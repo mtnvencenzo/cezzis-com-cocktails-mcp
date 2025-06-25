@@ -2,5 +2,5 @@
 Template repo for creating other repos from
 
 
-## Using Msal for token access to api
+## Helpful Links
 https://github.com/AzureAD/microsoft-authentication-library-for-go
