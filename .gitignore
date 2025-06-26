@@ -67,3 +67,5 @@ node_modules/
 
 #Dapr
 /**/.dapr/logs/
+
+/**/*/*.exe
