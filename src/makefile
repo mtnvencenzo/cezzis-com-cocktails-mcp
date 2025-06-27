@@ -12,5 +12,5 @@ run:
 clean:
 	rm ../dist/cezzis-cocktails.exe
 
-forclaude: clean build copyenv
+compile: clean build copyenv
 

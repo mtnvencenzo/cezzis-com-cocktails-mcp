@@ -13,7 +13,7 @@ In this repository, MCP is used to bridge LLMs and agents with the cocktails API
 - Programmatically query the cocktails database for recipes, ingredients, and suggestions.
 - Integrate cocktail search functionality into conversational or agent-based workflows, enabling richer and more interactive user experiences.
 
-This approach allows developers to build intelligent assistants or chatbots that can answer cocktail-related queries, recommend drinks, or help users explore new recipes, all powered by the cezzis.com cocktails API.
+This approach allows developers to build intelligent assistants or chatbots that can answer cocktail-related queries, recommend drinks, or help users explore new recipes, all powered by the cezzis.com cocktails API and its internall AI Search capabilities.
 
 ## Features ✨
 - MCP integration for LLMs and agents
@@ -32,13 +32,13 @@ This approach allows developers to build intelligent assistants or chatbots that
 Navigate to the `/src` directory and run:
 
 ```bash
-make forclaude
+make compile
 ```
 
 ## Setting up with Claude Desktop 💻
 
 Make sure an entry exists in this file for the deploy path of the local exe:
-> C:\Users\rvecc\AppData\Roaming\Claude\claude_desktop_config.json
+> C:\Users\<user>\AppData\Roaming\Claude\claude_desktop_config.json
 
 ```json
 {
@@ -50,7 +50,7 @@ Make sure an entry exists in this file for the deploy path of the local exe:
 }
 ```
 
-After changing the file, it's not enough to close and reopen Claude Desktop as it runs in the background. You must open Claude and exit out of it using the file menu. Then reopen it. This ensures the settings are re-loaded.
+After changing the file, it's not enough to close and reopen Claude Desktop as it runs in the background. You must open Claude and exit out of it using the `File > Exit` menu item. Then reopen it. This ensures the settings are re-loaded.
 
 ## Contributing 🤝
 
