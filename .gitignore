@@ -6,6 +6,9 @@ project.lock.json
 nupkg/
 *.nupkg
 
+# Local environment files
+**/.env.local
+
 # Visual Studio Code
 
 # Rider

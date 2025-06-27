@@ -4,14 +4,27 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 
 	"cezzis.com/cezzis-mcp-server/api/cocktailsapi"
+	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
 
 func main() {
-	//http.Handle("/", cocktailsapi.AuthMiddleware([]string{})(searchHandler))
+	exePath, err := os.Executable()
+	if err != nil {
+		fmt.Printf("Server error - exe path: %v\n", err)
+	}
+
+	// Get the directory of the executable
+	exeDir := filepath.Dir(exePath)
+
+	_ = godotenv.Overload(
+		fmt.Sprintf("%s/%s", exeDir, ".env"),
+		fmt.Sprintf("%s/%s", exeDir, ".env.local"))
 
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
@@ -30,14 +43,7 @@ func main() {
 
 	mcpServer.AddTool(searchTool, server.ToolHandlerFunc(searchToolHandler))
 
-	//log.Println("Starting MCP server on :9191")
-
-	// if err := http.ListenAndServe(":9191", mcpServer.Handler()); err != nil {
-	// 	log.Fatalf("could not start server: %s\n", err)
-	// }
-
 	// Start the stdio server
-	//fmt.Printf("Starting MCP server on stdio")
 	if err := server.ServeStdio(mcpServer); err != nil {
 		fmt.Printf("Server error: %v\n", err)
 	}
@@ -49,11 +55,14 @@ func searchToolHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.C
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	cocktailsClient, err := cocktailsapi.NewClient("https://api.cezzis.com/prd/cocktails")
+	apiHost := os.Getenv("COCKTAILS_API_HOST")
+	xKey := os.Getenv("COCKTAILS_API_XKEY")
+
+	cocktailsClient, err := cocktailsapi.NewClient(apiHost)
 	if err != nil {
 		return nil, err
 	}
-	xKey := "---"
+
 	rs, err := cocktailsClient.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
 		FreeText: &freeText,
 		XKey:     &xKey,
