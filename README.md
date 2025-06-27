@@ -1,28 +1,61 @@
-# template
-Template repo for creating other repos from
+# cezzis-com-cocktails-mcp 🍸
 
-Building the app for local usage.
+Model Context Protocol (MCP) application to allow LLMs and agents to connect and use the cocktails API search endpoint from cezzis.com.
 
-Navigate to the /src diectory and run:
-``` bash
+## What is MCP? 🤖
+
+Model Context Protocol (MCP) is an open protocol designed to enable large language models (LLMs) and intelligent agents to interact with external APIs and tools in a standardized, secure, and extensible way. MCP provides a structured context for models to understand available actions, endpoints, and data schemas, making it easier for LLMs to perform complex tasks by leveraging external services.
+
+### How does MCP help search for cocktails? 🍹
+
+In this repository, MCP is used to bridge LLMs and agents with the cocktails API from cezzis.com. By exposing the cocktails search endpoint through MCP, LLMs can:
+- Discover and understand the available search capabilities and parameters.
+- Programmatically query the cocktails database for recipes, ingredients, and suggestions.
+- Integrate cocktail search functionality into conversational or agent-based workflows, enabling richer and more interactive user experiences.
+
+This approach allows developers to build intelligent assistants or chatbots that can answer cocktail-related queries, recommend drinks, or help users explore new recipes, all powered by the cezzis.com cocktails API.
+
+## Features ✨
+- MCP integration for LLMs and agents
+- Secure and extensible API access
+- Search cocktails by name, ingredient, or recipe
+- Easy local development and deployment
+
+## Getting Started 🚀
+
+### Prerequisites
+- Go (latest version recommended)
+- make
+
+### Building the app for local usage 🛠️
+
+Navigate to the `/src` directory and run:
+
+```bash
 make forclaude
 ```
 
-# Setting up with claude desktop
-Make sure an entry exists in this file for the deploy path of the local exe
+## Setting up with Claude Desktop 💻
+
+Make sure an entry exists in this file for the deploy path of the local exe:
 > C:\Users\rvecc\AppData\Roaming\Claude\claude_desktop_config.json
 
-``` json
+```json
 {
   "mcpServers": {
-	"mcp-cocktails-go": {
+    "mcp-cocktails-go": {
       "command": "D:\\Github\\cezzis-com-cocktails-mcp\\dist\\cezzis-cocktails.exe"
     }
   }
 }
-
-After changing the file, it's not enough to close and reopen Claude Desktop as it runs in the background.  You must open Claude and exit out of it using the file menu.  Then repoen it.  This ensures the settings are re-loaded.
 ```
 
-## Helpful Links
-https://github.com/AzureAD/microsoft-authentication-library-for-go
+After changing the file, it's not enough to close and reopen Claude Desktop as it runs in the background. You must open Claude and exit out of it using the file menu. Then reopen it. This ensures the settings are re-loaded.
+
+## Contributing 🤝
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](../../issues).
+
+## License 📄
+
+This project is licensed under a proprietary license. All rights reserved. Please contact the repository owner for more information about usage and distribution rights.
