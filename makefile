@@ -1,16 +1,19 @@
 # choco install make
 
 build:
-	cd ./src && go build -o ../dist/cezzis-cocktails.exe ./cmd
+	cd ./cocktails.mcp/src && go build -o ../dist/cezzis-cocktails.exe ./cmd
 
 copyenv:
-	cp ./src/.env.local ./dist/.env.local && cp ./src/.env ./dist/.env
+	cp ./cocktails.mcp/src/.env.local ./cocktails.mcp/dist/.env.local && cp ./cocktails.mcp/src/.env ./cocktails.mcp/dist/.env
 
 run:
-	./dist/cezzis-cocktails.exe
+	./cocktails.mcp/dist/cezzis-cocktails.exe
 
 clean:
-	rm -f ./dist/cezzis-cocktails.exe
+	rm -rf ./cocktails.mcp/dist/ && mkdir ./cocktails.mcp/dist
 
 compile: clean build copyenv
+
+tidy:
+	cd ./cocktails.mcp/src && go mod tidy
 

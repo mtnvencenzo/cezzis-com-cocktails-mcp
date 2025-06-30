@@ -43,8 +43,8 @@ Make sure an entry exists in this file for the deploy path of the local exe:
 ```json
 {
   "mcpServers": {
-    "mcp-cocktails-go": {
-      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\dist\\cezzis-cocktails.exe"
+	"mcp-cocktails-go": {
+      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\cezzis-cocktails.exe"
     }
   }
 }
