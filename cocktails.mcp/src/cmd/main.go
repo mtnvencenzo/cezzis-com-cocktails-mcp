@@ -4,28 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 
-	"cezzis.com/cezzis-mcp-server/api/cocktailsapi"
-	"github.com/joho/godotenv"
+	"cezzis.com/cezzis-mcp-server/pkg/cocktailsapi"
+	"cezzis.com/cezzis-mcp-server/pkg/config"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
 
 func main() {
-	exePath, err := os.Executable()
-	if err != nil {
-		fmt.Printf("Server error - exe path: %v\n", err)
-	}
-
-	// Get the directory of the executable
-	exeDir := filepath.Dir(exePath)
-
-	_ = godotenv.Overload(
-		fmt.Sprintf("%s/%s", exeDir, ".env"),
-		fmt.Sprintf("%s/%s", exeDir, ".env.local"))
-
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
 		"1.0.0",
@@ -55,26 +41,24 @@ func searchToolHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.C
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	apiHost := os.Getenv("COCKTAILS_API_HOST")
-	xKey := os.Getenv("COCKTAILS_API_XKEY")
+	config := config.GetAppSettings()
 
-	cocktailsClient, err := cocktailsapi.NewClient(apiHost)
+	cocktailsClient, err := cocktailsapi.NewClient(config.CocktailsApiHost)
 	if err != nil {
-		return nil, err
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	rs, err := cocktailsClient.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
 		FreeText: &freeText,
-		XKey:     &xKey,
+		XKey:     &config.CocktailsApiSubscriptionKey,
 	})
 	if err != nil {
-		return nil, err
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 	defer rs.Body.Close()
 
 	bodyBytes, err := io.ReadAll(rs.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 

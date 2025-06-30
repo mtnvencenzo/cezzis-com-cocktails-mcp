@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"cezzis.com/cezzis-mcp-server/pkg/config"
 	"github.com/MicahParks/keyfunc"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -13,7 +14,12 @@ var jwks *keyfunc.JWKS
 
 func init() {
 	var err error
-	jwks, err = keyfunc.Get("https://login.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/discovery/v2.0/keys", keyfunc.Options{})
+	appSettings := config.GetAppSettings()
+	uri := appSettings.GetAzureAdB2CDiscoveryKeysUri()
+	if uri == "" {
+		panic("Azure AD B2C discovery URI not configured")
+	}
+	jwks, err = keyfunc.Get(uri, keyfunc.Options{})
 	if err != nil {
 		panic("Failed to get JWKS: " + err.Error())
 	}
