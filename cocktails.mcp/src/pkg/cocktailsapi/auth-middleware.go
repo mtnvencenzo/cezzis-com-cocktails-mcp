@@ -15,7 +15,11 @@ var jwks *keyfunc.JWKS
 func init() {
 	var err error
 	appSettings := config.GetAppSettings()
-	jwks, err = keyfunc.Get(appSettings.GetAzureAdB2CDiscoveryKeysUri(), keyfunc.Options{})
+	uri := appSettings.GetAzureAdB2CDiscoveryKeysUri()
+	if uri == "" {
+		panic("Azure AD B2C discovery URI not configured")
+	}
+	jwks, err = keyfunc.Get(uri, keyfunc.Options{})
 	if err != nil {
 		panic("Failed to get JWKS: " + err.Error())
 	}
