@@ -46,6 +46,13 @@ func GetAppSettings() *AppSettings {
 		if err := env.Parse(instance); err != nil {
 			fmt.Printf("Exe Path: %v\n", exeDir)
 			fmt.Printf("Failed to parse app settings: %v\n", err)
+
+			if instance.CocktailsApiHost == "" {
+				fmt.Printf("Warning: COCKTAILS_API_HOST is not set\n")
+			}
+			if instance.CocktailsApiSubscriptionKey == "" {
+				fmt.Printf("Warning: COCKTAILS_API_XKEY is not set\n")
+			}
 		}
 	})
 
