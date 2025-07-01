@@ -18,7 +18,7 @@ tidy:
 	cd ./cocktails.mcp/src && go mod tidy
 
 lint:
-	cd ./cocktails.mcp/src && golangci-lint run
+	cd ./cocktails.mcp/src && golangci-lint run --fix
 
 fmt:
 	cd ./cocktails.mcp/src && gofmt -s -w .

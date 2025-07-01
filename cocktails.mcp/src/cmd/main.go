@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 
-	"cezzis.com/cezzis-mcp-server/pkg/tools"
 	"github.com/mark3labs/mcp-go/server"
+
+	"cezzis.com/cezzis-mcp-server/pkg/tools"
 )
 
 func main() {

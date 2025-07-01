@@ -4,9 +4,10 @@ import (
 	"context"
 	"io"
 
+	"github.com/mark3labs/mcp-go/mcp"
+
 	"cezzis.com/cezzis-mcp-server/pkg/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/pkg/config"
-	"github.com/mark3labs/mcp-go/mcp"
 )
 
 var searchToolDescription = `

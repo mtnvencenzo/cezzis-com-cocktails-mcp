@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"cezzis.com/cezzis-mcp-server/pkg/config"
 	"github.com/MicahParks/keyfunc"
 	"github.com/golang-jwt/jwt/v4"
+
+	"cezzis.com/cezzis-mcp-server/pkg/config"
 )
 
 var jwks *keyfunc.JWKS
