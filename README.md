@@ -50,7 +50,23 @@ Make sure an entry exists in this file for the deploy path of the local exe:
 }
 ```
 
-After changing the file, it's not enough to close and reopen Claude Desktop as it runs in the background. You must open Claude and exit out of it using the `File > Exit` menu item. Then reopen it. This ensures the settings are re-loaded.
+## Setting up with Cursor 💻
+
+Make sure an entry exists in this file for the deploy path of the local exe:
+> C:\Users\rvecc\.cursor\mcp.json
+
+Or open the mcp settings within cursor via `Ctrl Shift P` > `View: Open Mcp Settings`
+
+```json
+{
+  "mcpServers": {
+	"mcp-cocktails-go": {
+      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\cezzis-cocktails.exe"
+    }
+  }
+}
+```
+
 
 ## Contributing 🤝
 
