@@ -55,5 +55,5 @@ func CocktailGetToolHandler(ctx context.Context, request mcp.CallToolRequest) (*
 	// Convert the byte slice to a string
 	bodyString := string(bodyBytes)
 
-	return mcp.NewToolResultError(bodyString), nil
+	return mcp.NewToolResultText(bodyString), nil
 }
