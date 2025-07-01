@@ -28,6 +28,7 @@ var CocktailSearchTool = mcp.NewTool(
 	),
 )
 
+// CocktailSearchToolHandler handles cocktail search requests by querying the Cezzis.com cocktails API with a free-text search term and returning the raw API response as a string result.
 func CocktailSearchToolHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	freeText, err := request.RequireString("freeText")
 	if err != nil {

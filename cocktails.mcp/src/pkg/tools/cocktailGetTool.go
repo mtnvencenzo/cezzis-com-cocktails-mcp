@@ -25,6 +25,8 @@ var CocktailGetTool = mcp.NewTool(
 	),
 )
 
+// CocktailGetToolHandler handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
+// It returns the full cocktail information as a string result, or an error result if any step fails.
 func CocktailGetToolHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	cocktailId, err := request.RequireString("cocktailId")
 	if err != nil {
