@@ -51,7 +51,7 @@ func main() {
 		// Use the official streamable HTTP server for MCP
 		streamableHTTP := server.NewStreamableHTTPServer(mcpServer)
 		http.Handle("/mcp", logMiddleware(streamableHTTP))
-		http.Handle("/healthz", logMiddleware(http.DefaultServeMux))
+		//http.Handle("/healthz", logMiddleware(http.DefaultServeMux))
 		log.Printf("Serving HTTP on %s", *httpAddr)
 		log.Fatal(http.ListenAndServe(*httpAddr, nil))
 	} else {
