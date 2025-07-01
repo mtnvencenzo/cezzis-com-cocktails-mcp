@@ -8,6 +8,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/pkg/tools"
 )
 
+// main initializes and runs the Cezzi Cocktails MCP server, registering cocktail search and retrieval tools and serving requests over standard input/output.
 func main() {
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
