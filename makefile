@@ -9,6 +9,9 @@ copyenv:
 run:
 	./cocktails.mcp/dist/cezzis-cocktails.exe
 
+run-http:
+	./cocktails.mcp/dist/cezzis-cocktails.exe --http :8181
+
 clean:
 	rm -rf ./cocktails.mcp/dist/ && mkdir ./cocktails.mcp/dist
 

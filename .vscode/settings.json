@@ -1,4 +1,14 @@
 {
     "dotnet.defaultSolution": "disable",
-    "makefile.configureOnOpen": false
+    "makefile.configureOnOpen": false,
+    "rest-client.enableTelemetry": false,
+    "rest-client.environmentVariables": {
+        "local": {
+          "host": "http://localhost:8181"
+        }
+    },
+    "explorer.experimental.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+    ".go": ".http"
+}
 }

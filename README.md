@@ -44,7 +44,8 @@ Make sure an entry exists in this file for the deploy path of the local exe:
 {
   "mcpServers": {
 	"mcp-cocktails-go": {
-      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\cezzis-cocktails.exe"
+      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\cezzis-cocktails.exe",
+      "args": ["--stdio"]
     }
   }
 }
@@ -61,7 +62,8 @@ Or open the mcp settings within cursor via `Ctrl Shift P` > `View: Open Mcp Sett
 {
   "mcpServers": {
 	"mcp-cocktails-go": {
-      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\cezzis-cocktails.exe"
+      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\cezzis-cocktails.exe",
+      "args": ["--stdio"]
     }
   }
 }
