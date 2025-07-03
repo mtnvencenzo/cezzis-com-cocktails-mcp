@@ -11,6 +11,17 @@ import (
 	"cezzis.com/cezzis-mcp-server/pkg/tools"
 )
 
+// statusRecorder wraps http.ResponseWriter to capture the status code
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (rec *statusRecorder) WriteHeader(code int) {
+	rec.status = code
+	rec.ResponseWriter.WriteHeader(code)
+}
+
 // main initializes and runs the Cezzi Cocktails MCP server, registering cocktail search and retrieval tools and serving requests over standard input/output or HTTP.
 func main() {
 	// Add a flag to choose between stdio and HTTP
@@ -29,17 +40,6 @@ func main() {
 	// Logging middleware for HTTP
 	logMiddleware := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Wrap the ResponseWriter to capture status code
-			type statusRecorder struct {
-				http.ResponseWriter
-				status int
-			}
-
-			// func (rec *statusRecorder) WriteHeader(code int) {
-			// 	rec.status = code
-			// 	rec.ResponseWriter.WriteHeader(code)
-			// }
-
 			rec := &statusRecorder{ResponseWriter: w, status: 200}
 			next.ServeHTTP(rec, r)
 			log.Printf("%s %s %s %d", r.Method, r.URL.Path, r.RemoteAddr, rec.status)
@@ -60,7 +60,6 @@ func main() {
 		// Use the official streamable HTTP server for MCP
 		streamableHTTP := server.NewStreamableHTTPServer(mcpServer)
 		http.Handle("/mcp", logMiddleware(streamableHTTP))
-		http.Handle("/healthz", logMiddleware(http.DefaultServeMux))
 		log.Printf("Serving HTTP on %s", *httpAddr)
 		log.Fatal(http.ListenAndServe(*httpAddr, nil))
 	} else {
