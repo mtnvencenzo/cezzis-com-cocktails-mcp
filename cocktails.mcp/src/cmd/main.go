@@ -42,11 +42,14 @@ func main() {
 
 	if *httpAddr != "" {
 		// HTTP mode
-		http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status":"ok"}`))
-		})
+ 		http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+ 			w.Header().Set("Content-Type", "application/json")
+ 			w.WriteHeader(http.StatusOK)
+-			w.Write([]byte(`{"status":"ok"}`))
++			if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
++				log.Printf("Error writing health check response: %v", err)
++			}
+ 		})
 
 		// Use the official streamable HTTP server for MCP
 		streamableHTTP := server.NewStreamableHTTPServer(mcpServer)
