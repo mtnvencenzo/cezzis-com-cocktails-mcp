@@ -2,6 +2,7 @@ package cocktailsapi
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -14,21 +15,32 @@ import (
 var jwks *keyfunc.JWKS
 
 func init() {
-	var err error
 	appSettings := config.GetAppSettings()
 	uri := appSettings.GetAzureAdB2CDiscoveryKeysUri()
 	if uri == "" {
-		panic("Azure AD B2C discovery URI not configured")
+		// Don't panic, just log a warning and continue without auth
+		fmt.Printf("Warning: Azure AD B2C discovery URI not configured, auth middleware will be disabled\n")
+		return
 	}
+
+	var err error
 	jwks, err = keyfunc.Get(uri, keyfunc.Options{})
 	if err != nil {
-		panic("Failed to get JWKS: " + err.Error())
+		// Don't panic, just log a warning and continue without auth
+		fmt.Printf("Warning: Failed to get JWKS: %v, auth middleware will be disabled\n", err)
+		return
 	}
 }
 
 func AuthMiddleware(requiredScopes []string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// If JWKS is not initialized, allow all requests through
+			if jwks == nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			// No need to check auth if no scopes are required
 			if len(requiredScopes) == 0 {
 				next.ServeHTTP(w, r)

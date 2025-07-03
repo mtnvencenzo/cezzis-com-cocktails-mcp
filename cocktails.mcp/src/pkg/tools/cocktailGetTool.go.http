@@ -46,9 +46,9 @@ Mcp-Session-Id: mcp-session-24f4d503-d725-4aa3-bae0-d4ded79b4a6e
   "id": "1",
   "method": "tools/call",
   "params": {
-    "name": "cocktails_search",
+    "name": "cocktails_get",
     "arguments": {
-      "freeText": "martini"
+      "cocktailId": "pimms-cup"
     }
   }
 }

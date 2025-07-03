@@ -9,6 +9,6 @@
     },
     "explorer.experimental.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
-    "*.go": "*.http"
+    ".go": ".http"
 }
 }
