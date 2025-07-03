@@ -34,6 +34,12 @@ func main() {
 				http.ResponseWriter
 				status int
 			}
+
+			// func (rec *statusRecorder) WriteHeader(code int) {
+			// 	rec.status = code
+			// 	rec.ResponseWriter.WriteHeader(code)
+			// }
+
 			rec := &statusRecorder{ResponseWriter: w, status: 200}
 			next.ServeHTTP(rec, r)
 			log.Printf("%s %s %s %d", r.Method, r.URL.Path, r.RemoteAddr, rec.status)
@@ -42,19 +48,19 @@ func main() {
 
 	if *httpAddr != "" {
 		// HTTP mode
- 		http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
- 			w.Header().Set("Content-Type", "application/json")
- 			w.WriteHeader(http.StatusOK)
--			w.Write([]byte(`{"status":"ok"}`))
-+			if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
-+				log.Printf("Error writing health check response: %v", err)
-+			}
- 		})
+		http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
+				log.Printf("Error writing health check response: %v", err)
+			}
+		})
 
 		// Use the official streamable HTTP server for MCP
 		streamableHTTP := server.NewStreamableHTTPServer(mcpServer)
 		http.Handle("/mcp", logMiddleware(streamableHTTP))
-		//http.Handle("/healthz", logMiddleware(http.DefaultServeMux))
+		http.Handle("/healthz", logMiddleware(http.DefaultServeMux))
 		log.Printf("Serving HTTP on %s", *httpAddr)
 		log.Fatal(http.ListenAndServe(*httpAddr, nil))
 	} else {
