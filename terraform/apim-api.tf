@@ -33,10 +33,10 @@ module "apim_cocktails_mcp" {
     #audience     = module.api_b2c_tenant.cocktails_api_app_registration_client_id
   }
 
-  key_vault = {
-    id   = data.azurerm_key_vault.cocktails_keyvault.id
-    name = data.azurerm_key_vault.cocktails_keyvault.name
-  }
+  # key_vault = {
+  #   id   = data.azurerm_key_vault.cocktails_keyvault.id
+  #   name = data.azurerm_key_vault.cocktails_keyvault.name
+  # }
 
   application_insights = {
     id                  = data.azurerm_application_insights.appi.id
