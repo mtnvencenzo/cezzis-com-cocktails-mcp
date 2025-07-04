@@ -41,6 +41,10 @@ module "aca_cocktails_mcp" {
     {
       name                  = "apim-host-key"
       key_vault_secret_name = azurerm_key_vault_secret.cocktails_mcp_apimhostkey.name
+    },
+    {
+      name                  = "apim-cocktails-api-subscription-key"
+      key_vault_secret_name = data.azurerm_key_vault_secret.cocktails_api_mcp_subscription_key.name
     }
   ]
 
@@ -56,6 +60,22 @@ module "aca_cocktails_mcp" {
     {
       name  = "ApplicationInsightsAgent_EXTENSION_VERSION"
       value = "~2"
+    },
+    {
+      name  = "COCKTAILS_API_HOST"
+      value = "https://api.cezzis.com/prd/cocktails"
+    },
+    {
+      name  = "AZUREAD_B2C_INSTANCE"
+      value = "https://login.cezzis.com"
+    },
+    {
+      name  = "AZUREAD_B2C_DOMAIN"
+      value = "cezzis.onmicrosoft.com"
+    },
+    {
+      name  = "AZUREAD_B2C_USERFLOW"
+      value = "B2C_1_SignInSignUp_Policy"
     }
   ]
 
@@ -63,6 +83,10 @@ module "aca_cocktails_mcp" {
     {
       name        = "CocktailsMcp__ApimHostKey"
       secret_name = "apim-host-key"
+    },
+    {
+      name        = "COCKTAILS_API_XKEY"
+      secret_name = "apim-cocktails-api-subscription-key"
     }
   ]
 }

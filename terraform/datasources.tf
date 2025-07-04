@@ -56,3 +56,8 @@ data "azurerm_dns_zone" "cezzis_dns_zone" {
   name                = "cezzis.com"
   resource_group_name = data.azurerm_resource_group.cocktails_global_resource_group.name
 }
+
+data "azurerm_key_vault_secret" "cocktails_api_mcp_subscription_key" {
+  name         = "cocktails_api_mcp_subscription_primary_key"
+  key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
+}
