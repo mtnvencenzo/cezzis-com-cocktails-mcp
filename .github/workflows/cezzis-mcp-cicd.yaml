@@ -19,6 +19,7 @@ jobs:
       go_mod_directory: './cocktails.mcp/src'
       go_main_directory: 'cmd'
       setup_files: '["cocktails.mcp/Dockerfile-CI"]'
+      go_executable_name: 'cezzis-cocktails'
       artifact_name: 'cocktails-mcp'
 
   # docker:
