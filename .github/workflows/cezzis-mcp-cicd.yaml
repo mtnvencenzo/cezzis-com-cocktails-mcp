@@ -18,6 +18,7 @@ jobs:
       go_version: '1.24.2'
       go_mod_directory: './cocktails.mcp/src'
       go_main_directory: 'cmd'
+      setup_files: '["cocktails.mcp/Dockerfile-CI"]'
       artifact_name: 'cocktails-mcp'
 
   # docker:
