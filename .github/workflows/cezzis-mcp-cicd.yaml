@@ -28,7 +28,7 @@ jobs:
     needs: [build]
     uses: mtnvencenzo/workflows/.github/workflows/docker-build-and-push.yaml@main
     with:
-      working_directory: ''
+      working_directory: 'cocktails.mcp'
       allow_build_and_push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
       artifact_name: 'cocktails-mcp'
       docker_file_name: 'Dockerfile-CI'
