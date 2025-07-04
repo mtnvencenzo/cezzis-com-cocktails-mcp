@@ -46,6 +46,8 @@ copyenv-linux:
 build-linux:
 	cd ./cocktails.mcp/src && CGO_ENABLED=0 GOOS=linux go build -o ../dist/linux/cezzis-cocktails ./cmd
 
+compile-linux-ci: clean-linux build-linux
+
 docker-build:
 	cd ./cocktails.mcp && docker build -t cocktails-mcp -f ./Dockerfile-CI .
 
