@@ -1,8 +1,12 @@
-FROM golang:1.24-alpine AS builder
-WORKDIR /cezzis-cocktails
-COPY ./dist/linux .
+FROM alpine:latest
+WORKDIR /
+COPY ./dist/linux/cezzis-cocktails /cezzis-cocktails
+COPY ./dist/linux/.env* ./
+
+# Make sure the binary is executable
+RUN chmod +x /cezzis-cocktails
 
 EXPOSE 8181
 EXPOSE 443
 
-CMD ["/cezzis-cocktails"]
+CMD ["/cezzis-cocktails", "--http", ":8181"]
