@@ -24,7 +24,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/pkg/tools"
 )
 
-// statusRecorder wraps http.ResponseWriter to capture the status code
+// statusRecorder wraps http.ResponseWriter to capture the status code.
 type statusRecorder struct {
 	http.ResponseWriter
 	status int
