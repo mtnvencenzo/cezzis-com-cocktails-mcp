@@ -1,0 +1,40 @@
+name: cicd-cezzis-mcp
+
+on:
+  pull_request:
+    branches: [main]
+    paths: [cocktails.mcp/**, terraform/**, .github/workflows/cezzis-mcp-cicd.yaml]
+  push:
+    branches: [main]
+    paths: [cocktails.mcp/**, terraform/**, .github/workflows/cezzis-mcp-cicd.yaml]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build app
+    uses: mtnvencenzo/workflows/.github/workflows/go-build.yaml@main
+    with:
+      go_version: '1.24.2'
+      go_mod_directory: './cocktails.mcp/src'
+      go_main_directory: 'cmd'
+      go_output_directory: 'dist/linux'
+      setup_files: '["cocktails.mcp/Dockerfile-CI"]'
+      go_executable_name: 'cezzis-cocktails'
+      artifact_name: 'cocktails-mcp'
+
+  docker:
+    name: Containerize app
+    needs: [build]
+    uses: mtnvencenzo/workflows/.github/workflows/docker-build-and-push.yaml@main
+    with:
+      working_directory: 'cocktails.mcp'
+      allow_build_and_push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+      artifact_name: 'cocktails-mcp'
+      docker_file_name: 'Dockerfile-CI'
+      image_tag: '${{ github.sha }}'
+      acr_registry_login_server: 'acrveceusgloshared001.azurecr.io'
+      acr_image_repository: 'cocktailsmcp'
+    secrets:
+      acr_registry_login_username: ${{ secrets.ACR_REGISTRY_USERNAME }}
+      acr_registry_login_password: ${{ secrets.ACR_REGISTRY_PASSWORD }}
