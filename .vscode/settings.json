@@ -5,6 +5,9 @@
     "rest-client.environmentVariables": {
         "local": {
           "host": "http://localhost:8181"
+        },
+        "local-docker": {
+          "host": "http://localhost:3001"
         }
     },
     "explorer.experimental.fileNesting.enabled": true,

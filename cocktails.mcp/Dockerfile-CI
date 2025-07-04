@@ -1,0 +1,15 @@
+FROM alpine:latest
+WORKDIR /
+COPY ./dist/linux/cezzis-cocktails /cezzis-cocktails
+COPY ./dist/linux/.env* ./
+
+# Make sure the binary is executable
+RUN chmod +x /cezzis-cocktails
+# add non-root runtime user
+RUN addgroup -S app && adduser -S -G app app
+USER app
+
+EXPOSE 8181
+EXPOSE 443
+
+CMD ["/cezzis-cocktails", "--http", ":8181"]
