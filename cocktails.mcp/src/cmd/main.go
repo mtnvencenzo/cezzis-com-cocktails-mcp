@@ -1,3 +1,16 @@
+// Package main is the entry point for the Cezzi Cocktails MCP server.
+// It initializes and runs the MCP server, registering tools and serving requests
+// over standard input/output or HTTP.
+//
+// The server supports two modes:
+//   - Standard input/output (stdio) - default mode
+//   - HTTP mode - if --http flag is provided
+//
+// The server includes:
+//   - MCP server initialization with tool registration
+//   - HTTP server setup with health check endpoint
+//   - Logging middleware for request tracking
+//   - Proper error handling and response formatting
 package main
 
 import (

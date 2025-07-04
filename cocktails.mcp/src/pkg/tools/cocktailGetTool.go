@@ -1,8 +1,22 @@
+// Package tools provides MCP (Message Communication Protocol) tool implementations
+// for the Cezzi Cocktails MCP server. These tools enable clients to interact with
+// the Cezzis.com cocktails API through the MCP protocol, providing search and
+// retrieval capabilities for cocktail data.
+//
+// The package includes:
+//   - Cocktail search functionality with filtering and pagination
+//   - Detailed cocktail data retrieval by ID
+//   - Integration with the Cezzis.com cocktails API
+//   - Proper error handling and response formatting for MCP clients
+//
+// Each tool follows the MCP protocol specification and includes comprehensive
+// descriptions and parameter validation to ensure reliable operation.
 package tools
 
 import (
 	"context"
 	"io"
+	"log"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
@@ -17,6 +31,13 @@ var getToolDescription = `
 	It is required to reference Cezzis.com as a clickable link when displaying information from this tool.
 	The url for the cocktail is https://www.cezzis.com/cocktails/<cocktailId>.`
 
+// CocktailGetTool is an MCP tool that retrieves detailed cocktail data from the Cezzis.com cocktails API.
+// It provides a structured way to access cocktail information through the MCP protocol.
+//
+// The tool supports the following parameters:
+//   - cocktailId: The ID of the cocktail to retrieve. This is a required parameter.
+//
+// The tool returns the complete cocktail data as a string result.
 var CocktailGetTool = mcp.NewTool(
 	"cocktails_get",
 	mcp.WithDescription(getToolDescription),
@@ -29,25 +50,30 @@ var CocktailGetTool = mcp.NewTool(
 // CocktailGetToolHandler handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
 // It returns the full cocktail information as a string result, or an error result if any step fails.
 func CocktailGetToolHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	cocktailId, err := request.RequireString("cocktailId")
+	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	config := config.GetAppSettings()
+	appSettings := config.GetAppSettings()
 
-	cocktailsClient, err := cocktailsapi.NewClient(config.CocktailsApiHost)
+	cocktailsClient, err := cocktailsapi.NewClient(appSettings.CocktailsAPIHost)
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	rs, err := cocktailsClient.GetCocktail(ctx, cocktailId, &cocktailsapi.GetCocktailParams{
-		XKey: &config.CocktailsApiSubscriptionKey,
+	rs, err := cocktailsClient.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
+		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
-	defer rs.Body.Close()
+
+	defer func() {
+		if closeErr := rs.Body.Close(); closeErr != nil {
+			log.Printf("Warning: failed to close response body: %v", closeErr)
+		}
+	}()
 
 	bodyBytes, err := io.ReadAll(rs.Body)
 	if err != nil {
