@@ -43,7 +43,7 @@ module "apim_cocktails_mcp" {
     instrumentation_key = data.azurerm_application_insights.appi.instrumentation_key
   }
 
-  allowed_origins = var.allowed_origins
+  allowed_origins = []
 
   subscriptions = [
     {
