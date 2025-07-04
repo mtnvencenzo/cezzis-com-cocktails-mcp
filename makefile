@@ -12,6 +12,9 @@ lint:
 fmt:
 	cd ./cocktails.mcp/src && gofmt -s -w .
 
+test:
+	cd ./cocktails.mcp/src && go test -v ./...
+
 # ------------------------------------------------------------
 # Windows build
 # ------------------------------------------------------------

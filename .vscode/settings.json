@@ -10,8 +10,8 @@
           "host": "http://localhost:3001"
         }
     },
-    "explorer.experimental.fileNesting.enabled": true,
+    "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
-      "*.go": ".http"
+      "*.go": "$(capture).go.http, $(capture)_test.go"
     }
 }
