@@ -1,0 +1,8 @@
+FROM golang:1.24-alpine AS builder
+WORKDIR /cezzis-cocktails
+COPY ./dist/linux .
+
+EXPOSE 8181
+EXPOSE 443
+
+CMD ["/cezzis-cocktails"]
