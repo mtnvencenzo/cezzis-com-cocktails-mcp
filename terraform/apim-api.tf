@@ -43,12 +43,6 @@ module "apim_cocktails_mcp" {
     instrumentation_key = data.azurerm_application_insights.appi.instrumentation_key
   }
 
-  b2c_auth = {
-    tenant_name   = var.b2c_tenant_name
-    signin_policy = var.b2c_signin_policy
-    tenant_id     = var.b2c_tenant_id
-  }
-
   allowed_origins = var.allowed_origins
 
   subscriptions = [
