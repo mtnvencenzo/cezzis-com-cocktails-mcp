@@ -16,9 +16,7 @@ jobs:
     uses: mtnvencenzo/workflows/.github/workflows/go-build.yaml@main
     with:
       go_version: '1.24.2'
-      make_build_command: 'compile-linux-ci'
       go_mod_directory: './cocktails.mcp/src'
-      go_dist_directory: './cocktails.mcp/dist'
       artifact_name: 'cocktails-mcp'
 
   # docker:
