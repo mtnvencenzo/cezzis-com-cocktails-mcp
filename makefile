@@ -26,7 +26,7 @@ build-windows:
 	cd ./cocktails.mcp/src && go build -o ../dist/win/cezzis-cocktails.exe ./cmd
 
 run-windows:
-	./cocktails.mcp/dist/cezzis-cocktails.exe
+	./cocktails.mcp/dist/win/cezzis-cocktails.exe
 
 run-windows-http:
 	./cocktails.mcp/dist/win/cezzis-cocktails.exe --http :8181
