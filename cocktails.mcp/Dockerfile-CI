@@ -9,7 +9,6 @@ RUN chmod +x /cezzis-cocktails
 RUN addgroup -S app && adduser -S -G app app
 USER app
 
-EXPOSE 8181
-EXPOSE 443
+EXPOSE 8080
 
-CMD ["/cezzis-cocktails", "--http", ":8181"]
+CMD ["/cezzis-cocktails", "--http", ":8080"]
