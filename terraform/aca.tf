@@ -1,4 +1,4 @@
-module "aca_cocktails_api" {
+module "aca_cocktails_mcp" {
   source = "git::ssh://git@github.com/mtnvencenzo/Terraform-Modules.git//modules/container-app"
   providers = {
     azurerm = azurerm
