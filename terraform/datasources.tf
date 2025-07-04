@@ -58,6 +58,6 @@ data "azurerm_dns_zone" "cezzis_dns_zone" {
 }
 
 data "azurerm_key_vault_secret" "cocktails_api_mcp_subscription_key" {
-  name         = "cocktails_api_mcp_subscription_primary_key"
+  name         = "cocktails-api-mcp-subscription-primary-key"
   key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
 }
