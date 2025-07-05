@@ -75,3 +75,24 @@ variable "b2c_terraform_app_registration_client_secret" {
 variable "image_tag" {
   type = string
 }
+
+variable "allowed_origins" {
+  type    = list(string)
+  default = []
+}
+
+variable "b2c_tenant_id" {
+  type        = string
+  description = "The b2c tenant id for this environment"
+}
+
+variable "b2c_tenant_name" {
+  type        = string
+  description = "The b2c tenant name (typeically the first part of the hostname)"
+}
+
+variable "b2c_signin_policy" {
+  type        = string
+  description = "The main signin policy for the cocktails webapp"
+  default     = "B2C_1_SignInSignUp_Policy"
+}
