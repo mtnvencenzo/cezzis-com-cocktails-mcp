@@ -59,11 +59,6 @@ variable "global_domain" {
   default     = "shared"
 }
 
-variable "b2c_tenant_id" {
-  type        = string
-  description = "The b2c tenant id for this environment"
-}
-
 variable "b2c_terraform_app_registration_client_id" {
   type = string
 }
