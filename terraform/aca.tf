@@ -15,7 +15,7 @@ module "aca_cocktails_mcp" {
   resource_group_location      = data.azurerm_resource_group.cocktails_resource_group.location
   container_app_environment_id = data.azurerm_container_app_environment.cae_shared.id
   ingress_target_port          = "8080"
-  startup_probe_relative_url   = "/api/v1/health/ping"
+  startup_probe_relative_url   = "/healthz"
 
   tags = local.tags
 

@@ -50,3 +50,13 @@ resource "azurerm_key_vault_secret" "cocktails_mcp_devops_subscription_primary_k
   key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
   tags         = local.tags
 }
+
+# ----------------------------------------
+# Misc secret for local development
+# ----------------------------------------
+resource "random_password" "cocktails_mcp_localusage_subscription_keys" {
+  count   = 2
+  length  = 24
+  special = true
+  upper   = false
+}
