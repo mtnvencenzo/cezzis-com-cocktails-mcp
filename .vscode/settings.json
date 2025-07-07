@@ -8,6 +8,9 @@
         },
         "local-docker": {
           "host": "http://localhost:3001"
+        },
+        "prod-apim": {
+          "host": "https://api.cezzis.com/prd/cocktails/mcp/v1"
         }
     },
     "explorer.fileNesting.enabled": true,

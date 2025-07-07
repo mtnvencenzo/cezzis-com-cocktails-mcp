@@ -15,13 +15,14 @@ package tools
 
 import (
 	"context"
+	"fmt"
 	"io"
-	"log"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/pkg/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/pkg/config"
+	l "cezzis.com/cezzis-mcp-server/pkg/logging"
 )
 
 var getToolDescription = `
@@ -62,21 +63,25 @@ func CocktailGetToolHandler(ctx context.Context, request mcp.CallToolRequest) (*
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
+	l.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
+
 	rs, err := cocktailsClient.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
 	if err != nil {
+		l.Logger.Err(err).Msg("MCP Error getting cocktail: " + cocktailID)
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	defer func() {
 		if closeErr := rs.Body.Close(); closeErr != nil {
-			log.Printf("Warning: failed to close response body: %v", closeErr)
+			l.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
 		}
 	}()
 
 	bodyBytes, err := io.ReadAll(rs.Body)
 	if err != nil {
+		l.Logger.Err(err).Msg("MCP Error getting cocktail rs body: " + cocktailID)
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 

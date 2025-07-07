@@ -14,29 +14,44 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/mark3labs/mcp-go/server"
+	"github.com/rs/xid"
+	"github.com/rs/zerolog"
 
+	l "cezzis.com/cezzis-mcp-server/pkg/logging"
 	"cezzis.com/cezzis-mcp-server/pkg/tools"
 )
 
-// statusRecorder wraps http.ResponseWriter to capture the status code
-type statusRecorder struct {
+type loggingResponseWriter struct {
 	http.ResponseWriter
-	status int
+	statusCode int
 }
 
-func (rec *statusRecorder) WriteHeader(code int) {
-	rec.status = code
-	rec.ResponseWriter.WriteHeader(code)
+func newLoggingResponseWriter(w http.ResponseWriter) *loggingResponseWriter {
+	return &loggingResponseWriter{w, http.StatusOK}
 }
+
+func (lrw *loggingResponseWriter) WriteHeader(code int) {
+	lrw.statusCode = code
+	lrw.ResponseWriter.WriteHeader(code)
+}
+
+type ctxKey string
 
 // main initializes and runs the Cezzi Cocktails MCP server, registering cocktail search and retrieval tools and serving requests over standard input/output or HTTP.
 func main() {
+	_, err := l.InitLogger()
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+
 	// Add a flag to choose between stdio and HTTP
 	httpAddr := flag.String("http", "", "If set, serve HTTP on this address (e.g., :8080). Otherwise, use stdio.")
 	flag.Parse()
@@ -50,12 +65,45 @@ func main() {
 	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.CocktailSearchToolHandler))
 	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.CocktailGetToolHandler))
 
-	// Logging middleware for HTTP
-	logMiddleware := func(next http.Handler) http.Handler {
+	requestLogger := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			rec := &statusRecorder{ResponseWriter: w, status: 200}
-			next.ServeHTTP(rec, r)
-			log.Printf("%s %s %s %d", r.Method, r.URL.Path, r.RemoteAddr, rec.status)
+			start := time.Now()
+
+			lg := l.Logger
+
+			correlationID := xid.New().String()
+
+			ctx := context.WithValue(r.Context(), ctxKey("correlation_id"), correlationID)
+
+			r = r.WithContext(ctx)
+
+			lg.UpdateContext(func(c zerolog.Context) zerolog.Context {
+				return c.Str("correlation_id", correlationID)
+			})
+
+			w.Header().Add("X-Correlation-ID", correlationID)
+
+			lrw := newLoggingResponseWriter(w)
+
+			r = r.WithContext(lg.WithContext(r.Context()))
+
+			defer func() {
+				panicVal := recover()
+				if panicVal != nil {
+					lrw.statusCode = http.StatusInternalServerError
+					panic(panicVal)
+				}
+
+				lg.
+					Info().
+					Str("method", r.Method).
+					Str("url", r.URL.RequestURI()).
+					Int("status_code", lrw.statusCode).
+					Dur("elapsed_ms", time.Since(start)).
+					Msg("MCP incoming request")
+			}()
+
+			next.ServeHTTP(lrw, r)
 		})
 	}
 
@@ -66,15 +114,22 @@ func main() {
 			w.WriteHeader(http.StatusOK)
 
 			if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
-				log.Printf("Error writing health check response: %v", err)
+				l.Logger.Err(err).Msg(fmt.Sprintf("Error writing health check response: %v", err))
 			}
 		})
 
 		// Use the official streamable HTTP server for MCP
 		streamableHTTP := server.NewStreamableHTTPServer(mcpServer)
-		http.Handle("/mcp", logMiddleware(streamableHTTP))
-		log.Printf("Serving HTTP on %s", *httpAddr)
-		log.Fatal(http.ListenAndServe(*httpAddr, nil))
+		http.Handle("/mcp", requestLogger(streamableHTTP))
+
+		l.Logger.Info().
+			Str("port", *httpAddr).
+			Msgf("Starting MCP Server on port '%s'", *httpAddr)
+
+		l.Logger.Fatal().
+			Err(http.ListenAndServe(*httpAddr, nil)).
+			Msg("MCP Server Closed")
+
 	} else {
 		// Stdio mode (default)
 		if err := server.ServeStdio(mcpServer); err != nil {
