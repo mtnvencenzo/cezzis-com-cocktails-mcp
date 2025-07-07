@@ -76,6 +76,14 @@ module "aca_cocktails_mcp" {
     {
       name  = "AZUREAD_B2C_USERFLOW"
       value = "B2C_1_SignInSignUp_Policy"
+    },
+    {
+      name  = "ENV"
+      value = var.environment
+    },
+    {
+      name  = "LOG_LEVEL"
+      value = "info"
     }
   ]
 

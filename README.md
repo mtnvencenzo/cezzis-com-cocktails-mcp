@@ -99,7 +99,8 @@ Or open the mcp settings within cursor via `Ctrl Shift P` > `View: Open Mcp Sett
     }
 }
 ```
-
+## Installs
+`go install -v github.com/go-delve/delve/cmd/dlv@latest`
 
 ## Contributing 🤝
 

@@ -33,7 +33,7 @@ Content-Type: application/json
 ###
 
 // ------------------------------------------------------------
-// Cocktail FreeText Search
+// Cocktail Get
 // ------------------------------------------------------------
 
 POST {{host}}/mcp
