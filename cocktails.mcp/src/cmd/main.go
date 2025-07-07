@@ -100,7 +100,7 @@ func main() {
 					Str("url", r.URL.RequestURI()).
 					Int("status_code", lrw.statusCode).
 					Dur("elapsed_ms", time.Since(start)).
-					Msg("MCP incoming request")
+					Msgf("MCP: %s %s %d %s", r.Method, r.URL.RequestURI(), lrw.statusCode, time.Since(start))
 			}()
 
 			next.ServeHTTP(lrw, r)

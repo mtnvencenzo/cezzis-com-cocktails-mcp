@@ -100,14 +100,14 @@ func (a *appInsightsLogger) Write(p []byte) (n int, err error) {
 	telemetry := appinsights.NewTraceTelemetry(message, severity)
 
 	// Extract and set the Correlation ID
-	correlationID, ok := logData["CorrelationID"].(string) // Assuming the hook added it as "CorrelationID"
+	correlationID, ok := logData["correlation_id"].(string) // Assuming the hook added it as "CorrelationID"
 	if ok {
-		telemetry.Properties["CorrelationID"] = correlationID
+		telemetry.Properties["correlation_id"] = correlationID
 		telemetry.Tags["ai.operation.id"] = correlationID // Set the operation ID using Tags
 	}
 
 	for key, value := range logData {
-		if key != "message" && key != "level" && key != "time" && key != "CorrelationID" {
+		if key != "message" && key != "level" && key != "time" && key != "correlation_id" {
 			telemetry.Properties[key] = fmt.Sprintf("%v", value)
 		}
 	}

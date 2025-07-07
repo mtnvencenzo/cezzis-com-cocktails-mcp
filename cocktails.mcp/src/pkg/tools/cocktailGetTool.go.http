@@ -9,31 +9,7 @@ Accept: application/json
 ###
 
 // ------------------------------------------------------------
-// Initialize Request
-// ------------------------------------------------------------
-
-POST {{host}}/mcp
-Accept: application/json
-Content-Type: application/json
-
-{
-  "jsonrpc": "2.0",
-  "id": 0,
-  "method": "initialize",
-  "params": {
-    "protocolVersion": "2024-11-05",
-    "capabilities": {},
-    "clientInfo": {
-      "name": "cocktails-dot-http-file",
-      "version": "1.0.0"
-    }
-  }
-}
-
-###
-
-// ------------------------------------------------------------
-// Cocktail Get
+// POST Cocktail GET
 // ------------------------------------------------------------
 
 POST {{host}}/mcp
@@ -48,7 +24,7 @@ Mcp-Session-Id: mcp-session-24f4d503-d725-4aa3-bae0-d4ded79b4a6e
   "params": {
     "name": "cocktails_get",
     "arguments": {
-      "cocktailId": "pimms-cup"
+      "cocktailId": "pisco-sour"
     }
   }
 }
