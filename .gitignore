@@ -6,6 +6,9 @@ project.lock.json
 nupkg/
 *.nupkg
 
+# Local environment files
+**/.env.local
+
 # Visual Studio Code
 
 # Rider
@@ -67,3 +70,7 @@ node_modules/
 
 #Dapr
 /**/.dapr/logs/
+
+/**/*/*.exe
+
+coverage.txt
