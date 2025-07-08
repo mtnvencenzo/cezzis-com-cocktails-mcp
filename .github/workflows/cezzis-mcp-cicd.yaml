@@ -119,10 +119,7 @@ jobs:
           expected_tag: ${{ github.sha }}
           url: https://api.cezzis.com/prd/cocktails/mcp/v1/version
           property_name: version
-          auth_header: X-Key
           timeout_seconds: 180
-        env:
-          AUTH_VALUE: 'na'
 
   warmup_prd:
     name: Warmup prd

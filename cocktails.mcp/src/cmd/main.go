@@ -116,7 +116,7 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
+			if _, err := w.Write([]byte(`{"status": "ok"}`)); err != nil {
 				l.Logger.Err(err).Msg(fmt.Sprintf("Error writing health check response: %v", err))
 			}
 		})
@@ -125,7 +125,7 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 
-			if _, err := w.Write([]byte(`{"version":"` + Version + `"}`)); err != nil {
+			if _, err := w.Write([]byte(`{"version": "` + Version + `"}`)); err != nil {
 				l.Logger.Err(err).Msg(fmt.Sprintf("Error writing version response: %v", err))
 			}
 		})
