@@ -7,7 +7,7 @@ tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
 require (
 	github.com/MicahParks/keyfunc v1.9.0
 	github.com/caarlos0/env/v11 v11.3.1
-	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/joho/godotenv v1.5.1
 	github.com/mark3labs/mcp-go v0.32.0
 	github.com/microsoft/ApplicationInsights-Go v0.4.4
