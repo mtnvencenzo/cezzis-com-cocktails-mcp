@@ -1,4 +1,20 @@
 {
     "dotnet.defaultSolution": "disable",
-    "makefile.configureOnOpen": false
+    "makefile.configureOnOpen": false,
+    "rest-client.enableTelemetry": false,
+    "rest-client.environmentVariables": {
+        "local": {
+          "host": "http://localhost:8181"
+        },
+        "local-docker": {
+          "host": "http://localhost:3001"
+        },
+        "prod-apim": {
+          "host": "https://api.cezzis.com/prd/cocktails/mcp/v1"
+        }
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+      "*.go": "$(capture).go.http, $(capture)_test.go"
+    }
 }

@@ -1,6 +1,39 @@
 # cezzis-com-cocktails-mcp 🍸
 
-Model Context Protocol (MCP) application to allow LLMs and agents to connect and use the cocktails API search endpoint from cezzis.com.
+## Cocktails MCP Tools & API Integration 🍸🔍
+
+This project exposes two powerful MCP tools that allow both developers and non-developers to seamlessly integrate cocktail search and data into their applications, chatbots, or workflows. These tools act as a bridge between the Model Context Protocol (MCP) and the cezzis.com cocktails API, unlocking advanced search and retrieval capabilities for cocktail recipes and information.
+
+### 1. Cocktail Search Tool
+- **Purpose:** Enables searching for cocktails by name, ingredient, or recipe details.
+- **How it works:**
+  - Accepts flexible search queries (e.g., "gin and tonic", "contains lime", "classic whiskey drinks").
+  - Forwards these queries to the cezzis.com cocktails API `/search` endpoint.
+  - Returns a list of matching cocktails, each with summary info, images, and key ingredients.
+- **Use cases:**
+  - Powering conversational agents that recommend drinks.
+  - Integrating cocktail search into mobile/web apps.
+  - Enabling voice assistants to answer cocktail-related questions.
+
+### 2. Cocktail Get Tool
+- **Purpose:** Retrieves detailed information about a specific cocktail by its unique ID.
+- **How it works:**
+  - Accepts a cocktail ID (from a search result or known recipe).
+  - Calls the cezzis.com cocktails API `/get` endpoint.
+  - Returns full recipe details, preparation instructions, images, ratings, and historical context.
+- **Use cases:**
+  - Displaying full cocktail recipes in apps or websites.
+  - Enabling step-by-step drink preparation guides.
+  - Fetching cocktail metadata for analytics or recommendations.
+
+### Advanced Search Backed by Azure AI Search & Lucene
+The cezzis.com cocktails API endpoints are powered by a robust backend leveraging **Azure AI Search** and **Lucene-based indexes**. This architecture provides:
+- **Intelligent, semantic search:** Understands natural language queries and ingredient combinations.
+- **High relevance:** Results are ranked using AI-driven scoring and classic information retrieval techniques.
+- **Scalability:** Supports thousands of cocktail recipes and complex queries with low latency.
+- **Rich filtering:** Search by ingredient, style, flavor profile, or even historical/geographic context.
+
+Whether you're a developer building a new app, or a non-developer looking to add cocktail discovery to your platform, these MCP tools and the cezzis.com API make it easy to deliver the best cocktail search experience available.
 
 ## What is MCP? 🤖
 
@@ -13,7 +46,7 @@ In this repository, MCP is used to bridge LLMs and agents with the cocktails API
 - Programmatically query the cocktails database for recipes, ingredients, and suggestions.
 - Integrate cocktail search functionality into conversational or agent-based workflows, enabling richer and more interactive user experiences.
 
-This approach allows developers to build intelligent assistants or chatbots that can answer cocktail-related queries, recommend drinks, or help users explore new recipes, all powered by the cezzis.com cocktails API.
+This approach allows developers to build intelligent assistants or chatbots that can answer cocktail-related queries, recommend drinks, or help users explore new recipes, all powered by the cezzis.com cocktails API and its internall AI Search capabilities.
 
 ## Features ✨
 - MCP integration for LLMs and agents
@@ -32,25 +65,42 @@ This approach allows developers to build intelligent assistants or chatbots that
 Navigate to the `/src` directory and run:
 
 ```bash
-make forclaude
+make compile-windows
 ```
 
 ## Setting up with Claude Desktop 💻
 
 Make sure an entry exists in this file for the deploy path of the local exe:
-> C:\Users\rvecc\AppData\Roaming\Claude\claude_desktop_config.json
+> C:\Users\<user>\AppData\Roaming\Claude\claude_desktop_config.json
 
 ```json
 {
   "mcpServers": {
     "mcp-cocktails-go": {
-      "command": "D:\\Github\\cezzis-com-cocktails-mcp\\dist\\cezzis-cocktails.exe"
+        "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\win\\cezzis-cocktails.exe"
+      }
     }
-  }
 }
 ```
 
-After changing the file, it's not enough to close and reopen Claude Desktop as it runs in the background. You must open Claude and exit out of it using the file menu. Then reopen it. This ensures the settings are re-loaded.
+## Setting up with Cursor 💻
+
+Make sure an entry exists in this file for the deploy path of the local exe:
+> C:\Users\rvecc\.cursor\mcp.json
+
+Or open the mcp settings within cursor via `Ctrl Shift P` > `View: Open Mcp Settings`
+
+```json
+{
+  "mcpServers": {
+    "mcp-cocktails-go": {
+        "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\win\\cezzis-cocktails.exe",
+      }
+    }
+}
+```
+## Installs
+`go install -v github.com/go-delve/delve/cmd/dlv@latest`
 
 ## Contributing 🤝
 
