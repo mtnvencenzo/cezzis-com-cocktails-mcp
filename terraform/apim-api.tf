@@ -58,6 +58,14 @@ module "apim_cocktails_mcp" {
       policy_xml_content  = local.apim_anonomous_operation_policy
     },
     {
+      display_name        = "Get Version"
+      method              = "GET"
+      url_template        = "/version"
+      description         = "Get version"
+      success_status_code = 200
+      policy_xml_content  = local.apim_anonomous_operation_policy
+    },
+    {
       display_name        = "POST MCP"
       method              = "POST"
       url_template        = "/mcp"

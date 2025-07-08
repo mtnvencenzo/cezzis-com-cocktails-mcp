@@ -29,6 +29,9 @@ import (
 	"cezzis.com/cezzis-mcp-server/pkg/tools"
 )
 
+// Version uses build linkers to set this value at build time
+var Version string = "0.0.0"
+
 type loggingResponseWriter struct {
 	http.ResponseWriter
 	statusCode int
@@ -115,6 +118,15 @@ func main() {
 
 			if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
 				l.Logger.Err(err).Msg(fmt.Sprintf("Error writing health check response: %v", err))
+			}
+		})
+
+		http.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			if _, err := w.Write([]byte(`{"version":"` + Version + `"}`)); err != nil {
+				l.Logger.Err(err).Msg(fmt.Sprintf("Error writing version response: %v", err))
 			}
 		})
 
