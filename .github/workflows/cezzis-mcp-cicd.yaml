@@ -47,7 +47,7 @@ jobs:
       setup_files: '["cocktails.mcp/Dockerfile-CI"]'
       go_executable_name: 'cezzis-cocktails'
       artifact_name: 'cocktails-mcp'
-      version: ${{ needs.gitVersion.outputs.semVer }}
+      version: "${{ needs.gitVersion.outputs.semVer }}+${{ github.sha }}"
 
   docker:
     name: Containerize app
