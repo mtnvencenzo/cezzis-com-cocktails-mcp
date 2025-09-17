@@ -36,7 +36,7 @@ func TestMain(m *testing.M) {
 
 	_ = godotenv.Overload(
 		fmt.Sprintf("%s/%s", envPath, ".env"),
-		fmt.Sprintf("%s/%s", envPath, ".env.local"))
+		fmt.Sprintf("%s/%s", envPath, ".env.test"))
 
 	// Change the current working directory.
 	// if err := os.Chdir("../../"); err != nil {
