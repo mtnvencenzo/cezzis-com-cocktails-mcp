@@ -7,13 +7,13 @@ import (
 func Test_Appsettings(t *testing.T) {
 
 	// arrange
-	expectedApiHost := "https://testapi.cezzis.com/prd/cocktails"
+	expectedAPIHost := "https://testapi.cezzis.com/prd/cocktails"
 
 	// act
 	var appSettings *AppSettings = GetAppSettings()
 
 	// asert
-	if appSettings.CocktailsAPIHost != expectedApiHost {
-		t.Errorf("Expected CocktailsAPIHost to be %s, got %s", expectedApiHost, appSettings.CocktailsAPIHost)
+	if appSettings.CocktailsAPIHost != expectedAPIHost {
+		t.Errorf("Expected CocktailsAPIHost to be %s, got %s", expectedAPIHost, appSettings.CocktailsAPIHost)
 	}
 }
