@@ -61,11 +61,11 @@ copyenv:
 build:
 	cd ./cocktails.mcp/src && CGO_ENABLED=0 GOOS=linux go build -o ../dist/linux/cezzis-cocktails ./cmd
 
-compile: clean-linux build-linux copyenv-linux
+compile: clean build copyenv
 
-compile-ci: clean-linux build-linux
+compile-ci: clean build
 
 docker-build:
 	cd ./cocktails.mcp && docker build -t cocktails-mcp -f ./Dockerfile-CI .
 
-compile-docker: clean-linux build-linux copyenv-linux docker-build
+compile-docker: clean build copyenv docker-build

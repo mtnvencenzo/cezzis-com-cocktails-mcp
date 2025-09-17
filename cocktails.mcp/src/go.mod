@@ -1,6 +1,6 @@
 module cezzis.com/cezzis-mcp-server
 
-go 1.24.2
+go 1.25.1
 
 tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
 
