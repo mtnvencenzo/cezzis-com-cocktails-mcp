@@ -22,7 +22,7 @@ import (
 	"github.com/MicahParks/keyfunc"
 	"github.com/golang-jwt/jwt/v4"
 
-	"cezzis.com/cezzis-mcp-server/pkg/config"
+	"cezzis.com/cezzis-mcp-server/internal/config"
 )
 
 // contextKey is a custom type for context keys to avoid collisions

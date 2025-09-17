@@ -8,7 +8,6 @@ import (
 )
 
 func Test_CocktailGetToolHandler_throws_on_invalid_cocktailId(t *testing.T) {
-
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
 			Method: "cocktails_get",

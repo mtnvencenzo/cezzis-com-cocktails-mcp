@@ -20,9 +20,9 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 
-	"cezzis.com/cezzis-mcp-server/pkg/cocktailsapi"
-	"cezzis.com/cezzis-mcp-server/pkg/config"
-	l "cezzis.com/cezzis-mcp-server/pkg/logging"
+	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
+	"cezzis.com/cezzis-mcp-server/internal/config"
+	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 var getToolDescription = `
