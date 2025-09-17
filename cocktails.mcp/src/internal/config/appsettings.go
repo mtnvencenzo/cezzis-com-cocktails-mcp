@@ -60,21 +60,6 @@ type AppSettings struct {
 // Returns a pointer to the AppSettings instance containing all application configuration.
 func GetAppSettings() *AppSettings {
 	once.Do(func() {
-		// exePath, oserr := os.Executable()
-		// if oserr != nil {
-		// 	fmt.Printf("Server error - exe path: %v\n", oserr)
-		// }
-
-		// var finalEnvPath string = envPath
-
-		// if finalEnvPath == "" {
-		// 	finalEnvPath = filepath.Dir(exePath)
-		// }
-
-		// _ = godotenv.Overload(
-		// 	fmt.Sprintf("%s/%s", finalEnvPath, ".env"),
-		// 	fmt.Sprintf("%s/%s", finalEnvPath, ".env.local"))
-
 		instance = &AppSettings{}
 		if err := env.Parse(instance); err != nil {
 			fmt.Printf("Failed to parse app settings: %v\n", err)
@@ -84,6 +69,15 @@ func GetAppSettings() *AppSettings {
 			}
 			if instance.CocktailsAPISubscriptionKey == "" {
 				fmt.Printf("Warning: COCKTAILS_API_XKEY is not set\n")
+			}
+			if instance.AzureAdB2CInstance == "" {
+				fmt.Printf("Warning: AZUREAD_B2C_INSTANCE is not set\n")
+			}
+			if instance.AzureAdB2CDomain == "" {
+				fmt.Printf("Warning: AZUREAD_B2C_DOMAIN is not set\n")
+			}
+			if instance.AzureAdB2CUserFlow == "" {
+				fmt.Printf("Warning: AZUREAD_B2C_USERFLOW is not set\n")
 			}
 		}
 	})

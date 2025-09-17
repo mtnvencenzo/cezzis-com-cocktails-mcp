@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/server"
@@ -32,19 +33,7 @@ var Version string = "0.0.0"
 
 // main initializes and runs the Cezzi Cocktails MCP server, registering cocktail search and retrieval tools and serving requests over standard input/output or HTTP.
 func main() {
-
-	// Set up environment variables from .env files in the executable directory
-	// This allows configuration settings to be loaded at runtime.
-	exePath, oserr := os.Executable()
-	if oserr != nil {
-		fmt.Printf("Server error - exe path: %v\n", oserr)
-	}
-
-	e := os.Getenv("ENV")
-
-	_ = godotenv.Overload(
-		fmt.Sprintf("%s/%s", exePath, ".env"),
-		fmt.Sprintf("%s/%s.%s", exePath, ".env", e))
+	loadEnv()
 
 	// Initialize the logger
 	_, err := l.InitLogger()
@@ -78,11 +67,45 @@ func main() {
 	if *httpAddr != "" {
 		// HTTP mode
 		httpServer := internalServer.NewMCPHTTPServer(*httpAddr, mcpServer, Version)
-		l.Logger.Fatal().Err(httpServer.Start()).Msg("MCP Server Closed")
+
+		if err := httpServer.Start(); err != nil {
+			l.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
+		}
+
+		l.Logger.Info().Msg("MCP HTTP server stopped")
 	} else {
 		// Stdio mode (default)
 		if err := server.ServeStdio(mcpServer); err != nil {
 			fmt.Printf("Server error: %v\n", err)
 		}
+	}
+}
+
+func loadEnv() {
+	// Set up environment variables from .env files in the executable directory
+	// This allows configuration settings to be loaded at runtime.
+	exePath, oserr := os.Executable()
+	if oserr != nil {
+		fmt.Printf("Server error - exe path: %v\n", oserr)
+	}
+
+	exeDir := filepath.Dir(exePath)
+	env := os.Getenv("ENV")
+	baseEnvFile := filepath.Join(exeDir, ".env")
+	candidates := []string{baseEnvFile}
+
+	if env != "" {
+		candidates = append(candidates, baseEnvFile+"."+env)
+	}
+
+	toLoad := make([]string, 0, len(candidates))
+	for _, f := range candidates {
+		if _, err := os.Stat(f); err == nil {
+			toLoad = append(toLoad, f)
+		}
+	}
+
+	if len(toLoad) > 0 {
+		_ = godotenv.Load(toLoad...)
 	}
 }

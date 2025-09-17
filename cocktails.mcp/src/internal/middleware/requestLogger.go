@@ -58,10 +58,17 @@ func RequestLogger(next http.Handler) http.Handler {
 		r = r.WithContext(lg.WithContext(r.Context()))
 
 		defer func() {
-			panicVal := recover()
-			if panicVal != nil {
+			if rec := recover(); rec != nil {
 				lrw.statusCode = http.StatusInternalServerError
-				panic(panicVal)
+				lg.Error().
+					Str("method", r.Method).
+					Str("url", r.URL.RequestURI()).
+					Int("status_code", lrw.statusCode).
+					Int64("elapsed_ms", time.Since(start).Milliseconds()).
+					Interface("panic", rec).
+					Msg("Recovered panic in HTTP handler")
+				http.Error(lrw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
 			}
 
 			lg.
