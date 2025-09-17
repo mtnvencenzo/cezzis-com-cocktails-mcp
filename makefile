@@ -4,7 +4,7 @@
 # sudo apt install build-essentials
 
 # install golangci-lint
-# go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+# go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 
 # sudo apt install golang-golang-x-tools
 # sudo snap install goimports-reviser
