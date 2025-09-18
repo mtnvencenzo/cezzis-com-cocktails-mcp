@@ -51,17 +51,21 @@ var CocktailSearchTool = mcp.NewTool(
 	),
 )
 
+// CocktailSearchToolHandler implements the MCP tool handler for searching cocktails.
+// It maintains a reference to the cocktails API factory for making API calls.
 type CocktailSearchToolHandler struct {
-	ClientProxy cocktailsapi.ICocktailsApiProxy
+	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
 }
 
-func NewCocktailSearchToolHandler(clientProxy cocktailsapi.ICocktailsApiProxy) *CocktailSearchToolHandler {
+// NewCocktailSearchToolHandler creates a new instance of CocktailSearchToolHandler with the provided API factory.
+// The handler uses the factory to create API clients for searching cocktails.
+func NewCocktailSearchToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *CocktailSearchToolHandler {
 	return &CocktailSearchToolHandler{
-		clientProxy,
+		cocktailsAPIFactory,
 	}
 }
 
-// CocktailSearchToolHandler handles cocktail search requests by querying the Cezzis.com cocktails API with a free-text search term and returning the raw API response as a string result.
+// Handle handles cocktail search requests by querying the Cezzis.com cocktails API with a free-text search term and returning the raw API response as a string result.
 // It returns the raw API response as a string result, or an error result if any step fails.
 func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	freeText, err := request.RequireString("freeText")
@@ -73,14 +77,19 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 
 	l.Logger.Info().Msg("MCP Searching cocktails: " + freeText)
 
-	rs, err := handler.ClientProxy.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
+	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
+	if cliErr != nil {
+		return mcp.NewToolResultError(cliErr.Error()), nil // already logged upstream
+	}
+
+	rs, callErr := cocktailsAPI.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
 		FreeText: &freeText,
 		Inc:      &[]cocktailsapi.CocktailDataIncludeModel{"mainImages", "searchTiles", "descriptiveTitle"},
 		XKey:     &appSettings.CocktailsAPISubscriptionKey,
 	})
-	if err != nil {
-		l.Logger.Err(err).Msg("MCP Error searching cocktails")
-		return mcp.NewToolResultError(err.Error()), nil
+	if callErr != nil {
+		l.Logger.Err(callErr).Msg("MCP Error searching cocktails")
+		return mcp.NewToolResultError(callErr.Error()), nil
 	}
 
 	defer func() {
@@ -89,10 +98,10 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		}
 	}()
 
-	bodyBytes, err := io.ReadAll(rs.Body)
-	if err != nil {
-		l.Logger.Err(err).Msg("MCP Error searching cocktail rs body")
-		return mcp.NewToolResultError(err.Error()), nil
+	bodyBytes, readErr := io.ReadAll(rs.Body)
+	if readErr != nil {
+		l.Logger.Err(readErr).Msg("MCP Error searching cocktail rs body")
+		return mcp.NewToolResultError(readErr.Error()), nil
 	}
 
 	// Convert the byte slice to a string

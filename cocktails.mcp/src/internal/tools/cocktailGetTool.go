@@ -48,34 +48,42 @@ var CocktailGetTool = mcp.NewTool(
 	),
 )
 
+// CocktailGetToolHandler handles cocktail retrieval requests through the MCP protocol.
+// It maintains a reference to the cocktails API factory for making API calls.
 type CocktailGetToolHandler struct {
-	ClientProxy cocktailsapi.ICocktailsApiProxy
+	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
 }
 
-func NewCocktailGetToolHandler(clientProxy cocktailsapi.ICocktailsApiProxy) *CocktailGetToolHandler {
+// NewCocktailGetToolHandler creates a new instance of CocktailGetToolHandler with the provided API factory.
+func NewCocktailGetToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *CocktailGetToolHandler {
 	return &CocktailGetToolHandler{
-		clientProxy,
+		cocktailsAPIFactory,
 	}
 }
 
-// CocktailGetToolHandler handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
+// Handle handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
 // It returns the full cocktail information as a string result, or an error result if any step fails.
 func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
+		return mcp.NewToolResultError(err.Error()), err
 	}
 
 	appSettings := config.GetAppSettings()
 
 	l.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
 
-	rs, err := handler.ClientProxy.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
+	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
+	if cliErr != nil {
+		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
+	}
+
+	rs, callErr := cocktailsAPI.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
-	if err != nil {
-		l.Logger.Err(err).Msg("MCP Error getting cocktail: " + cocktailID)
-		return mcp.NewToolResultError(err.Error()), nil
+	if callErr != nil {
+		l.Logger.Err(callErr).Msg("MCP Error getting cocktail: " + cocktailID)
+		return mcp.NewToolResultError(callErr.Error()), callErr
 	}
 
 	defer func() {
@@ -84,10 +92,10 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		}
 	}()
 
-	bodyBytes, err := io.ReadAll(rs.Body)
-	if err != nil {
-		l.Logger.Err(err).Msg("MCP Error getting cocktail rs body: " + cocktailID)
-		return mcp.NewToolResultError(err.Error()), nil
+	bodyBytes, readErr := io.ReadAll(rs.Body)
+	if readErr != nil {
+		l.Logger.Err(readErr).Msg("MCP Error getting cocktail rs body: " + cocktailID)
+		return mcp.NewToolResultError(readErr.Error()), readErr
 	}
 
 	// Convert the byte slice to a string

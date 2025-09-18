@@ -24,7 +24,6 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
-	"cezzis.com/cezzis-mcp-server/internal/config"
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
 	internalServer "cezzis.com/cezzis-mcp-server/internal/server"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
@@ -55,20 +54,13 @@ func main() {
 		server.WithToolCapabilities(true),
 	)
 
-	appSettings := config.GetAppSettings()
-
-	client, err := cocktailsapi.NewClient(appSettings.CocktailsAPIHost)
-	if err != nil {
-		l.Logger.Fatal().Err(err).Msg(err.Error())
-	}
-
-	clientProxy := cocktailsapi.NewCocktailsApiProxy(*client)
+	cocktailsAPIFactory := cocktailsapi.NewCocktailsAPIFactory()
 
 	// Add the carious tools to the MCP server
 	// Each tool is registered with its corresponding handler function.
 	// This allows clients to invoke the tools via the MCP protocol.
-	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.NewCocktailGetToolHandler(clientProxy).Handle))
-	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(clientProxy).Handle))
+	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.NewCocktailGetToolHandler(cocktailsAPIFactory).Handle))
+	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(cocktailsAPIFactory).Handle))
 
 	// Finally, start the server in the chosen mode
 	// If --http is provided, start the HTTP server with logging middleware and a health check endpoint.
