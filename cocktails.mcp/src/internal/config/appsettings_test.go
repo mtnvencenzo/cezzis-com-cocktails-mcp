@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_Appsettings_retreives_correct_env_file_settings(t *testing.T) {
+func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 
 	// arrange
 	expectedCocktailsAPIHost := "https://testapi.cezzis.com/prd/cocktails"
@@ -38,14 +38,14 @@ func Test_Appsettings_retreives_correct_env_file_settings(t *testing.T) {
 	}
 }
 
-func Test_Appsettings_produces_correct_discovery_keys_url(t *testing.T) {
+func Test_appsettings_produces_correct_discovery_keys_url(t *testing.T) {
 
 	// arrange
 	expectedAzureAdB2CDiscoveryKeysURI := "https://testlogin.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/discovery/v2.0/keys"
 
 	// act
-	var appSettings *AppSettings = GetAppSettings()
-	var azureAdB2CDiscoveryKeysURI = appSettings.GetAzureAdB2CDiscoveryKeysURI()
+	appSettings := GetAppSettings()
+	azureAdB2CDiscoveryKeysURI := appSettings.GetAzureAdB2CDiscoveryKeysURI()
 
 	// asert
 	if azureAdB2CDiscoveryKeysURI != expectedAzureAdB2CDiscoveryKeysURI {

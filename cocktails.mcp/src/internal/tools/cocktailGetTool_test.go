@@ -7,7 +7,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-func Test_CocktailGetToolHandler_throws_on_invalid_cocktailId(t *testing.T) {
+func Test_cocktailget_toolhandler_throws_on_invalid_cocktailId(t *testing.T) {
+	// Arrange
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
 			Method: "cocktails_get",
@@ -18,6 +19,7 @@ func Test_CocktailGetToolHandler_throws_on_invalid_cocktailId(t *testing.T) {
 		},
 	}
 
+	// Act
 	result, err := CocktailGetToolHandler(context.TODO(), request)
 
 	if err != nil {

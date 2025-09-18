@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/rs/xid"
-	"github.com/rs/zerolog"
 
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
@@ -47,20 +46,17 @@ func RequestLogger(next http.Handler) http.Handler {
 
 		r = r.WithContext(ctx)
 
-		lg.UpdateContext(func(c zerolog.Context) zerolog.Context {
-			return c.Str("correlation_id", correlationID)
-		})
-
 		w.Header().Add("X-Correlation-ID", correlationID)
 
 		lrw := newLoggingResponseWriter(w)
 
-		r = r.WithContext(lg.WithContext(r.Context()))
+		reqLogger := lg.With().Str("correlation_id", correlationID).Logger()
+		r = r.WithContext(reqLogger.WithContext(r.Context()))
 
 		defer func() {
 			if rec := recover(); rec != nil {
 				lrw.statusCode = http.StatusInternalServerError
-				lg.Error().
+				reqLogger.Error().
 					Str("method", r.Method).
 					Str("url", r.URL.RequestURI()).
 					Int("status_code", lrw.statusCode).
@@ -71,13 +67,13 @@ func RequestLogger(next http.Handler) http.Handler {
 				return
 			}
 
-			lg.
+			reqLogger.
 				Info().
 				Str("method", r.Method).
 				Str("url", r.URL.RequestURI()).
 				Int("status_code", lrw.statusCode).
-				Dur("elapsed_ms", time.Since(start)).
-				Msgf("MCP: %s %s %d %s", r.Method, r.URL.RequestURI(), lrw.statusCode, time.Since(start))
+				Int64("elapsed_ms", time.Since(start).Milliseconds()).
+				Msgf("MCP: %s %s %d", r.Method, r.URL.RequestURI(), lrw.statusCode)
 		}()
 
 		next.ServeHTTP(lrw, r)

@@ -48,9 +48,19 @@ var CocktailGetTool = mcp.NewTool(
 	),
 )
 
+type CocktailGetToolHandler struct {
+	ClientProxy cocktailsapi.ICocktailsApiProxy
+}
+
+func NewCocktailGetToolHandler(clientProxy cocktailsapi.ICocktailsApiProxy) *CocktailGetToolHandler {
+	return &CocktailGetToolHandler{
+		clientProxy,
+	}
+}
+
 // CocktailGetToolHandler handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
 // It returns the full cocktail information as a string result, or an error result if any step fails.
-func CocktailGetToolHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
@@ -58,14 +68,9 @@ func CocktailGetToolHandler(ctx context.Context, request mcp.CallToolRequest) (*
 
 	appSettings := config.GetAppSettings()
 
-	cocktailsClient, err := cocktailsapi.NewClient(appSettings.CocktailsAPIHost)
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
-	}
-
 	l.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
 
-	rs, err := cocktailsClient.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
+	rs, err := handler.ClientProxy.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
 	if err != nil {

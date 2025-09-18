@@ -51,9 +51,19 @@ var CocktailSearchTool = mcp.NewTool(
 	),
 )
 
+type CocktailSearchToolHandler struct {
+	ClientProxy cocktailsapi.ICocktailsApiProxy
+}
+
+func NewCocktailSearchToolHandler(clientProxy cocktailsapi.ICocktailsApiProxy) *CocktailSearchToolHandler {
+	return &CocktailSearchToolHandler{
+		clientProxy,
+	}
+}
+
 // CocktailSearchToolHandler handles cocktail search requests by querying the Cezzis.com cocktails API with a free-text search term and returning the raw API response as a string result.
 // It returns the raw API response as a string result, or an error result if any step fails.
-func CocktailSearchToolHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	freeText, err := request.RequireString("freeText")
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
@@ -61,14 +71,9 @@ func CocktailSearchToolHandler(ctx context.Context, request mcp.CallToolRequest)
 
 	appSettings := config.GetAppSettings()
 
-	cocktailsClient, err := cocktailsapi.NewClient(appSettings.CocktailsAPIHost)
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
-	}
-
 	l.Logger.Info().Msg("MCP Searching cocktails: " + freeText)
 
-	rs, err := cocktailsClient.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
+	rs, err := handler.ClientProxy.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
 		FreeText: &freeText,
 		Inc:      &[]cocktailsapi.CocktailDataIncludeModel{"mainImages", "searchTiles", "descriptiveTitle"},
 		XKey:     &appSettings.CocktailsAPISubscriptionKey,

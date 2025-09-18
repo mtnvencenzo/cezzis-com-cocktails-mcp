@@ -22,7 +22,7 @@ const (
 	Oauth2Scopes = "oauth2.Scopes"
 )
 
-// AccountAccessibilitySettingsModel The accessibility settings for the account visible to other users
+// AccountAccessibilitySettingsModel The accessibility settings for the account
 type AccountAccessibilitySettingsModel struct {
 	// Theme The accessibility theme
 	Theme DisplayThemeModel `json:"theme"`
@@ -94,9 +94,15 @@ type AccountCocktailRatingsRs struct {
 	Ratings []AccountCocktailRatingsModel `json:"ratings"`
 }
 
+// AccountNotificationSettingsModel The notification settings for the account
+type AccountNotificationSettingsModel struct {
+	// OnNewCocktailAdditions The notification setting to use when new cocktail addtions are added
+	OnNewCocktailAdditions CocktailUpdatedNotificationModel `json:"onNewCocktailAdditions"`
+}
+
 // AccountOwnedProfileRs defines model for AccountOwnedProfileRs.
 type AccountOwnedProfileRs struct {
-	// Accessibility The accessibility settings for the account visible to other users
+	// Accessibility The accessibility settings for the account
 	Accessibility AccountAccessibilitySettingsModel `json:"accessibility"`
 
 	// AvatarUri The avatar image uri for the account
@@ -119,6 +125,9 @@ type AccountOwnedProfileRs struct {
 
 	// LoginEmail The login email address for the account
 	LoginEmail string `json:"loginEmail"`
+
+	// Notifications The notification settings for the account
+	Notifications AccountNotificationSettingsModel `json:"notifications"`
 
 	// PrimaryAddress The optional primary address listed with the account
 	PrimaryAddress AccountAddressModel `json:"primaryAddress"`
@@ -318,6 +327,9 @@ type CocktailRs struct {
 	// Item The cocktail recipe model
 	Item CocktailModel `json:"item"`
 }
+
+// CocktailUpdatedNotificationModel The notification setting to use when new cocktail addtions are added
+type CocktailUpdatedNotificationModel = interface{}
 
 // CocktailsListModel defines model for CocktailsListModel.
 type CocktailsListModel struct {
@@ -597,6 +609,12 @@ type UpdateAccountOwnedAccessibilitySettingsRq struct {
 	Theme DisplayThemeModel2 `json:"theme"`
 }
 
+// UpdateAccountOwnedNotificationSettingsRq defines model for UpdateAccountOwnedNotificationSettingsRq.
+type UpdateAccountOwnedNotificationSettingsRq struct {
+	// OnNewCocktailAdditions The notification setting to use when new cocktail addtions are added
+	OnNewCocktailAdditions CocktailUpdatedNotificationModel `json:"onNewCocktailAdditions"`
+}
+
 // UpdateAccountOwnedProfileEmailRq defines model for UpdateAccountOwnedProfileEmailRq.
 type UpdateAccountOwnedProfileEmailRq struct {
 	// Email The email address for the account
@@ -626,6 +644,12 @@ type UploadProfileImageRs struct {
 
 // GetAccountOwnedProfileParams defines parameters for GetAccountOwnedProfile.
 type GetAccountOwnedProfileParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// LoginAccountOwnedProfileParams defines parameters for LoginAccountOwnedProfile.
+type LoginAccountOwnedProfileParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -679,6 +703,12 @@ type UploadProfileImageMultipartBody struct {
 
 // UploadProfileImageParams defines parameters for UploadProfileImage.
 type UploadProfileImageParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// UpdateAccountOwnedNotificationSettingsParams defines parameters for UpdateAccountOwnedNotificationSettings.
+type UpdateAccountOwnedNotificationSettingsParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -767,6 +797,9 @@ type UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody = Upd
 // UploadProfileImageMultipartRequestBody defines body for UploadProfileImage for multipart/form-data; x-api-version=1.0 ContentType.
 type UploadProfileImageMultipartRequestBody UploadProfileImageMultipartBody
 
+// UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody defines body for UpdateAccountOwnedNotificationSettings for application/json; x-api-version=1.0 ContentType.
+type UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody = UpdateAccountOwnedNotificationSettingsRq
+
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
@@ -843,6 +876,9 @@ type ClientInterface interface {
 	// GetAccountOwnedProfile request
 	GetAccountOwnedProfile(ctx context.Context, params *GetAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// LoginAccountOwnedProfile request
+	LoginAccountOwnedProfile(ctx context.Context, params *LoginAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UpdateAccountOwnedProfileWithBody request with any body
 	UpdateAccountOwnedProfileWithBody(ctx context.Context, params *UpdateAccountOwnedProfileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -879,6 +915,11 @@ type ClientInterface interface {
 	// UploadProfileImageWithBody request with any body
 	UploadProfileImageWithBody(ctx context.Context, params *UploadProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// UpdateAccountOwnedNotificationSettingsWithBody request with any body
+	UpdateAccountOwnedNotificationSettingsWithBody(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, body UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetCocktailsList request
 	GetCocktailsList(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -903,6 +944,18 @@ type ClientInterface interface {
 
 func (c *Client) GetAccountOwnedProfile(ctx context.Context, params *GetAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAccountOwnedProfileRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) LoginAccountOwnedProfile(ctx context.Context, params *LoginAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLoginAccountOwnedProfileRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1081,6 +1134,30 @@ func (c *Client) UploadProfileImageWithBody(ctx context.Context, params *UploadP
 	return c.Client.Do(req)
 }
 
+func (c *Client) UpdateAccountOwnedNotificationSettingsWithBody(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAccountOwnedNotificationSettingsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, body UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAccountOwnedNotificationSettingsRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetCocktailsList(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCocktailsListRequest(c.Server, params)
 	if err != nil {
@@ -1185,6 +1262,48 @@ func NewGetAccountOwnedProfileRequest(server string, params *GetAccountOwnedProf
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewLoginAccountOwnedProfileRequest generates requests for LoginAccountOwnedProfile
+func NewLoginAccountOwnedProfileRequest(server string, params *LoginAccountOwnedProfileParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1599,6 +1718,61 @@ func NewUploadProfileImageRequestWithBody(server string, params *UploadProfileIm
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateAccountOwnedNotificationSettingsRequestWithApplicationJSONXAPIVersion10Body calls the generic UpdateAccountOwnedNotificationSettings builder with application/json; x-api-version=1.0 body
+func NewUpdateAccountOwnedNotificationSettingsRequestWithApplicationJSONXAPIVersion10Body(server string, params *UpdateAccountOwnedNotificationSettingsParams, body UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateAccountOwnedNotificationSettingsRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
+}
+
+// NewUpdateAccountOwnedNotificationSettingsRequestWithBody generates requests for UpdateAccountOwnedNotificationSettings with any type of body
+func NewUpdateAccountOwnedNotificationSettingsRequestWithBody(server string, params *UpdateAccountOwnedNotificationSettingsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/notifications")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -2088,6 +2262,9 @@ type ClientWithResponsesInterface interface {
 	// GetAccountOwnedProfileWithResponse request
 	GetAccountOwnedProfileWithResponse(ctx context.Context, params *GetAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*GetAccountOwnedProfileResponse, error)
 
+	// LoginAccountOwnedProfileWithResponse request
+	LoginAccountOwnedProfileWithResponse(ctx context.Context, params *LoginAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*LoginAccountOwnedProfileResponse, error)
+
 	// UpdateAccountOwnedProfileWithBodyWithResponse request with any body
 	UpdateAccountOwnedProfileWithBodyWithResponse(ctx context.Context, params *UpdateAccountOwnedProfileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileResponse, error)
 
@@ -2123,6 +2300,11 @@ type ClientWithResponsesInterface interface {
 
 	// UploadProfileImageWithBodyWithResponse request with any body
 	UploadProfileImageWithBodyWithResponse(ctx context.Context, params *UploadProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadProfileImageResponse, error)
+
+	// UpdateAccountOwnedNotificationSettingsWithBodyWithResponse request with any body
+	UpdateAccountOwnedNotificationSettingsWithBodyWithResponse(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsResponse, error)
+
+	UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, body UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsResponse, error)
 
 	// GetCocktailsListWithResponse request
 	GetCocktailsListWithResponse(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*GetCocktailsListResponse, error)
@@ -2163,6 +2345,30 @@ func (r GetAccountOwnedProfileResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetAccountOwnedProfileResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type LoginAccountOwnedProfileResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *AccountOwnedProfileRs
+	ApplicationjsonXApiVersion10201     *AccountOwnedProfileRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r LoginAccountOwnedProfileResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LoginAccountOwnedProfileResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2353,6 +2559,29 @@ func (r UploadProfileImageResponse) StatusCode() int {
 	return 0
 }
 
+type UpdateAccountOwnedNotificationSettingsResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *AccountOwnedProfileRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateAccountOwnedNotificationSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateAccountOwnedNotificationSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetCocktailsListResponse struct {
 	Body                                []byte
 	HTTPResponse                        *http.Response
@@ -2521,6 +2750,15 @@ func (c *ClientWithResponses) GetAccountOwnedProfileWithResponse(ctx context.Con
 	return ParseGetAccountOwnedProfileResponse(rsp)
 }
 
+// LoginAccountOwnedProfileWithResponse request returning *LoginAccountOwnedProfileResponse
+func (c *ClientWithResponses) LoginAccountOwnedProfileWithResponse(ctx context.Context, params *LoginAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*LoginAccountOwnedProfileResponse, error) {
+	rsp, err := c.LoginAccountOwnedProfile(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLoginAccountOwnedProfileResponse(rsp)
+}
+
 // UpdateAccountOwnedProfileWithBodyWithResponse request with arbitrary body returning *UpdateAccountOwnedProfileResponse
 func (c *ClientWithResponses) UpdateAccountOwnedProfileWithBodyWithResponse(ctx context.Context, params *UpdateAccountOwnedProfileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileResponse, error) {
 	rsp, err := c.UpdateAccountOwnedProfileWithBody(ctx, params, contentType, body, reqEditors...)
@@ -2641,6 +2879,23 @@ func (c *ClientWithResponses) UploadProfileImageWithBodyWithResponse(ctx context
 	return ParseUploadProfileImageResponse(rsp)
 }
 
+// UpdateAccountOwnedNotificationSettingsWithBodyWithResponse request with arbitrary body returning *UpdateAccountOwnedNotificationSettingsResponse
+func (c *ClientWithResponses) UpdateAccountOwnedNotificationSettingsWithBodyWithResponse(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsResponse, error) {
+	rsp, err := c.UpdateAccountOwnedNotificationSettingsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAccountOwnedNotificationSettingsResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, body UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsResponse, error) {
+	rsp, err := c.UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAccountOwnedNotificationSettingsResponse(rsp)
+}
+
 // GetCocktailsListWithResponse request returning *GetCocktailsListResponse
 func (c *ClientWithResponses) GetCocktailsListWithResponse(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*GetCocktailsListResponse, error) {
 	rsp, err := c.GetCocktailsList(ctx, params, reqEditors...)
@@ -2724,6 +2979,46 @@ func ParseGetAccountOwnedProfileResponse(rsp *http.Response) (*GetAccountOwnedPr
 			return nil, err
 		}
 		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseLoginAccountOwnedProfileResponse parses an HTTP response from a LoginAccountOwnedProfileWithResponse call
+func ParseLoginAccountOwnedProfileResponse(rsp *http.Response) (*LoginAccountOwnedProfileResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LoginAccountOwnedProfileResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AccountOwnedProfileRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest AccountOwnedProfileRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10201 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
@@ -2988,6 +3283,39 @@ func ParseUploadProfileImageResponse(rsp *http.Response) (*UploadProfileImageRes
 			return nil, err
 		}
 		response.ApplicationjsonXApiVersion10201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateAccountOwnedNotificationSettingsResponse parses an HTTP response from a UpdateAccountOwnedNotificationSettingsWithResponse call
+func ParseUpdateAccountOwnedNotificationSettingsResponse(rsp *http.Response) (*UpdateAccountOwnedNotificationSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateAccountOwnedNotificationSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AccountOwnedProfileRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
