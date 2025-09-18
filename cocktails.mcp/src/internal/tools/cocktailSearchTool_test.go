@@ -9,22 +9,22 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 )
 
-func Test_cocktailget_toolhandler_throws_on_invalid_cocktailId(t *testing.T) {
+func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 	// Arrange
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
-			Method: "cocktails_get",
+			Method: "cocktails_search",
 		},
 		Params: mcp.CallToolParams{
-			Name:      "cocktails_get",
+			Name:      "cocktails_search",
 			Arguments: map[string]interface{}{},
 		},
 	}
 
 	cocktailsAPIFactory := cocktailsapi.NewCocktailsAPIFactory()
-	handler := NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := NewCocktailSearchToolHandler(cocktailsAPIFactory)
 
 	// Act
 	result, err := handler.Handle(context.TODO(), request)
-	assertError(t, result, err, "required argument \"cocktailId\" not found")
+	assertError(t, result, err, "required argument \"freeText\" not found")
 }

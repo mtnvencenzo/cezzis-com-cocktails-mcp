@@ -70,7 +70,7 @@ func NewCocktailSearchToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPI
 func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	freeText, err := request.RequireString("freeText")
 	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
+		return mcp.NewToolResultError(err.Error()), err
 	}
 
 	appSettings := config.GetAppSettings()
@@ -79,7 +79,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 
 	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
 	if cliErr != nil {
-		return mcp.NewToolResultError(cliErr.Error()), nil // already logged upstream
+		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
 	}
 
 	rs, callErr := cocktailsAPI.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
@@ -89,7 +89,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 	})
 	if callErr != nil {
 		l.Logger.Err(callErr).Msg("MCP Error searching cocktails")
-		return mcp.NewToolResultError(callErr.Error()), nil
+		return mcp.NewToolResultError(callErr.Error()), callErr
 	}
 
 	defer func() {
@@ -101,7 +101,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 	bodyBytes, readErr := io.ReadAll(rs.Body)
 	if readErr != nil {
 		l.Logger.Err(readErr).Msg("MCP Error searching cocktail rs body")
-		return mcp.NewToolResultError(readErr.Error()), nil
+		return mcp.NewToolResultError(readErr.Error()), readErr
 	}
 
 	// Convert the byte slice to a string
