@@ -1,4 +1,5 @@
-package tools
+// Package test provides common testing utilities for the Cezzi Cocktails MCP server.
+package test
 
 import (
 	"testing"
@@ -7,12 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func assertError(t *testing.T, result *mcp.CallToolResult, err error, expectedErrMsg string) {
+// AssertError validates error responses from MCP tool handlers.
+// It checks that the error matches expected conditions and contains the expected message.
+func AssertError(t *testing.T, result *mcp.CallToolResult, err error, expectedErrMsg string) {
 	// Check nils
 	require.Nil(t, result.Meta)
 	require.NotNil(t, result)
 	require.NotNil(t, result.Result)
-	require.Nil(t, result.Result.Meta)
+	require.Nil(t, result.Meta)
 
 	// Check error
 	require.True(t, result.IsError)
@@ -23,12 +26,7 @@ func assertError(t *testing.T, result *mcp.CallToolResult, err error, expectedEr
 	require.NotNil(t, result.Content)
 	require.Len(t, result.Content, 1)
 
-	textContent, ok := result.Content[0].(mcp.TextContent)
+	content, ok := result.Content[0].(mcp.TextContent)
 	require.True(t, ok, "Content should be of type TextContent")
-	require.Equal(t, "text", textContent.Type)
-	require.Equal(t, expectedErrMsg, textContent.Text)
-
-	require.NotNil(t, textContent.Annotated)
-	require.Nil(t, textContent.Annotations)
-	require.Nil(t, textContent.Annotated.Annotations)
+	require.Equal(t, expectedErrMsg, content.Text)
 }

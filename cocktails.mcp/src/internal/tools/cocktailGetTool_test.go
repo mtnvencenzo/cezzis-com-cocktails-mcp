@@ -1,4 +1,4 @@
-package tools
+package tools_test
 
 import (
 	"context"
@@ -7,6 +7,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
+	"cezzis.com/cezzis-mcp-server/internal/test"
+	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
 func Test_cocktailget_toolhandler_throws_on_invalid_cocktailId(t *testing.T) {
@@ -22,9 +24,9 @@ func Test_cocktailget_toolhandler_throws_on_invalid_cocktailId(t *testing.T) {
 	}
 
 	cocktailsAPIFactory := cocktailsapi.NewCocktailsAPIFactory()
-	handler := NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
 
 	// Act
 	result, err := handler.Handle(context.TODO(), request)
-	assertError(t, result, err, "required argument \"cocktailId\" not found")
+	test.AssertError(t, result, err, "required argument \"cocktailId\" not found")
 }
