@@ -74,3 +74,4 @@ node_modules/
 /**/*/*.exe
 
 coverage.txt
+cobertura.xml

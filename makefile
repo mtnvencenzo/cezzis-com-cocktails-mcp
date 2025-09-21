@@ -33,10 +33,10 @@ test:
 	cd ./cocktails.mcp/src && \
 	go test \
 		-cover \
-		-coverprofile=../../coverage.txt \
+		-coverprofile=../../cobertura.xml \
 		-v ./... && \
-	go-ignore-cov --file ../../coverage.txt --exclude-globs="**/test/**,cmd/**" && \
-	go tool cover -html=../../coverage.txt
+	go-ignore-cov --file ../../cobertura.xml --exclude-globs="**/test/**,cmd/**" && \
+	go tool cover -html=../../cobertura.xml
 
 # ------------------------------------------------------------
 # build
