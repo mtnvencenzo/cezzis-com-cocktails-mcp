@@ -7,6 +7,7 @@
 # go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 # go install golang.org/x/tools/...@latest
 # go install github.com/incu6us/goimports-reviser/v3@latest
+# go install github.com/quantumcycle/go-ignore-cov@latest
 # cd /usr/local && sudo curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sudo sh -s
 
 # https://github.com/mehdihadeli/Go-MediatR
@@ -29,7 +30,13 @@ fmt:
 	cd ./cocktails.mcp/src && gofmt -s -w .
 
 test:
-	cd ./cocktails.mcp/src && go test -cover -coverprofile=../../coverage.txt -v ./... &&  go tool cover -html=../../coverage.txt
+	cd ./cocktails.mcp/src && \
+	go test \
+		-cover \
+		-coverprofile=../../coverage.txt \
+		-v ./... && \
+	go-ignore-cov --file ../../coverage.txt --exclude-globs="**/test/**,cmd/**" && \
+	go tool cover -html=../../coverage.txt
 
 # ------------------------------------------------------------
 # build

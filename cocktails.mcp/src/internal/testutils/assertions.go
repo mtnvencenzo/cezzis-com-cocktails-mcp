@@ -1,3 +1,5 @@
+//coverage:ignore file
+
 // Package testutils provides shared test utilities for the Cezzi Cocktails MCP server.
 // This file is only compiled when the 'test' build tag is used.
 package testutils
