@@ -87,6 +87,7 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 	rs, callErr := cocktailsAPI.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
+
 	if callErr != nil {
 		l.Logger.Err(callErr).Msg("MCP Error getting cocktail: " + cocktailID)
 		return mcp.NewToolResultError(callErr.Error()), callErr
