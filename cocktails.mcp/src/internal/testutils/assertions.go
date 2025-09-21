@@ -1,5 +1,6 @@
-// Package test provides common testing utilities for the Cezzi Cocktails MCP server.
-package test
+// Package testutils provides shared test utilities for the Cezzi Cocktails MCP server.
+// This file is only compiled when the 'test' build tag is used.
+package testutils
 
 import (
 	"testing"

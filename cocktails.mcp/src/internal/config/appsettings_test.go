@@ -1,10 +1,14 @@
-package config
+package config_test
 
 import (
 	"testing"
+
+	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/testutils"
 )
 
 func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
+	testutils.LoadEnvironment("..", "..")
 
 	// arrange
 	expectedCocktailsAPIHost := "https://testapi.cezzis.com/prd/cocktails"
@@ -14,7 +18,7 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 	expectedCocktailsAPISubscriptionKey := "00000000-0000-0000-0000-000000000000"
 
 	// act
-	var appSettings *AppSettings = GetAppSettings()
+	var appSettings *config.AppSettings = config.GetAppSettings()
 
 	// asert
 	if appSettings.CocktailsAPIHost != expectedCocktailsAPIHost {
@@ -39,12 +43,13 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 }
 
 func Test_appsettings_produces_correct_discovery_keys_url(t *testing.T) {
+	testutils.LoadEnvironment("..", "..")
 
 	// arrange
 	expectedAzureAdB2CDiscoveryKeysURI := "https://testlogin.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/discovery/v2.0/keys"
 
 	// act
-	appSettings := GetAppSettings()
+	appSettings := config.GetAppSettings()
 	azureAdB2CDiscoveryKeysURI := appSettings.GetAzureAdB2CDiscoveryKeysURI()
 
 	// asert

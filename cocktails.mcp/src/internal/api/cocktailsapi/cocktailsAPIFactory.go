@@ -2,6 +2,7 @@ package cocktailsapi
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
@@ -35,9 +36,15 @@ func NewCocktailsAPIFactory() CocktailsAPIFactory {
 func (factory CocktailsAPIFactory) GetClient() (ICocktailsAPI, error) {
 	appSettings := config.GetAppSettings()
 
+	if appSettings.CocktailsAPIHost == "" {
+		err := errors.New("CocktailsAPIHost has not been configured")
+		l.Logger.Error().Err(err).Msg(err.Error())
+		return nil, err
+	}
+
 	client, err := NewClient(appSettings.CocktailsAPIHost)
 	if err != nil {
-		l.Logger.Fatal().Err(err).Msg(err.Error())
+		l.Logger.Error().Err(err).Msg(err.Error())
 		return nil, err
 	}
 

@@ -7,7 +7,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
-	"cezzis.com/cezzis-mcp-server/internal/test"
+	"cezzis.com/cezzis-mcp-server/internal/testutils"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
@@ -27,6 +27,6 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 	handler := tools.NewCocktailSearchToolHandler(cocktailsAPIFactory)
 
 	// Act
-	result, err := handler.Handle(context.TODO(), request)
-	test.AssertError(t, result, err, "required argument \"freeText\" not found")
+	result, err := handler.Handle(context.Background(), request)
+	testutils.AssertError(t, result, err, "required argument \"freeText\" not found")
 }

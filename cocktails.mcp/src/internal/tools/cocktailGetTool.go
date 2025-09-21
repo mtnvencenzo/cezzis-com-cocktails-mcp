@@ -15,6 +15,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 
@@ -66,6 +67,11 @@ func NewCocktailGetToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPIFac
 func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
+	if cocktailID == "" {
+		err := errors.New("required argument \"cocktailId\" is empty")
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
