@@ -8,6 +8,7 @@
 # go install golang.org/x/tools/...@latest
 # go install github.com/incu6us/goimports-reviser/v3@latest
 # go install github.com/quantumcycle/go-ignore-cov@latest
+# go install github.com/t-yuki/gocover-cobertura@latest
 # cd /usr/local && sudo curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sudo sh -s
 
 # https://github.com/mehdihadeli/Go-MediatR
@@ -33,10 +34,12 @@ test:
 	cd ./cocktails.mcp/src && \
 	go test \
 		-cover \
-		-coverprofile=../../cobertura.xml \
+		-coverprofile=../../coverage.out \
+		-covermode count \
 		-v ./... && \
-	go-ignore-cov --file ../../cobertura.xml --exclude-globs="**/test/**,cmd/**" && \
-	go tool cover -html=../../cobertura.xml
+	go-ignore-cov --file ../../coverage.out --exclude-globs="**/test/**,cmd/**" && \
+	gocover-cobertura < ../../coverage.out > ../../cobertura.xml && \
+	go tool cover -html=../../coverage.out
 
 # ------------------------------------------------------------
 # build
