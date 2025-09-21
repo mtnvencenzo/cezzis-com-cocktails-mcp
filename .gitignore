@@ -71,6 +71,7 @@ node_modules/
 #Dapr
 /**/.dapr/logs/
 
+#Exe
 /**/*/*.exe
 
 /**/coverage.out
