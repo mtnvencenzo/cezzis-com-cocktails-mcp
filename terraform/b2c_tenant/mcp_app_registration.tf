@@ -23,7 +23,7 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
   }
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
     ignore_changes = [
       # This parameter is managed by `azuread_application_identifier_uri`.
       # Details: https://github.com/hashicorp/terraform-provider-azuread/issues/428#issuecomment-1788737766
