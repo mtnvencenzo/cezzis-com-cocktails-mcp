@@ -62,22 +62,24 @@ This approach allows developers to build intelligent assistants or chatbots that
 
 ### Building the app for local usage 🛠️
 
-Navigate to the `/src` directory and run:
+Navigate to the project root directory and run:
 
 ```bash
-make compile-windows
+make compile
 ```
+
+This will build the application and place the executable at `./cocktails.mcp/dist/linux/cezzis-cocktails`
 
 ## Setting up with Claude Desktop 💻
 
-Make sure an entry exists in this file for the deploy path of the local exe:
-> C:\Users\<user>\AppData\Roaming\Claude\claude_desktop_config.json
+Make sure an entry exists in this file for the deploy path of the local executable:
+> ~/.config/Claude/claude_desktop_config.json (Linux/macOS) or C:\Users\<user>\AppData\Roaming\Claude\claude_desktop_config.json (Windows)
 
 ```json
 {
   "mcpServers": {
     "mcp-cocktails-go": {
-        "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\win\\cezzis-cocktails.exe"
+        "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
       }
     }
 }
@@ -85,8 +87,8 @@ Make sure an entry exists in this file for the deploy path of the local exe:
 
 ## Setting up with Cursor 💻
 
-Make sure an entry exists in this file for the deploy path of the local exe:
-> C:\Users\rvecc\.cursor\mcp.json
+Make sure an entry exists in this file for the deploy path of the local executable:
+> ~/.cursor/mcp.json (Linux/macOS) or C:\Users\<user>\.cursor\mcp.json (Windows)
 
 Or open the mcp settings within cursor via `Ctrl Shift P` > `View: Open Mcp Settings`
 
@@ -94,11 +96,47 @@ Or open the mcp settings within cursor via `Ctrl Shift P` > `View: Open Mcp Sett
 {
   "mcpServers": {
     "mcp-cocktails-go": {
-        "command": "D:\\Github\\cezzis-com-cocktails-mcp\\cocktails.mcp\\dist\\win\\cezzis-cocktails.exe",
+        "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
       }
     }
 }
 ```
+
+## Setting up with GitHub Copilot 💻
+
+GitHub Copilot supports MCP servers through its configuration. Add an entry to your GitHub Copilot MCP configuration:
+
+**For VS Code/GitHub Copilot Chat:**
+1. Open VS Code Settings (Ctrl/Cmd + ,)
+2. Search for "copilot mcp"
+3. Add the MCP server configuration:
+
+```json
+{
+  "github.copilot.chat.mcp.servers": {
+    "mcp-cocktails-go": {
+      "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
+    }
+  }
+}
+```
+
+**Alternative configuration file approach:**
+Create or edit the GitHub Copilot MCP configuration file at:
+> ~/.config/github-copilot/mcp.json (Linux/macOS) or %APPDATA%\github-copilot\mcp.json (Windows)
+
+```json
+{
+  "mcpServers": {
+    "mcp-cocktails-go": {
+      "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
+    }
+  }
+}
+```
+
+After configuration, restart VS Code and you should be able to use cocktail search and lookup tools in GitHub Copilot Chat.
+
 ## Installs
 `go install -v github.com/go-delve/delve/cmd/dlv@latest`
 
