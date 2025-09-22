@@ -67,9 +67,7 @@ This server bridges AI assistants with the Cezzis.com cocktails database through
 ### Prerequisites
 
 - **Go**: Version 1.25.1 or later ([Install Go](https://golang.org/doc/install))
-- **Make**: For build automation
-  - Linux/macOS: Usually pre-installed
-  - Windows: `choco install make` or install from [GnuWin32](http://gnuwin32.sourceforge.net/packages/make.htm)
+- **Make**: For build automation (usually pre-installed on Linux)
 
 ### Quick Start
 
@@ -131,12 +129,7 @@ To obtain a `COCKTAILS_API_XKEY`:
 ### Claude Desktop
 
 1. Build and configure the server (see steps above)
-2. Add to your Claude Desktop configuration file:
-
-**Configuration file locations:**
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-- **Linux**: `~/.config/Claude/claude_desktop_config.json`
+2. Add to your Claude Desktop configuration file at `~/.config/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -154,11 +147,9 @@ To obtain a `COCKTAILS_API_XKEY`:
 2. Add to your Cursor MCP configuration:
 
 **Via Settings UI:**
-- Open Cursor → `Ctrl/Cmd + Shift + P` → "View: Open MCP Settings"
+- Open Cursor → `Ctrl + Shift + P` → "View: Open MCP Settings"
 
-**Via Configuration File:**
-- **macOS/Linux**: `~/.cursor/mcp.json`
-- **Windows**: `%USERPROFILE%\.cursor\mcp.json`
+**Via Configuration File at `~/.cursor/mcp.json`:**
 
 ```json
 {
@@ -176,7 +167,7 @@ To obtain a `COCKTAILS_API_XKEY`:
 2. Configure GitHub Copilot MCP integration:
 
 **Via VS Code Settings:**
-1. Open VS Code Settings (`Ctrl/Cmd + ,`)
+1. Open VS Code Settings (`Ctrl + ,`)
 2. Search for "copilot mcp"
 3. Add the server configuration:
 
@@ -190,9 +181,7 @@ To obtain a `COCKTAILS_API_XKEY`:
 }
 ```
 
-**Via Configuration File:**
-- **macOS/Linux**: `~/.config/github-copilot/mcp.json`  
-- **Windows**: `%APPDATA%\github-copilot\mcp.json`
+**Via Configuration File at `~/.config/github-copilot/mcp.json`:**
 
 ```json
 {
