@@ -1,148 +1,334 @@
-# cezzis-com-cocktails-mcp 🍸
+# Cezzis Cocktails MCP Server 🍸
 
-## Cocktails MCP Tools & API Integration 🍸🔍
+[![Go](https://github.com/mtnvencenzo/cezzis-com-cocktails-mcp/actions/workflows/cezzis-mcp-cicd.yaml/badge.svg)](https://github.com/mtnvencenzo/cezzis-com-cocktails-mcp/actions/workflows/cezzis-mcp-cicd.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mtnvencenzo/cezzis-com-cocktails-mcp)](https://goreportcard.com/report/github.com/mtnvencenzo/cezzis-com-cocktails-mcp)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
-This project exposes two powerful MCP tools that allow both developers and non-developers to seamlessly integrate cocktail search and data into their applications, chatbots, or workflows. These tools act as a bridge between the Model Context Protocol (MCP) and the cezzis.com cocktails API, unlocking advanced search and retrieval capabilities for cocktail recipes and information.
+A Model Context Protocol (MCP) server that provides seamless access to the Cezzis.com cocktails API, enabling AI agents and applications to search and retrieve detailed cocktail recipes and information.
 
-### 1. Cocktail Search Tool
-- **Purpose:** Enables searching for cocktails by name, ingredient, or recipe details.
-- **How it works:**
-  - Accepts flexible search queries (e.g., "gin and tonic", "contains lime", "classic whiskey drinks").
-  - Forwards these queries to the cezzis.com cocktails API `/search` endpoint.
-  - Returns a list of matching cocktails, each with summary info, images, and key ingredients.
-- **Use cases:**
-  - Powering conversational agents that recommend drinks.
-  - Integrating cocktail search into mobile/web apps.
-  - Enabling voice assistants to answer cocktail-related questions.
+## Table of Contents
 
-### 2. Cocktail Get Tool
-- **Purpose:** Retrieves detailed information about a specific cocktail by its unique ID.
-- **How it works:**
-  - Accepts a cocktail ID (from a search result or known recipe).
-  - Calls the cezzis.com cocktails API `/get` endpoint.
-  - Returns full recipe details, preparation instructions, images, ratings, and historical context.
-- **Use cases:**
-  - Displaying full cocktail recipes in apps or websites.
-  - Enabling step-by-step drink preparation guides.
-  - Fetching cocktail metadata for analytics or recommendations.
+- [Features](#features)
+- [What is MCP?](#what-is-mcp-)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [MCP Client Setup](#mcp-client-setup)
+- [Development](#development)
+- [API Documentation](#api-documentation)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Advanced Search Backed by Azure AI Search & Lucene
-The cezzis.com cocktails API endpoints are powered by a robust backend leveraging **Azure AI Search** and **Lucene-based indexes**. This architecture provides:
-- **Intelligent, semantic search:** Understands natural language queries and ingredient combinations.
-- **High relevance:** Results are ranked using AI-driven scoring and classic information retrieval techniques.
-- **Scalability:** Supports thousands of cocktail recipes and complex queries with low latency.
-- **Rich filtering:** Search by ingredient, style, flavor profile, or even historical/geographic context.
+## Features ✨
 
-Whether you're a developer building a new app, or a non-developer looking to add cocktail discovery to your platform, these MCP tools and the cezzis.com API make it easy to deliver the best cocktail search experience available.
+- **🔍 Cocktail Search Tool**: Search cocktails by name, ingredient, or recipe details with intelligent semantic search
+- **📖 Cocktail Retrieval Tool**: Get detailed information about specific cocktails including full recipes, instructions, and ratings  
+- **🤖 MCP Integration**: Seamless integration with AI agents and LLM applications
+- **🔒 Secure API Access**: Built-in authentication and API key management
+- **🚀 High Performance**: Powered by Azure AI Search with Lucene indexing
+- **📋 Comprehensive Logging**: Built-in structured logging with zerolog
+- **🐳 Container Support**: Docker support for easy deployment
+- **🧪 Well Tested**: Comprehensive test coverage with Go testing framework
+
+### MCP Tools Available
+
+#### 1. Cocktail Search Tool
+- **Purpose:** Search for cocktails using flexible natural language queries
+- **Capabilities:**
+  - Search by cocktail name (e.g., "Old Fashioned", "Margarita")
+  - Search by ingredients (e.g., "gin and tonic", "contains lime") 
+  - Search by style or category (e.g., "whiskey cocktails", "tiki drinks")
+- **Returns:** List of matching cocktails with summaries, images, and key ingredients
+
+#### 2. Cocktail Get Tool  
+- **Purpose:** Retrieve detailed information about a specific cocktail by ID
+- **Capabilities:**
+  - Full recipe details with precise measurements
+  - Step-by-step preparation instructions
+  - High-quality cocktail images
+  - User ratings and reviews
+  - Historical context and variations
+- **Returns:** Complete cocktail information including ingredients, directions, and metadata
 
 ## What is MCP? 🤖
 
-Model Context Protocol (MCP) is an open protocol designed to enable large language models (LLMs) and intelligent agents to interact with external APIs and tools in a standardized, secure, and extensible way. MCP provides a structured context for models to understand available actions, endpoints, and data schemas, making it easier for LLMs to perform complex tasks by leveraging external services.
+The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open standard that enables AI assistants to securely connect with external data sources and tools. It provides a universal way for AI models to access and interact with various APIs, databases, and services.
 
-### How does MCP help search for cocktails? 🍹
+### Why MCP for Cocktails? 🍹
 
-In this repository, MCP is used to bridge LLMs and agents with the cocktails API from cezzis.com. By exposing the cocktails search endpoint through MCP, LLMs can:
-- Discover and understand the available search capabilities and parameters.
-- Programmatically query the cocktails database for recipes, ingredients, and suggestions.
-- Integrate cocktail search functionality into conversational or agent-based workflows, enabling richer and more interactive user experiences.
+This server bridges AI assistants with the Cezzis.com cocktails database through MCP, enabling:
 
-This approach allows developers to build intelligent assistants or chatbots that can answer cocktail-related queries, recommend drinks, or help users explore new recipes, all powered by the cezzis.com cocktails API and its internall AI Search capabilities.
-
-## Features ✨
-- MCP integration for LLMs and agents
-- Secure and extensible API access
-- Search cocktails by name, ingredient, or recipe
-- Easy local development and deployment
+- **Natural Language Queries**: Ask for cocktails in plain English ("What's a good whiskey cocktail for winter?")
+- **Contextual Recommendations**: Get personalized suggestions based on available ingredients
+- **Rich Recipe Data**: Access detailed recipes, techniques, and cocktail history
+- **Seamless Integration**: Works with any MCP-compatible AI assistant or application
 
 ## Getting Started 🚀
 
 ### Prerequisites
-- Go (latest version recommended)
-- make
 
-### Building the app for local usage 🛠️
+- **Go**: Version 1.25.1 or later ([Install Go](https://golang.org/doc/install))
+- **Make**: For build automation
+  - Linux/macOS: Usually pre-installed
+  - Windows: `choco install make` or install from [GnuWin32](http://gnuwin32.sourceforge.net/packages/make.htm)
 
-Navigate to the project root directory and run:
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/mtnvencenzo/cezzis-com-cocktails-mcp.git
+   cd cezzis-com-cocktails-mcp
+   ```
+
+2. **Build the application**
+   ```bash
+   make compile
+   ```
+   This creates the executable at `./cocktails.mcp/dist/linux/cezzis-cocktails`
+
+3. **Configure environment variables** (see [Configuration](#configuration))
+
+4. **Set up your MCP client** (see [MCP Client Setup](#mcp-client-setup))
+
+## Configuration ⚙️
+
+The server requires several environment variables for API access and authentication. Create a `.env` file in `./cocktails.mcp/src/`:
 
 ```bash
-make compile
+# Required: Cezzis.com API Configuration
+COCKTAILS_API_HOST=https://api.cezzis.com/prd/cocktails
+COCKTAILS_API_XKEY=your_api_subscription_key_here
+
+# Required: Azure AD B2C Configuration (for authentication)
+AZUREAD_B2C_INSTANCE=https://your_tenant.b2clogin.com
+AZUREAD_B2C_DOMAIN=your_tenant.onmicrosoft.com  
+AZUREAD_B2C_USERFLOW=B2C_1_SignInSignUp_Policy
+
+# Optional: Application Insights (for telemetry)
+APPLICATIONINSIGHTS_INSTRUMENTATIONKEY=your_app_insights_key
+
+# Optional: Logging
+LOG_LEVEL=info
+ENV=local
 ```
 
-This will build the application and place the executable at `./cocktails.mcp/dist/linux/cezzis-cocktails`
+### Environment Files
 
-## Setting up with Claude Desktop 💻
+The server supports multiple environment files:
+- `.env` - Base configuration
+- `.env.local` - Local development overrides (recommended for development)
+- `.env.test` - Test environment configuration
 
-Make sure an entry exists in this file for the deploy path of the local executable:
-> ~/.config/Claude/claude_desktop_config.json (Linux/macOS) or C:\Users\<user>\AppData\Roaming\Claude\claude_desktop_config.json (Windows)
+### Getting API Access
+
+To obtain a `COCKTAILS_API_XKEY`:
+1. Visit [Cezzis.com Developer Portal](https://api.cezzis.com) 
+2. Sign up for an account
+3. Subscribe to the Cocktails API
+4. Copy your subscription key
+
+## MCP Client Setup 💻
+
+### Claude Desktop
+
+1. Build and configure the server (see steps above)
+2. Add to your Claude Desktop configuration file:
+
+**Configuration file locations:**
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
-    "mcp-cocktails-go": {
-        "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
-      }
+    "cezzis-cocktails": {
+      "command": "/absolute/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
     }
+  }
 }
 ```
 
-## Setting up with Cursor 💻
+### Cursor
 
-Make sure an entry exists in this file for the deploy path of the local executable:
-> ~/.cursor/mcp.json (Linux/macOS) or C:\Users\<user>\.cursor\mcp.json (Windows)
+1. Build and configure the server (see steps above) 
+2. Add to your Cursor MCP configuration:
 
-Or open the mcp settings within cursor via `Ctrl Shift P` > `View: Open Mcp Settings`
+**Via Settings UI:**
+- Open Cursor → `Ctrl/Cmd + Shift + P` → "View: Open MCP Settings"
+
+**Via Configuration File:**
+- **macOS/Linux**: `~/.cursor/mcp.json`
+- **Windows**: `%USERPROFILE%\.cursor\mcp.json`
 
 ```json
 {
   "mcpServers": {
-    "mcp-cocktails-go": {
-        "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
-      }
+    "cezzis-cocktails": {
+      "command": "/absolute/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
     }
+  }
 }
 ```
 
-## Setting up with GitHub Copilot 💻
+### GitHub Copilot
 
-GitHub Copilot supports MCP servers through its configuration. Add an entry to your GitHub Copilot MCP configuration:
+1. Build and configure the server (see steps above)
+2. Configure GitHub Copilot MCP integration:
 
-**For VS Code/GitHub Copilot Chat:**
-1. Open VS Code Settings (Ctrl/Cmd + ,)
+**Via VS Code Settings:**
+1. Open VS Code Settings (`Ctrl/Cmd + ,`)
 2. Search for "copilot mcp"
-3. Add the MCP server configuration:
+3. Add the server configuration:
 
 ```json
 {
   "github.copilot.chat.mcp.servers": {
-    "mcp-cocktails-go": {
-      "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
+    "cezzis-cocktails": {
+      "command": "/absolute/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
     }
   }
 }
 ```
 
-**Alternative configuration file approach:**
-Create or edit the GitHub Copilot MCP configuration file at:
-> ~/.config/github-copilot/mcp.json (Linux/macOS) or %APPDATA%\github-copilot\mcp.json (Windows)
+**Via Configuration File:**
+- **macOS/Linux**: `~/.config/github-copilot/mcp.json`  
+- **Windows**: `%APPDATA%\github-copilot\mcp.json`
 
 ```json
 {
   "mcpServers": {
-    "mcp-cocktails-go": {
-      "command": "/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
+    "cezzis-cocktails": {
+      "command": "/absolute/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
     }
   }
 }
 ```
 
-After configuration, restart VS Code and you should be able to use cocktail search and lookup tools in GitHub Copilot Chat.
+3. Restart VS Code to apply changes
 
-## Installs
-`go install -v github.com/go-delve/delve/cmd/dlv@latest`
+## Development 🛠️
+
+### Project Structure
+
+```
+cocktails.mcp/
+├── src/
+│   ├── cmd/                    # Application entry point
+│   ├── internal/
+│   │   ├── api/               # Generated API client code
+│   │   ├── config/            # Configuration management  
+│   │   ├── logging/           # Structured logging
+│   │   ├── middleware/        # HTTP middleware
+│   │   ├── server/            # MCP server implementation
+│   │   ├── testutils/         # Testing utilities
+│   │   └── tools/             # MCP tool implementations
+│   ├── .env                   # Environment configuration
+│   └── go.mod                 # Go module definition
+└── dist/                      # Build outputs
+```
+
+### Available Make Targets
+
+```bash
+# Development
+make tidy          # Update Go modules
+make lint          # Run linters and fix issues
+make fmt           # Format Go code  
+make test          # Run tests with coverage
+make imports       # Fix imports
+
+# Building  
+make compile       # Build for Linux
+make clean         # Clean build artifacts
+make docker-build  # Build Docker image
+
+# Running
+./cocktails.mcp/dist/linux/cezzis-cocktails --http :8080  # HTTP mode
+./cocktails.mcp/dist/linux/cezzis-cocktails               # Stdio mode (MCP)
+```
+
+### Running Tests
+
+```bash
+make test
+```
+
+This runs the full test suite with:
+- Unit tests for all packages
+- Coverage report (generates `coverage.out` and `cobertura.xml`)
+- HTML coverage report
+
+### Code Generation
+
+The project uses [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) to generate API client code from OpenAPI specifications. Generated files are marked with `DO NOT EDIT` comments.
+
+## API Documentation 📚
+
+The server exposes cocktail search and retrieval capabilities through two main MCP tools:
+
+### Cocktail Search
+- **Tool**: `cocktail_search`
+- **Purpose**: Search cocktails by query
+- **Parameters**: 
+  - `query` (string): Natural language search query
+  - `limit` (optional int): Maximum results to return
+
+### Cocktail Get  
+- **Tool**: `cocktail_get`
+- **Purpose**: Get detailed cocktail information
+- **Parameters**:
+  - `id` (string): Cocktail ID from search results
+
+### HTTP Mode (Development)
+
+When run with `--http` flag, the server also exposes HTTP endpoints for testing:
+
+- `GET /health` - Health check endpoint
+- MCP protocol over HTTP for debugging
 
 ## Contributing 🤝
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](../../issues).
+We welcome contributions! Please see our contributing guidelines:
+
+### Prerequisites
+
+1. **Go 1.25.1+** with modules enabled
+2. **Development tools** (installed via Makefile):
+   ```bash
+   # Install required tools
+   go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+   go install golang.org/x/tools/cmd/goimports@latest
+   go install github.com/incu6us/goimports-reviser/v3@latest
+   go install github.com/quantumcycle/go-ignore-cov@latest
+   go install github.com/t-yuki/gocover-cobertura@latest
+   ```
+
+### Development Workflow
+
+1. **Fork and clone** the repository
+2. **Create a feature branch**: `git checkout -b feature/my-feature`
+3. **Make changes** following the coding standards
+4. **Run tests**: `make test`
+5. **Run linting**: `make lint`  
+6. **Commit changes** with [conventional commits](https://conventionalcommits.org/)
+7. **Push and create** a pull request
+
+### Coding Standards
+
+- Follow standard Go conventions and idioms
+- Use `golangci-lint` for code quality (config in `.golangci.yaml`)
+- Maintain test coverage above 80%
+- Document public APIs with Go doc comments
+- Use structured logging with zerolog
+
+### Commit Message Format
+
+We use [GitVersion](https://gitversion.net/) for semantic versioning:
+
+- `feat: add new cocktail search filter` (+semver: minor)
+- `fix: resolve API timeout issue` (+semver: patch)  
+- `feat!: change search API response format` (+semver: major)
+- `docs: update README examples` (+semver: none)
 
 ## License 📄
 
