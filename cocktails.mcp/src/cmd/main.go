@@ -111,6 +111,6 @@ func loadEnv() {
 	}
 
 	if len(toLoad) > 0 {
-		_ = godotenv.Load(toLoad...)
+		_ = godotenv.Overload(toLoad...)
 	}
 }
