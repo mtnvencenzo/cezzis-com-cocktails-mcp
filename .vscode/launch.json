@@ -1,0 +1,36 @@
+    {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Debug (http)",
+                "type": "go",
+                "request": "launch",
+                "mode": "debug",
+                "program": "${workspaceFolder}/cocktails.mcp/src/cmd", // or "${workspaceFolder}/your_subdir"
+                "args": [
+                    "--http",
+                    ":6098"
+                ],
+                "env": {
+                    "ENV": "local",
+                    "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"
+                }
+            },
+            {
+                "name": "Run (http)",
+                "type": "go",
+                "request": "launch",
+                "mode": "auto",
+                "program": "${workspaceFolder}/cocktails.mcp/src/cmd", // or "${workspaceFolder}/your_subdir"
+                "args": [
+                    "--http",
+                    ":6098"
+                ],
+                "env": {
+                    "ENV": "local",
+                    "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"
+                },
+                "noDebug": true
+            }
+        ]
+    }

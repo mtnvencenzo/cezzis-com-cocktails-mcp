@@ -1,46 +1,50 @@
-run:
-  timeout: 5m
-
+version: "2"
 linters:
   enable:
     - govet
     - staticcheck
     - errcheck
-    - gosimple
     - unused
-    - gofmt
-    - goimports
     - gocyclo
     - revive
-
-linters-settings:
-  gofmt:
-    simplify: true
-  goimports:
-    local-prefixes: cezzis.com/cezzis-mcp-server
-  gocyclo:
-    min-complexity: 15
-  revive:
-    severity: warning
-    confidence: 0.8
+  settings:
+    gocyclo:
+      min-complexity: 15
+    revive:
+      confidence: 0.8
+      severity: warning
+      rules:
+        - name: var-naming
+        - name: package-comments
+        - name: blank-imports
+        - name: indent-error-flow
+        - name: if-return
+        - name: import-shadowing
+        - name: range-val-address
+        - name: error-naming
+        - name: exported
+        - name: time-naming
+  exclusions:
+    generated: lax
     rules:
-      - name: var-naming
-      - name: package-comments
-      - name: blank-imports
-      - name: indent-error-flow
-      - name: if-return
-      - name: import-shadowing
-      - name: range-val-address
-      - name: error-naming
-      - name: exported
-      - name: time-naming
-
+      - linters:
+          - errcheck
+          - staticcheck
+        path: _test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
-        - staticcheck
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    gofmt:
+      simplify: true
+    goimports:
+      local-prefixes:
+        - cezzis.com/cezzis-mcp-server

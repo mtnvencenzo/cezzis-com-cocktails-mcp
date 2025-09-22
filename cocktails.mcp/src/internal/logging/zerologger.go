@@ -30,7 +30,7 @@ func InitLogger() (zerolog.Logger, error) {
 	zerolog.SetGlobalLevel(level)
 
 	// Create a console writer with pretty printing for local development
-	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout}
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr}
 
 	// Create an Application Insights writer
 	aiLogger := &appInsightsLogger{telemetryClient: telemetryClient}
@@ -64,7 +64,7 @@ func (a *appInsightsLogger) Write(p []byte) (n int, err error) {
 	err = json.Unmarshal(p, &logData) // Unmarshal JSON into a map[string]interface{}
 	if err != nil {
 		// Handle the unmarshalling error (e.g., log an error message, but not to App Insights to avoid an infinite loop)
-		_, err := os.Stderr.Write([]byte(fmt.Sprintf("Error unmarshalling log data: %v\n", err)))
+		_, _ = fmt.Fprintf(os.Stderr, "Error unmarshalling log data: %v\n", err)
 
 		return len(p), err // Still return the length of the data processed
 	}
@@ -100,7 +100,7 @@ func (a *appInsightsLogger) Write(p []byte) (n int, err error) {
 	telemetry := appinsights.NewTraceTelemetry(message, severity)
 
 	// Extract and set the Correlation ID
-	correlationID, ok := logData["correlation_id"].(string) // Assuming the hook added it as "CorrelationID"
+	correlationID, ok := logData["correlation_id"].(string)
 	if ok {
 		telemetry.Properties["correlation_id"] = correlationID
 		telemetry.Tags["ai.operation.id"] = correlationID // Set the operation ID using Tags

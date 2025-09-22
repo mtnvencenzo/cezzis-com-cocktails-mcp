@@ -13,12 +13,10 @@ package config
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"sync"
 
 	"github.com/caarlos0/env/v11"
-	"github.com/joho/godotenv"
+
+	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 // AppSettings contains all application configuration settings loaded from environment variables.
@@ -45,19 +43,6 @@ type AppSettings struct {
 	AzureAdB2CUserFlow string `env:"AZUREAD_B2C_USERFLOW"`
 }
 
-// GetAzureAdB2CDiscoveryKeysURI constructs the Azure AD B2C discovery keys URI
-// by combining the instance, domain, and user flow settings.
-// This URI is used to fetch the JSON Web Key Set (JWKS) for JWT token validation.
-// Returns a formatted string like: "https://your-tenant.b2clogin.com/your-tenant.onmicrosoft.com/B2C_1_signupsignin/discovery/v2.0/keys"
-func (a *AppSettings) GetAzureAdB2CDiscoveryKeysURI() string {
-	return fmt.Sprintf("%s/%s/%s/discovery/v2.0/keys", a.AzureAdB2CInstance, a.AzureAdB2CDomain, a.AzureAdB2CUserFlow)
-}
-
-var (
-	instance *AppSettings
-	once     sync.Once
-)
-
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
 // This function is thread-safe and ensures that configuration is loaded only once,
 // even when called concurrently from multiple goroutines.
@@ -70,32 +55,34 @@ var (
 //
 // Returns a pointer to the AppSettings instance containing all application configuration.
 func GetAppSettings() *AppSettings {
-	once.Do(func() {
-		exePath, oserr := os.Executable()
-		if oserr != nil {
-			fmt.Printf("Server error - exe path: %v\n", oserr)
-		}
+	instance := &AppSettings{}
+	if err := env.Parse(instance); err != nil {
+		l.Logger.Warn().Err(err).Msg("Failed to parse app settings: %v\n")
+	}
 
-		// Get the directory of the executable
-		exeDir := filepath.Dir(exePath)
-
-		_ = godotenv.Overload(
-			fmt.Sprintf("%s/%s", exeDir, ".env"),
-			fmt.Sprintf("%s/%s", exeDir, ".env.local"))
-
-		instance = &AppSettings{}
-		if err := env.Parse(instance); err != nil {
-			fmt.Printf("Exe Path: %v\n", exeDir)
-			fmt.Printf("Failed to parse app settings: %v\n", err)
-
-			if instance.CocktailsAPIHost == "" {
-				fmt.Printf("Warning: COCKTAILS_API_HOST is not set\n")
-			}
-			if instance.CocktailsAPISubscriptionKey == "" {
-				fmt.Printf("Warning: COCKTAILS_API_XKEY is not set\n")
-			}
-		}
-	})
+	if instance.CocktailsAPIHost == "" {
+		l.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set\n")
+	}
+	if instance.CocktailsAPISubscriptionKey == "" {
+		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set\n")
+	}
+	if instance.AzureAdB2CInstance == "" {
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_INSTANCE is not set\n")
+	}
+	if instance.AzureAdB2CDomain == "" {
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_DOMAIN is not set\n")
+	}
+	if instance.AzureAdB2CUserFlow == "" {
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_USERFLOW is not set\n")
+	}
 
 	return instance
+}
+
+// GetAzureAdB2CDiscoveryKeysURI constructs the Azure AD B2C discovery keys URI
+// by combining the instance, domain, and user flow settings.
+// This URI is used to fetch the JSON Web Key Set (JWKS) for JWT token validation.
+// Returns a formatted string like: "https://your-tenant.b2clogin.com/your-tenant.onmicrosoft.com/B2C_1_signupsignin/discovery/v2.0/keys"
+func (a *AppSettings) GetAzureAdB2CDiscoveryKeysURI() string {
+	return fmt.Sprintf("%s/%s/%s/discovery/v2.0/keys", a.AzureAdB2CInstance, a.AzureAdB2CDomain, a.AzureAdB2CUserFlow)
 }

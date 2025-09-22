@@ -14,48 +14,36 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"fmt"
 	"log"
-	"net/http"
-	"time"
+	"os"
+	"path/filepath"
 
+	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/rs/xid"
-	"github.com/rs/zerolog"
 
-	l "cezzis.com/cezzis-mcp-server/pkg/logging"
-	"cezzis.com/cezzis-mcp-server/pkg/tools"
+	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
+	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	internalServer "cezzis.com/cezzis-mcp-server/internal/server"
+	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
 // Version uses build linkers to set this value at build time
 var Version string = "0.0.0"
 
-type loggingResponseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func newLoggingResponseWriter(w http.ResponseWriter) *loggingResponseWriter {
-	return &loggingResponseWriter{w, http.StatusOK}
-}
-
-func (lrw *loggingResponseWriter) WriteHeader(code int) {
-	lrw.statusCode = code
-	lrw.ResponseWriter.WriteHeader(code)
-}
-
-type ctxKey string
-
 // main initializes and runs the Cezzi Cocktails MCP server, registering cocktail search and retrieval tools and serving requests over standard input/output or HTTP.
 func main() {
+	loadEnv()
+
+	// Initialize the logger
 	_, err := l.InitLogger()
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
 	// Add a flag to choose between stdio and HTTP
+	// If --http is provided, the server will run in HTTP mode on the specified address.
+	// Otherwise, it will default to stdio mode.
 	httpAddr := flag.String("http", "", "If set, serve HTTP on this address (e.g., :8080). Otherwise, use stdio.")
 	flag.Parse()
 
@@ -65,87 +53,64 @@ func main() {
 		server.WithToolCapabilities(true),
 	)
 
-	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.CocktailSearchToolHandler))
-	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.CocktailGetToolHandler))
+	cocktailsAPIFactory := cocktailsapi.NewCocktailsAPIFactory()
 
-	requestLogger := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			start := time.Now()
+	// Add the carious tools to the MCP server
+	// Each tool is registered with its corresponding handler function.
+	// This allows clients to invoke the tools via the MCP protocol.
+	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.NewCocktailGetToolHandler(cocktailsAPIFactory).Handle))
+	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(cocktailsAPIFactory).Handle))
 
-			lg := l.Logger
-
-			correlationID := xid.New().String()
-
-			ctx := context.WithValue(r.Context(), ctxKey("correlation_id"), correlationID)
-
-			r = r.WithContext(ctx)
-
-			lg.UpdateContext(func(c zerolog.Context) zerolog.Context {
-				return c.Str("correlation_id", correlationID)
-			})
-
-			w.Header().Add("X-Correlation-ID", correlationID)
-
-			lrw := newLoggingResponseWriter(w)
-
-			r = r.WithContext(lg.WithContext(r.Context()))
-
-			defer func() {
-				panicVal := recover()
-				if panicVal != nil {
-					lrw.statusCode = http.StatusInternalServerError
-					panic(panicVal)
-				}
-
-				lg.
-					Info().
-					Str("method", r.Method).
-					Str("url", r.URL.RequestURI()).
-					Int("status_code", lrw.statusCode).
-					Dur("elapsed_ms", time.Since(start)).
-					Msgf("MCP: %s %s %d %s", r.Method, r.URL.RequestURI(), lrw.statusCode, time.Since(start))
-			}()
-
-			next.ServeHTTP(lrw, r)
-		})
-	}
-
+	// Finally, start the server in the chosen mode
+	// If --http is provided, start the HTTP server with logging middleware and a health check endpoint.
+	// Otherwise, serve requests over stdio.
+	// Proper error handling ensures that any issues during startup are logged.
+	// The server will run until it is manually stopped or encounters a fatal error.
 	if *httpAddr != "" {
 		// HTTP mode
-		http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
+		httpServer := internalServer.NewMCPHTTPServer(*httpAddr, mcpServer, Version)
 
-			if _, err := w.Write([]byte(`{"status": "ok"}`)); err != nil {
-				l.Logger.Err(err).Msg(fmt.Sprintf("Error writing health check response: %v", err))
-			}
-		})
+		if err := httpServer.Start(); err != nil {
+			l.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
+		}
 
-		http.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-
-			if _, err := w.Write([]byte(`{"version": "` + Version + `"}`)); err != nil {
-				l.Logger.Err(err).Msg(fmt.Sprintf("Error writing version response: %v", err))
-			}
-		})
-
-		// Use the official streamable HTTP server for MCP
-		streamableHTTP := server.NewStreamableHTTPServer(mcpServer)
-		http.Handle("/mcp", requestLogger(streamableHTTP))
-
-		l.Logger.Info().
-			Str("port", *httpAddr).
-			Msgf("Starting MCP Server on port '%s'", *httpAddr)
-
-		l.Logger.Fatal().
-			Err(http.ListenAndServe(*httpAddr, nil)).
-			Msg("MCP Server Closed")
-
+		l.Logger.Info().Msg("MCP HTTP server stopped")
 	} else {
 		// Stdio mode (default)
 		if err := server.ServeStdio(mcpServer); err != nil {
-			fmt.Printf("Server error: %v\n", err)
+			l.Logger.Err(err).Msg("Server error: %v\n")
 		}
+	}
+}
+
+func loadEnv() {
+	// Set up environment variables from .env files in the executable directory
+	// This allows configuration settings to be loaded at runtime.
+	exePath, _ := os.Executable()
+	exeDir := filepath.Dir(exePath)
+
+	envFileDir := exeDir
+
+	if os.Getenv("ENV_DIR_OVERRIDE") != "" {
+		envFileDir = os.Getenv("ENV_DIR_OVERRIDE")
+	}
+
+	env := os.Getenv("ENV")
+	baseEnvFile := filepath.Join(envFileDir, ".env")
+	candidates := []string{baseEnvFile}
+
+	if env != "" {
+		candidates = append(candidates, baseEnvFile+"."+env)
+	}
+
+	toLoad := make([]string, 0, len(candidates))
+	for _, f := range candidates {
+		if _, err := os.Stat(f); err == nil {
+			toLoad = append(toLoad, f)
+		}
+	}
+
+	if len(toLoad) > 0 {
+		_ = godotenv.Overload(toLoad...)
 	}
 }

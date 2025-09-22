@@ -10,6 +10,10 @@ on:
 
   workflow_dispatch:
 
+concurrency:
+  group: cezzis-mcp-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   gitVersion:
     name: Git version
@@ -40,7 +44,7 @@ jobs:
     uses: mtnvencenzo/workflows/.github/workflows/go-build.yaml@main
     needs: [gitVersion]
     with:
-      go_version: '1.24.2'
+      go_version: '1.25.1'
       go_mod_directory: './cocktails.mcp/src'
       go_main_directory: 'cmd'
       go_output_directory: 'dist/linux'

@@ -15,14 +15,15 @@ package cocktailsapi
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/MicahParks/keyfunc"
 	"github.com/golang-jwt/jwt/v4"
 
-	"cezzis.com/cezzis-mcp-server/pkg/config"
+	"cezzis.com/cezzis-mcp-server/internal/config"
+	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 // contextKey is a custom type for context keys to avoid collisions
@@ -36,9 +37,20 @@ var jwks *keyfunc.JWKS
 func init() {
 	appSettings := config.GetAppSettings()
 	uri := appSettings.GetAzureAdB2CDiscoveryKeysURI()
+
+	if uri == "" {
+		l.Logger.Warn().Msg("Warning: Azure AD B2C discovery URI not configured\n")
+		if strings.ToLower(os.Getenv("ENV")) != "local" && strings.ToLower(os.Getenv("ENV")) != "test" {
+			// In non-local, do not disable auth silently
+			return
+		}
+		// local/test: leave jwks nil to permit fail-open
+		return
+	}
+
 	if uri == "" {
 		// Don't panic, just log a warning and continue without auth
-		fmt.Printf("Warning: Azure AD B2C discovery URI not configured, auth middleware will be disabled\n")
+		l.Logger.Warn().Msg("Warning: Azure AD B2C discovery URI not configured, auth middleware will be disabled\n")
 		return
 	}
 
@@ -46,7 +58,7 @@ func init() {
 	jwks, err = keyfunc.Get(uri, keyfunc.Options{})
 	if err != nil {
 		// Don't panic, just log a warning and continue without auth
-		fmt.Printf("Warning: Failed to get JWKS: %v, auth middleware will be disabled\n", err)
+		l.Logger.Warn().Err(err).Msg("Warning: Failed to get JWKS: auth middleware will be disabled")
 		return
 	}
 }
@@ -73,9 +85,12 @@ func init() {
 func AuthMiddleware(requiredScopes []string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// If JWKS is not initialized, allow all requests through
-			if jwks == nil {
+			// Allow-through only in local/test; otherwise fail closed
+			if jwks == nil && (strings.ToLower(os.Getenv("ENV")) == "local" || strings.ToLower(os.Getenv("ENV")) == "test") {
 				next.ServeHTTP(w, r)
+				return
+			} else if jwks == nil {
+				http.Error(w, "Authentication service unavailable", http.StatusServiceUnavailable)
 				return
 			}
 
