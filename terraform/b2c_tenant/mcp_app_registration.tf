@@ -50,6 +50,11 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
     resource_access {
+      id   = azuread_service_principal.msgraph.app_role_ids["Application.ReadWrite.All"]
+      type = "Role"
+    }
+
+    resource_access {
       id   = "37f7f235-527c-4136-accd-4a02d197296e" # openid
       type = "Scope"
     }
