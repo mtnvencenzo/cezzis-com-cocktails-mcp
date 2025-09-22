@@ -49,8 +49,8 @@ type DeviceCodeResponse struct {
 	Message         string `json:"message"`
 }
 
-// AuthManager handles OAuth authentication flows
-type AuthManager struct {
+// Manager handles OAuth authentication flows
+type Manager struct {
 	appSettings        *config.AppSettings
 	currentTokens      *TokenResponse
 	currentPKCE        *PKCEChallenge
@@ -59,8 +59,8 @@ type AuthManager struct {
 	storage            *TokenStorage
 }
 
-// NewAuthManager creates a new authentication manager
-func NewAuthManager() *AuthManager {
+// NewManager creates a new authentication manager
+func NewManager() *Manager {
 	// Create storage in user's home directory
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -73,7 +73,7 @@ func NewAuthManager() *AuthManager {
 		l.Logger.Error().Err(err).Msg("Failed to create token storage")
 	}
 
-	manager := &AuthManager{
+	manager := &Manager{
 		appSettings: config.GetAppSettings(),
 		httpClient:  &http.Client{Timeout: 30 * time.Second},
 		storage:     storage,
@@ -91,7 +91,7 @@ func NewAuthManager() *AuthManager {
 }
 
 // StartDeviceFlow initiates the device code authentication flow
-func (auth *AuthManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
+func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
 	// Try the standard Azure AD B2C device code endpoint first
 	deviceEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/devicecode",
 		auth.appSettings.AzureAdB2CInstance,
@@ -125,7 +125,11 @@ func (auth *AuthManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeRespon
 	if err != nil {
 		return nil, fmt.Errorf("failed to request device code: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to close response body")
+		}
+	}()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -156,7 +160,9 @@ func (auth *AuthManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeRespon
 }
 
 // PollForTokens polls for tokens after user completes device authentication
-func (auth *AuthManager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeResponse) (*TokenResponse, error) {
+//
+//nolint:gocyclo
+func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeResponse) (*TokenResponse, error) {
 	tokenEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
 		auth.appSettings.AzureAdB2CInstance,
 		auth.appSettings.AzureAdB2CDomain,
@@ -201,7 +207,9 @@ func (auth *AuthManager) PollForTokens(ctx context.Context, deviceCode *DeviceCo
 		}
 
 		body, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			l.Logger.Warn().Err(closeErr).Msg("Failed to close response body")
+		}
 		if err != nil {
 			l.Logger.Warn().Err(err).Msg("Failed to read token response")
 			time.Sleep(pollInterval)
@@ -246,7 +254,7 @@ func (auth *AuthManager) PollForTokens(ctx context.Context, deviceCode *DeviceCo
 }
 
 // GetAccessToken returns the current access token, refreshing if necessary
-func (auth *AuthManager) GetAccessToken(ctx context.Context) (string, error) {
+func (auth *Manager) GetAccessToken(ctx context.Context) (string, error) {
 	if auth.currentTokens == nil {
 		return "", fmt.Errorf("no tokens available, authentication required")
 	}
@@ -257,7 +265,9 @@ func (auth *AuthManager) GetAccessToken(ctx context.Context) (string, error) {
 }
 
 // StartBrowserAuth initiates browser-based OAuth authentication using Authorization Code Flow with PKCE
-func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, error) {
+//
+//nolint:gocyclo
+func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, error) {
 	// Generate PKCE challenge
 	pkce, err := generatePKCEChallenge()
 	if err != nil {
@@ -273,14 +283,18 @@ func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, 
 	if err != nil {
 		return nil, fmt.Errorf("port %d is not available: %w", port, err)
 	}
-	listener.Close()
+	if err := listener.Close(); err != nil {
+		l.Logger.Warn().Err(err).Msg("Failed to close port listener")
+	}
 
 	redirectURI := fmt.Sprintf("http://localhost:%d/callback", port)
 	auth.currentRedirectURI = redirectURI
 
 	// Generate state parameter for CSRF protection
 	stateBytes := make([]byte, 32)
-	rand.Read(stateBytes)
+	if _, err := rand.Read(stateBytes); err != nil {
+		return nil, fmt.Errorf("failed to generate state parameter: %w", err)
+	}
 	state := base64.RawURLEncoding.EncodeToString(stateBytes)
 
 	// Build authorization URL
@@ -302,7 +316,7 @@ func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, 
 	fullAuthURL := authURL + "?" + params.Encode()
 
 	// Channel to receive callback result
-	resultChan := make(chan AuthCallbackResult, 1)
+	resultChan := make(chan CallbackResult, 1)
 
 	// Setup callback server
 	mux := http.NewServeMux()
@@ -311,7 +325,7 @@ func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, 
 		returnedState := r.URL.Query().Get("state")
 		errorParam := r.URL.Query().Get("error")
 
-		result := AuthCallbackResult{
+		result := CallbackResult{
 			Code:  code,
 			State: returnedState,
 			Error: errorParam,
@@ -328,7 +342,7 @@ func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, 
 		} else {
 			// Success page
 			w.Header().Set("Content-Type", "text/html")
-			fmt.Fprintf(w, `<!DOCTYPE html>
+			if _, err := fmt.Fprintf(w, `<!DOCTYPE html>
 <html>
 <head><title>Authorization Complete</title>
 <style>body{font-family:Arial,sans-serif;text-align:center;margin:50px;}
@@ -336,7 +350,9 @@ func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, 
 <body><div class="success">
 <h2>✅ Authorization Successful!</h2>
 <p>You can now close this window and return to your application.</p>
-</div></body></html>`)
+</div></body></html>`); err != nil {
+				l.Logger.Warn().Err(err).Msg("Failed to write success page")
+			}
 		}
 
 		// Send result to waiting goroutine
@@ -372,16 +388,20 @@ func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, 
 	authCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 	defer cancel()
 
-	var result AuthCallbackResult
+	var result CallbackResult
 	select {
 	case result = <-resultChan:
 	case <-authCtx.Done():
-		server.Shutdown(context.Background())
+		if err := server.Shutdown(context.Background()); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to shutdown server")
+		}
 		return nil, fmt.Errorf("authentication timed out")
 	}
 
 	// Shutdown server
-	server.Shutdown(context.Background())
+	if err := server.Shutdown(context.Background()); err != nil {
+		l.Logger.Warn().Err(err).Msg("Failed to shutdown server")
+	}
 
 	if result.Error != "" {
 		return nil, fmt.Errorf("authentication failed: %s", result.Error)
@@ -391,8 +411,8 @@ func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, 
 	return auth.exchangeCodeForTokens(ctx, result.Code)
 }
 
-// AuthCallbackResult represents the OAuth callback result
-type AuthCallbackResult struct {
+// CallbackResult represents the OAuth callback result
+type CallbackResult struct {
 	Code  string
 	State string
 	Error string
@@ -416,7 +436,7 @@ func generatePKCEChallenge() (*PKCEChallenge, error) {
 }
 
 // exchangeCodeForTokens exchanges authorization code for tokens
-func (auth *AuthManager) exchangeCodeForTokens(ctx context.Context, code string) (*TokenResponse, error) {
+func (auth *Manager) exchangeCodeForTokens(ctx context.Context, code string) (*TokenResponse, error) {
 	tokenURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
 		auth.appSettings.AzureAdB2CInstance,
 		auth.appSettings.AzureAdB2CDomain,
@@ -440,7 +460,11 @@ func (auth *AuthManager) exchangeCodeForTokens(ctx context.Context, code string)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange code: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to close response body")
+		}
+	}()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -473,15 +497,15 @@ func (auth *AuthManager) exchangeCodeForTokens(ctx context.Context, code string)
 }
 
 // openBrowser opens URL in default browser
-func openBrowser(url string) error {
+func openBrowser(targetURL string) error {
 	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case "linux":
-		cmd = exec.Command("xdg-open", url)
+		cmd = exec.Command("xdg-open", targetURL)
 	case "windows":
-		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", targetURL)
 	case "darwin":
-		cmd = exec.Command("open", url)
+		cmd = exec.Command("open", targetURL)
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
@@ -489,12 +513,12 @@ func openBrowser(url string) error {
 }
 
 // IsAuthenticated returns true if the user is currently authenticated
-func (auth *AuthManager) IsAuthenticated() bool {
+func (auth *Manager) IsAuthenticated() bool {
 	return auth.currentTokens != nil && auth.currentTokens.AccessToken != ""
 }
 
 // Logout clears current authentication
-func (auth *AuthManager) Logout() error {
+func (auth *Manager) Logout() error {
 	auth.currentTokens = nil
 
 	if auth.storage != nil {

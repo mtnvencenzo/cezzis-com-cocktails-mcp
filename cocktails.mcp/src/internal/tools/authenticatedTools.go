@@ -37,12 +37,12 @@ var RateCocktailTool = mcp.NewTool(
 
 // RateCocktailToolHandler handles cocktail rating requests
 type RateCocktailToolHandler struct {
-	authManager         *auth.AuthManager
+	authManager         *auth.Manager
 	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
 }
 
 // NewRateCocktailToolHandler creates a new cocktail rating handler
-func NewRateCocktailToolHandler(authManager *auth.AuthManager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *RateCocktailToolHandler {
+func NewRateCocktailToolHandler(authManager *auth.Manager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *RateCocktailToolHandler {
 	return &RateCocktailToolHandler{
 		authManager:         authManager,
 		cocktailsAPIFactory: cocktailsAPIFactory,
@@ -52,7 +52,7 @@ func NewRateCocktailToolHandler(authManager *auth.AuthManager, cocktailsAPIFacto
 // Handle handles cocktail rating requests
 func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	// Extract cocktailId parameter
-	cocktailId, err := request.RequireString("cocktailId")
+	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
 		return mcp.NewToolResultError("cocktailId is required"), err
 	}
@@ -90,10 +90,10 @@ Your Rating: %d stars
 Your rating has been saved and will contribute to the overall cocktail rating on Cezzis.com.
 Visit https://www.cezzis.com/cocktails/%s to see the updated rating.
 
-Thank you for contributing to the Cezzis.com community!`, cocktailId, stars, cocktailId)
+Thank you for contributing to the Cezzis.com community!`, cocktailID, stars, cocktailID)
 
 	l.Logger.Info().
-		Str("cocktail_id", cocktailId).
+		Str("cocktail_id", cocktailID).
 		Int("stars", stars).
 		Msg("Cocktail rating submitted")
 
@@ -114,12 +114,12 @@ var GetFavoritesTool = mcp.NewTool(
 
 // GetFavoritesToolHandler handles favorite cocktails retrieval requests
 type GetFavoritesToolHandler struct {
-	authManager         *auth.AuthManager
+	authManager         *auth.Manager
 	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
 }
 
 // NewGetFavoritesToolHandler creates a new favorites retrieval handler
-func NewGetFavoritesToolHandler(authManager *auth.AuthManager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *GetFavoritesToolHandler {
+func NewGetFavoritesToolHandler(authManager *auth.Manager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *GetFavoritesToolHandler {
 	return &GetFavoritesToolHandler{
 		authManager:         authManager,
 		cocktailsAPIFactory: cocktailsAPIFactory,

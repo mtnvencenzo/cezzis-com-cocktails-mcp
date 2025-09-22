@@ -55,7 +55,7 @@ func main() {
 	)
 
 	// Initialize authentication manager
-	authManager := auth.NewAuthManager()
+	authManager := auth.NewManager()
 
 	// Initialize API factories
 	cocktailsAPIFactory := cocktailsapi.NewCocktailsAPIFactory()

@@ -28,11 +28,11 @@ var AuthLoginTool = mcp.NewTool(
 
 // AuthLoginToolHandler handles authentication login requests
 type AuthLoginToolHandler struct {
-	authManager *auth.AuthManager
+	authManager *auth.Manager
 }
 
 // NewAuthLoginToolHandler creates a new authentication login handler
-func NewAuthLoginToolHandler(authManager *auth.AuthManager) *AuthLoginToolHandler {
+func NewAuthLoginToolHandler(authManager *auth.Manager) *AuthLoginToolHandler {
 	return &AuthLoginToolHandler{
 		authManager: authManager,
 	}
@@ -82,11 +82,11 @@ var AuthStatusTool = mcp.NewTool(
 
 // AuthStatusToolHandler handles authentication status requests
 type AuthStatusToolHandler struct {
-	authManager *auth.AuthManager
+	authManager *auth.Manager
 }
 
 // NewAuthStatusToolHandler creates a new authentication status handler
-func NewAuthStatusToolHandler(authManager *auth.AuthManager) *AuthStatusToolHandler {
+func NewAuthStatusToolHandler(authManager *auth.Manager) *AuthStatusToolHandler {
 	return &AuthStatusToolHandler{
 		authManager: authManager,
 	}

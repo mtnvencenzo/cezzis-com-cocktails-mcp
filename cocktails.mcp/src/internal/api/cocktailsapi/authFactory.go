@@ -11,7 +11,7 @@ import (
 )
 
 // AuthenticatedRequestEditor creates a request editor that adds OAuth bearer token
-func AuthenticatedRequestEditor(authManager *auth.AuthManager) RequestEditorFn {
+func AuthenticatedRequestEditor(authManager *auth.Manager) RequestEditorFn {
 	return func(ctx context.Context, req *http.Request) error {
 		// Add subscription key header
 		appSettings := config.GetAppSettings()
@@ -48,11 +48,11 @@ func SubscriptionKeyRequestEditor() RequestEditorFn {
 // AuthenticatedCocktailsAPIFactory extends the base factory with authentication support
 type AuthenticatedCocktailsAPIFactory struct {
 	CocktailsAPIFactory
-	authManager *auth.AuthManager
+	authManager *auth.Manager
 }
 
 // NewAuthenticatedCocktailsAPIFactory creates a new authenticated API factory
-func NewAuthenticatedCocktailsAPIFactory(authManager *auth.AuthManager) *AuthenticatedCocktailsAPIFactory {
+func NewAuthenticatedCocktailsAPIFactory(authManager *auth.Manager) *AuthenticatedCocktailsAPIFactory {
 	return &AuthenticatedCocktailsAPIFactory{
 		CocktailsAPIFactory: NewCocktailsAPIFactory(),
 		authManager:         authManager,
