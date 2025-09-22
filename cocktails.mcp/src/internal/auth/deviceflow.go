@@ -238,7 +238,7 @@ func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, erro
 		"client_id":             {auth.appSettings.AzureAdB2CClientID},
 		"response_type":         {"code"},
 		"redirect_uri":          {redirectURI},
-		"scope":                 {"https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write openid"},
+		"scope":                 {"openid offline_access https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write openid"},
 		"state":                 {state},
 		"code_challenge":        {pkce.CodeChallenge},
 		"code_challenge_method": {"S256"},
