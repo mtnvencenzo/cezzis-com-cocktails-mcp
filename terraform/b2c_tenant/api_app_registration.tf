@@ -9,8 +9,8 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
 
   web {
     redirect_uris = [
-      "http://localhost:6098/callback",                    # For local development
-      "https://aca-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}.azurecontainerapps.io/callback",  # For production
+      "http://localhost:6098/callback",                                                                                          # For local development
+      "https://aca-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}.azurecontainerapps.io/callback", # For production
     ]
 
     implicit_grant {
