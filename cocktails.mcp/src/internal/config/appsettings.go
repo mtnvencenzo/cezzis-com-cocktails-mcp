@@ -61,7 +61,7 @@ type AppSettings struct {
 func GetAppSettings() *AppSettings {
 	instance := &AppSettings{}
 	if err := env.Parse(instance); err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to parse app settings: %v")
+		l.Logger.Warn().Err(err).Msg("Failed to parse app settings")
 	}
 
 	if instance.CocktailsAPIHost == "" {
