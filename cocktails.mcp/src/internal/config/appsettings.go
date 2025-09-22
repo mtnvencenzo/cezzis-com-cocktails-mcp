@@ -41,6 +41,10 @@ type AppSettings struct {
 	// AzureAdB2CUserFlow is the name of the Azure AD B2C user flow for authentication.
 	// Example: "B2C_1_signupsignin"
 	AzureAdB2CUserFlow string `env:"AZUREAD_B2C_USERFLOW"`
+
+	// AzureAdB2CClientID is the client ID of the Azure AD B2C app registration.
+	// Example: "84744194-da27-410f-ae0e-74f5589d4c96"
+	AzureAdB2CClientID string `env:"AZUREAD_B2C_CLIENT_ID"`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
@@ -57,23 +61,26 @@ type AppSettings struct {
 func GetAppSettings() *AppSettings {
 	instance := &AppSettings{}
 	if err := env.Parse(instance); err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to parse app settings: %v\n")
+		l.Logger.Warn().Err(err).Msg("Failed to parse app settings")
 	}
 
 	if instance.CocktailsAPIHost == "" {
-		l.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set\n")
+		l.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set")
 	}
 	if instance.CocktailsAPISubscriptionKey == "" {
-		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set\n")
+		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
 	}
 	if instance.AzureAdB2CInstance == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_INSTANCE is not set\n")
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_INSTANCE is not set")
 	}
 	if instance.AzureAdB2CDomain == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_DOMAIN is not set\n")
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_DOMAIN is not set")
 	}
 	if instance.AzureAdB2CUserFlow == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_USERFLOW is not set\n")
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_USERFLOW is not set")
+	}
+	if instance.AzureAdB2CClientID == "" {
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_CLIENT_ID is not set")
 	}
 
 	return instance

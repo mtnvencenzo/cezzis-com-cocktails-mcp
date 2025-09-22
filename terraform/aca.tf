@@ -74,6 +74,10 @@ module "aca_cocktails_mcp" {
       value = "cezzis.onmicrosoft.com"
     },
     {
+      name  = "AZUREAD_B2C_CLIENT_ID"
+      value = module.mcp_b2c_tenant.cocktails_mcp_app_registration_client_id
+    },
+    {
       name  = "AZUREAD_B2C_USERFLOW"
       value = "B2C_1_SignInSignUp_Policy"
     },
