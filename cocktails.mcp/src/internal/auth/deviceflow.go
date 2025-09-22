@@ -31,6 +31,8 @@ type TokenResponse struct {
 	ExpiresIn    int    `json:"expires_in"`
 	TokenType    string `json:"token_type"`
 	Scope        string `json:"scope"`
+	// Computed locally (not returned by the provider)
+	ExpiresAt time.Time `json:"-"`
 }
 
 // PKCEChallenge represents PKCE challenge data for authorization code flow
@@ -153,6 +155,11 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 				return nil, fmt.Errorf("failed to parse token response: %w", err)
 			}
 
+			// Compute local expiry with a safety margin
+			if tokenResp.ExpiresIn > 0 {
+				tokenResp.ExpiresAt = time.Now().Add(time.Duration(tokenResp.ExpiresIn-60) * time.Second)
+			}
+
 			auth.currentTokens = &tokenResp
 
 			// Save tokens to storage
@@ -190,9 +197,70 @@ func (auth *Manager) GetAccessToken(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("no tokens available, authentication required")
 	}
 
-	// TODO: Implement token refresh logic here if needed
-	// For now, just return the current token
+	if !auth.currentTokens.ExpiresAt.IsZero() && time.Until(auth.currentTokens.ExpiresAt) < 2*time.Minute {
+		if _, err := auth.refreshAccessToken(ctx); err != nil {
+			l.Logger.Warn().Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
+		}
+	}
+
 	return auth.currentTokens.AccessToken, nil
+}
+
+// refreshAccessToken refreshes tokens using the current refresh_token.
+func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, error) {
+	if auth.currentTokens == nil || auth.currentTokens.RefreshToken == "" {
+		return nil, fmt.Errorf("no refresh token available")
+	}
+	tokenURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
+		auth.appSettings.AzureAdB2CInstance,
+		auth.appSettings.AzureAdB2CDomain,
+		auth.appSettings.AzureAdB2CUserFlow)
+
+	data := url.Values{
+		"grant_type":    {"refresh_token"},
+		"client_id":     {auth.appSettings.AzureAdB2CClientID},
+		"refresh_token": {auth.currentTokens.RefreshToken},
+		// Let the server infer scopes; if needed, reuse previously granted scopes:
+		// "scope": {auth.currentTokens.Scope},
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create refresh request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := auth.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to refresh token: %w", err)
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to close response body")
+		}
+	}()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read refresh response: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("refresh failed (%d): %s", resp.StatusCode, string(body))
+	}
+
+	var tokens TokenResponse
+	if err := json.Unmarshal(body, &tokens); err != nil {
+		return nil, fmt.Errorf("failed to parse refreshed tokens: %w", err)
+	}
+	if tokens.ExpiresIn > 0 {
+		tokens.ExpiresAt = time.Now().Add(time.Duration(tokens.ExpiresIn-60) * time.Second)
+	}
+	auth.currentTokens = &tokens
+	if auth.storage != nil {
+		_ = auth.storage.SaveTokens(&tokens)
+	}
+	return &tokens, nil
 }
 
 // StartBrowserAuth initiates browser-based OAuth authentication using Authorization Code Flow with PKCE
