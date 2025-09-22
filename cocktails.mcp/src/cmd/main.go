@@ -86,14 +86,17 @@ func main() {
 func loadEnv() {
 	// Set up environment variables from .env files in the executable directory
 	// This allows configuration settings to be loaded at runtime.
-	exePath, oserr := os.Executable()
-	if oserr != nil {
-		l.Logger.Err(oserr).Msg("Server error - exe path")
+	exePath, _ := os.Executable()
+	exeDir := filepath.Dir(exePath)
+
+	envFileDir := exeDir
+
+	if os.Getenv("ENV_DIR_OVERRIDE") != "" {
+		envFileDir = os.Getenv("ENV_DIR_OVERRIDE")
 	}
 
-	exeDir := filepath.Dir(exePath)
 	env := os.Getenv("ENV")
-	baseEnvFile := filepath.Join(exeDir, ".env")
+	baseEnvFile := filepath.Join(envFileDir, ".env")
 	candidates := []string{baseEnvFile}
 
 	if env != "" {
