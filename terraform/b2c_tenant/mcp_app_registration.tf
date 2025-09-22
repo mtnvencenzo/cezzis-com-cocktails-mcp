@@ -1,6 +1,3 @@
-resource "random_uuid" "cocktails_mcp_read_own_account_scope_id" {}
-resource "random_uuid" "cocktails_mcp_write_own_account_scope_id" {}
-
 resource "azuread_application" "cocktails_mcp_app_registration" {
   display_name                   = "appr-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}"
   sign_in_audience               = "AzureADandPersonalMicrosoftAccount"
@@ -19,10 +16,10 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
       "https://aca-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}.azurecontainerapps.io/callback", # For production
     ]
 
-    implicit_grant {
-      access_token_issuance_enabled = true
-      id_token_issuance_enabled     = true
-    }
+    # implicit_grant {
+    #   access_token_issuance_enabled = true
+    #   id_token_issuance_enabled     = true
+    # }
   }
 
   lifecycle {
