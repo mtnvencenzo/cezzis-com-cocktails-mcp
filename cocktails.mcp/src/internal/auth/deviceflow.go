@@ -4,13 +4,19 @@ package auth
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -27,6 +33,12 @@ type TokenResponse struct {
 	Scope        string `json:"scope"`
 }
 
+// PKCEChallenge represents PKCE challenge data for authorization code flow
+type PKCEChallenge struct {
+	CodeVerifier  string
+	CodeChallenge string
+}
+
 // DeviceCodeResponse represents the device code response
 type DeviceCodeResponse struct {
 	DeviceCode      string `json:"device_code"`
@@ -39,10 +51,12 @@ type DeviceCodeResponse struct {
 
 // AuthManager handles OAuth authentication flows
 type AuthManager struct {
-	appSettings   *config.AppSettings
-	currentTokens *TokenResponse
-	httpClient    *http.Client
-	storage       *TokenStorage
+	appSettings        *config.AppSettings
+	currentTokens      *TokenResponse
+	currentPKCE        *PKCEChallenge
+	currentRedirectURI string
+	httpClient         *http.Client
+	storage            *TokenStorage
 }
 
 // NewAuthManager creates a new authentication manager
@@ -78,16 +92,27 @@ func NewAuthManager() *AuthManager {
 
 // StartDeviceFlow initiates the device code authentication flow
 func (auth *AuthManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
-	// Azure AD B2C device code endpoint
+	// Try the standard Azure AD B2C device code endpoint first
 	deviceEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/devicecode",
 		auth.appSettings.AzureAdB2CInstance,
 		auth.appSettings.AzureAdB2CDomain,
 		auth.appSettings.AzureAdB2CUserFlow)
 
+	// Debug logging to see what URL is being constructed
+	l.Logger.Info().
+		Str("instance", auth.appSettings.AzureAdB2CInstance).
+		Str("domain", auth.appSettings.AzureAdB2CDomain).
+		Str("userflow", auth.appSettings.AzureAdB2CUserFlow).
+		Str("device_endpoint", deviceEndpoint).
+		Msg("Device code endpoint configuration")
+
 	data := url.Values{
-		"client_id": {"84744194-da27-410f-ae0e-74f5589d4c96"}, // From your OpenAPI spec
+		"client_id": {auth.appSettings.AzureAdB2CClientID},
 		"scope":     {"https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write"},
 	}
+
+	// TODO: Testing with this one
+	deviceEndpoint = "https://login.microsoftonline.com/cezzis.onmicrosoft.com/oauth2/v2.0/devicecode"
 
 	req, err := http.NewRequestWithContext(ctx, "POST", deviceEndpoint, strings.NewReader(data.Encode()))
 	if err != nil {
@@ -108,7 +133,13 @@ func (auth *AuthManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeRespon
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("device code request failed: %s", string(body))
+		l.Logger.Error().
+			Int("status_code", resp.StatusCode).
+			Str("response_body", string(body)).
+			Str("device_endpoint", deviceEndpoint).
+			Msg("Device code request failed")
+
+		return nil, fmt.Errorf("device code request failed (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	var deviceResp DeviceCodeResponse
@@ -151,7 +182,7 @@ func (auth *AuthManager) PollForTokens(ctx context.Context, deviceCode *DeviceCo
 
 		data := url.Values{
 			"grant_type":  {"urn:ietf:params:oauth:grant-type:device_code"},
-			"client_id":   {"84744194-da27-410f-ae0e-74f5589d4c96"},
+			"client_id":   {auth.appSettings.AzureAdB2CClientID},
 			"device_code": {deviceCode.DeviceCode},
 		}
 
@@ -223,6 +254,238 @@ func (auth *AuthManager) GetAccessToken(ctx context.Context) (string, error) {
 	// TODO: Implement token refresh logic here if needed
 	// For now, just return the current token
 	return auth.currentTokens.AccessToken, nil
+}
+
+// StartBrowserAuth initiates browser-based OAuth authentication using Authorization Code Flow with PKCE
+func (auth *AuthManager) StartBrowserAuth(ctx context.Context) (*TokenResponse, error) {
+	// Generate PKCE challenge
+	pkce, err := generatePKCEChallenge()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate PKCE: %w", err)
+	}
+	auth.currentPKCE = pkce
+
+	// Use fixed port 8083 for Azure AD B2C configuration
+	port := 8083
+
+	// Test if port is available
+	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	if err != nil {
+		return nil, fmt.Errorf("port %d is not available: %w", port, err)
+	}
+	listener.Close()
+
+	redirectURI := fmt.Sprintf("http://localhost:%d/callback", port)
+	auth.currentRedirectURI = redirectURI
+
+	// Generate state parameter for CSRF protection
+	stateBytes := make([]byte, 32)
+	rand.Read(stateBytes)
+	state := base64.RawURLEncoding.EncodeToString(stateBytes)
+
+	// Build authorization URL
+	authURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/authorize",
+		auth.appSettings.AzureAdB2CInstance,
+		auth.appSettings.AzureAdB2CDomain,
+		auth.appSettings.AzureAdB2CUserFlow)
+
+	params := url.Values{
+		"client_id":             {auth.appSettings.AzureAdB2CClientID},
+		"response_type":         {"code"},
+		"redirect_uri":          {redirectURI},
+		"scope":                 {"https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write openid"},
+		"state":                 {state},
+		"code_challenge":        {pkce.CodeChallenge},
+		"code_challenge_method": {"S256"},
+	}
+
+	fullAuthURL := authURL + "?" + params.Encode()
+
+	// Channel to receive callback result
+	resultChan := make(chan AuthCallbackResult, 1)
+
+	// Setup callback server
+	mux := http.NewServeMux()
+	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		code := r.URL.Query().Get("code")
+		returnedState := r.URL.Query().Get("state")
+		errorParam := r.URL.Query().Get("error")
+
+		result := AuthCallbackResult{
+			Code:  code,
+			State: returnedState,
+			Error: errorParam,
+		}
+
+		if errorParam != "" {
+			http.Error(w, fmt.Sprintf("Authorization failed: %s", errorParam), http.StatusBadRequest)
+		} else if code == "" {
+			http.Error(w, "No authorization code received", http.StatusBadRequest)
+			result.Error = "no_code"
+		} else if returnedState != state {
+			http.Error(w, "Invalid state parameter", http.StatusBadRequest)
+			result.Error = "invalid_state"
+		} else {
+			// Success page
+			w.Header().Set("Content-Type", "text/html")
+			fmt.Fprintf(w, `<!DOCTYPE html>
+<html>
+<head><title>Authorization Complete</title>
+<style>body{font-family:Arial,sans-serif;text-align:center;margin:50px;}
+.success{color:#28a745;}</style></head>
+<body><div class="success">
+<h2>✅ Authorization Successful!</h2>
+<p>You can now close this window and return to your application.</p>
+</div></body></html>`)
+		}
+
+		// Send result to waiting goroutine
+		select {
+		case resultChan <- result:
+		default:
+		}
+	})
+
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: mux,
+	}
+
+	// Start server in background
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			l.Logger.Error().Err(err).Msg("Callback server failed")
+		}
+	}()
+
+	// Try to open browser
+	l.Logger.Info().
+		Str("auth_url", fullAuthURL).
+		Int("port", port).
+		Msg("Opening browser for authentication")
+
+	if err := openBrowser(fullAuthURL); err != nil {
+		l.Logger.Warn().Err(err).Msg("Failed to open browser automatically")
+	}
+
+	// Wait for callback with timeout
+	authCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
+	defer cancel()
+
+	var result AuthCallbackResult
+	select {
+	case result = <-resultChan:
+	case <-authCtx.Done():
+		server.Shutdown(context.Background())
+		return nil, fmt.Errorf("authentication timed out")
+	}
+
+	// Shutdown server
+	server.Shutdown(context.Background())
+
+	if result.Error != "" {
+		return nil, fmt.Errorf("authentication failed: %s", result.Error)
+	}
+
+	// Exchange code for tokens
+	return auth.exchangeCodeForTokens(ctx, result.Code)
+}
+
+// AuthCallbackResult represents the OAuth callback result
+type AuthCallbackResult struct {
+	Code  string
+	State string
+	Error string
+}
+
+// generatePKCEChallenge generates PKCE code verifier and challenge
+func generatePKCEChallenge() (*PKCEChallenge, error) {
+	verifierBytes := make([]byte, 96)
+	if _, err := rand.Read(verifierBytes); err != nil {
+		return nil, err
+	}
+	codeVerifier := base64.RawURLEncoding.EncodeToString(verifierBytes)
+
+	hash := sha256.Sum256([]byte(codeVerifier))
+	codeChallenge := base64.RawURLEncoding.EncodeToString(hash[:])
+
+	return &PKCEChallenge{
+		CodeVerifier:  codeVerifier,
+		CodeChallenge: codeChallenge,
+	}, nil
+}
+
+// exchangeCodeForTokens exchanges authorization code for tokens
+func (auth *AuthManager) exchangeCodeForTokens(ctx context.Context, code string) (*TokenResponse, error) {
+	tokenURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
+		auth.appSettings.AzureAdB2CInstance,
+		auth.appSettings.AzureAdB2CDomain,
+		auth.appSettings.AzureAdB2CUserFlow)
+
+	data := url.Values{
+		"grant_type":    {"authorization_code"},
+		"client_id":     {auth.appSettings.AzureAdB2CClientID},
+		"code":          {code},
+		"redirect_uri":  {auth.currentRedirectURI},
+		"code_verifier": {auth.currentPKCE.CodeVerifier},
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := auth.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to exchange code: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		l.Logger.Error().
+			Int("status", resp.StatusCode).
+			Str("response", string(body)).
+			Msg("Token exchange failed")
+		return nil, fmt.Errorf("token exchange failed (%d): %s", resp.StatusCode, string(body))
+	}
+
+	var tokens TokenResponse
+	if err := json.Unmarshal(body, &tokens); err != nil {
+		return nil, fmt.Errorf("failed to parse tokens: %w", err)
+	}
+
+	// Save tokens
+	auth.currentTokens = &tokens
+	if auth.storage != nil {
+		if err := auth.storage.SaveTokens(&tokens); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to save tokens")
+		}
+	}
+
+	l.Logger.Info().Msg("Successfully obtained tokens via browser authentication")
+	return &tokens, nil
+}
+
+// openBrowser opens URL in default browser
+func openBrowser(url string) error {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "linux":
+		cmd = exec.Command("xdg-open", url)
+	case "windows":
+		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+	case "darwin":
+		cmd = exec.Command("open", url)
+	default:
+		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
+	}
+	return cmd.Start()
 }
 
 // IsAuthenticated returns true if the user is currently authenticated

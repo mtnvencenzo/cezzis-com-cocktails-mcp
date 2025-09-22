@@ -71,11 +71,6 @@ variable "image_tag" {
   type = string
 }
 
-variable "allowed_origins" {
-  type    = list(string)
-  default = []
-}
-
 variable "b2c_tenant_id" {
   type        = string
   description = "The b2c tenant id for this environment"
@@ -86,8 +81,29 @@ variable "b2c_tenant_name" {
   description = "The b2c tenant name (typeically the first part of the hostname)"
 }
 
+variable "b2c_tenant_domain_name" {
+  type        = string
+  description = "The b2c tenant domain name for this environment"
+}
+
 variable "b2c_signin_policy" {
   type        = string
   description = "The main signin policy for the cocktails webapp"
   default     = "B2C_1_SignInSignUp_Policy"
+}
+
+variable "login_subdomain" {
+  type = string
+}
+
+variable "cocktails_api_scope_account_read" {
+  type = string
+}
+
+variable "cocktails_api_scope_account_write" {
+  type = string
+}
+
+variable "cocktails_api_client_id" {
+  type = string
 }

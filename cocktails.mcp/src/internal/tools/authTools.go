@@ -3,7 +3,6 @@ package tools
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
@@ -13,12 +12,12 @@ import (
 
 var authLoginDescription = `
 	Initiates OAuth authentication flow for Cezzis.com account access.
-	This tool starts a device code authentication flow that allows you to authenticate 
-	with your Cezzis.com account to access personalized features like favorites, ratings,
-	and profile management.
+	This tool starts an authorization code flow that opens your web browser 
+	to authenticate with your Cezzis.com account and access personalized features 
+	like favorites, ratings, and profile management.
 	
-	The tool will provide you with a user code and verification URL. Open the URL in your 
-	browser and enter the provided code to complete authentication.
+	The tool will provide you with an authorization URL that will open in your browser.
+	After completing the authentication, you can return to this application.
 `
 
 // AuthLoginTool handles OAuth authentication using device code flow
@@ -41,45 +40,30 @@ func NewAuthLoginToolHandler(authManager *auth.AuthManager) *AuthLoginToolHandle
 
 // Handle handles authentication login requests
 func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	// Start device code flow
-	deviceCode, err := handler.authManager.StartDeviceFlow(ctx)
+	// Start browser-based authentication
+	tokens, err := handler.authManager.StartBrowserAuth(ctx)
 	if err != nil {
-		l.Logger.Error().Err(err).Msg("Failed to start device flow")
-		return mcp.NewToolResultError(fmt.Sprintf("Failed to start authentication: %v", err)), nil
+		l.Logger.Error().Err(err).Msg("Failed to complete authentication")
+		return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil
 	}
 
-	// Format the response for the user
-	result := fmt.Sprintf(`Authentication started successfully!
+	// Format success response
+	result := fmt.Sprintf(`✅ Authentication successful!
 
-Please follow these steps to complete authentication:
+Token Details:
+- Token Type: %s
+- Expires In: %d seconds
+- Scopes: %s
 
-1. Open your web browser and navigate to: %s
-2. Enter the following user code: %s
-3. Complete the sign-in process with your Cezzis.com account
+You are now authenticated and can use personalized features like:
+- Rating cocktails
+- Managing favorites
+- Accessing your profile
 
-The authentication will be active for %d minutes. The system will automatically check for completion.
-
-Waiting for you to complete authentication...`,
-		deviceCode.VerificationURI,
-		deviceCode.UserCode,
-		deviceCode.ExpiresIn/60)
-
-	// Start polling for tokens in background
-	go func() {
-		pollCtx, cancel := context.WithTimeout(context.Background(), time.Duration(deviceCode.ExpiresIn)*time.Second)
-		defer cancel()
-
-		tokens, err := handler.authManager.PollForTokens(pollCtx, deviceCode)
-		if err != nil {
-			l.Logger.Error().Err(err).Msg("Failed to obtain tokens")
-			return
-		}
-
-		l.Logger.Info().
-			Str("token_type", tokens.TokenType).
-			Int("expires_in", tokens.ExpiresIn).
-			Msg("Authentication completed successfully")
-	}()
+Authentication will be automatically saved for future use.`,
+		tokens.TokenType,
+		tokens.ExpiresIn,
+		tokens.Scope)
 
 	return mcp.NewToolResultText(result), nil
 }
