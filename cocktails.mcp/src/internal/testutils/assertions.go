@@ -15,10 +15,9 @@ import (
 // It checks that the error matches expected conditions and contains the expected message.
 func AssertError(t *testing.T, result *mcp.CallToolResult, err error, expectedErrMsg string) {
 	// Check nils
-	require.Nil(t, result.Meta)
 	require.NotNil(t, result)
-	require.NotNil(t, result.Result)
 	require.Nil(t, result.Meta)
+	require.NotNil(t, result.Result)
 
 	// Check error
 	require.True(t, result.IsError)

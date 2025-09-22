@@ -25,6 +25,8 @@ type MockCocktailsAPI struct {
 	cocktailsListRsInitalized bool
 }
 
+var _ cocktailsapi.ICocktailsAPI = (*MockCocktailsAPI)(nil)
+
 // NewMockCocktailsAPI constructs and returns a ready-to-use
 // MockCocktailsAPI value. The returned value has no internal state and
 // can be copied freely.
