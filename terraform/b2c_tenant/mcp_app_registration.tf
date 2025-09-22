@@ -66,15 +66,3 @@ resource "azuread_service_principal" "cocktails_mcp_app_registration_serviceprin
   app_role_assignment_required = false
   description                  = "Service principal for the ${azuread_application.cocktails_mcp_app_registration.display_name}"
 }
-
-resource "azuread_app_role_assignment" "cocktails_mcp_app_registration_serviceprincipal_app_rw_all_role_assignment" {
-  app_role_id         = azuread_service_principal.msgraph.app_role_ids["Application.ReadWrite.All"]
-  principal_object_id = azuread_service_principal.cocktails_mcp_app_registration_serviceprincipal.object_id
-  resource_object_id  = azuread_service_principal.msgraph.object_id
-}
-
-resource "azuread_service_principal_password" "cocktails_mcp_app_registration_graph_api_secret" {
-  service_principal_id = azuread_service_principal.cocktails_mcp_app_registration_serviceprincipal.id
-  display_name         = "cocktails-mcp-graph-client-secret"
-  end_date_relative    = "2yr"
-}
