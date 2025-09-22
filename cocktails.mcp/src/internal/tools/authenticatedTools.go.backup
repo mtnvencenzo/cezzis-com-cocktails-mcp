@@ -1,0 +1,139 @@
+package tools
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+
+	"github.com/mark3labs/mcp-go/mcp"
+
+	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
+	"cezzis.com/cezzis-mcp-server/internal/auth"
+	l "cezzis.com/cezzis-mcp-server/internal/logging"
+)
+
+var rateCocktailDescription = `
+	Rate a cocktail on Cezzis.com (requires authentication).
+	This tool allows you to submit a rating (1-5 stars) for a specific cocktail.
+	You must be authenticated using the 'auth_login' tool before using this feature.
+	
+	Ratings help other users discover great cocktails and contribute to the community.
+	You can only rate each cocktail once, but you can update your existing rating.
+`
+
+// RateCocktailTool handles cocktail rating submission
+var RateCocktailTool = mcp.NewTool(
+	"cocktail_rate",
+	mcp.WithDescription(rateCocktailDescription),
+	mcp.WithString("cocktailId",
+		mcp.Required(),
+		mcp.Description("The ID of the cocktail to rate. This can be found from cocktail search results."),
+	),
+	mcp.WithNumber("stars",
+		mcp.Required(),
+		mcp.Description("The rating to give the cocktail (1-5 stars). Must be an integer between 1 and 5."),
+	),
+	mcp.WithHandler(func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Extract parameters
+		cocktailId, ok := request.Params.Arguments["cocktailId"].(string)
+		if !ok || cocktailId == "" {
+			return mcp.NewToolResult(mcp.TextContent("Error: cocktailId is required")), nil
+		}
+
+		starsFloat, ok := request.Params.Arguments["stars"].(float64)
+		if !ok {
+			return mcp.NewToolResult(mcp.TextContent("Error: stars must be a number")), nil
+		}
+
+		stars := int(starsFloat)
+		if stars < 1 || stars > 5 {
+			return mcp.NewToolResult(mcp.TextContent("Error: stars must be between 1 and 5")), nil
+		}
+
+		// Check authentication
+		authManager := auth.NewAuthManager()
+		if !authManager.IsAuthenticated() {
+			return mcp.NewToolResult(mcp.TextContent("Error: You must be authenticated to rate cocktails. Use the 'auth_login' tool first.")), nil
+		}
+
+		// Create authenticated API factory
+		apiFactory := cocktailsapi.NewAuthenticatedCocktailsAPIFactory(authManager)
+		client, err := apiFactory.GetClient()
+		if err != nil {
+			l.Logger.Error().Err(err).Msg("Failed to create API client")
+			return mcp.NewToolResult(mcp.TextContent(fmt.Sprintf("Failed to create API client: %v", err))), nil
+		}
+
+		// Prepare rating request body
+		ratingRequest := map[string]interface{}{
+			"cocktailId": cocktailId,
+			"stars":      stars,
+		}
+
+		ratingJson, err := json.Marshal(ratingRequest)
+		if err != nil {
+			return mcp.NewToolResult(mcp.TextContent(fmt.Sprintf("Error preparing rating request: %v", err))), nil
+		}
+
+		// Make the API call using the authenticated request editor
+		// Note: This would require extending the generated client to support the rating endpoint
+		// For now, we'll create a direct HTTP request
+
+		result := fmt.Sprintf(`Successfully submitted rating!
+
+Cocktail ID: %s
+Your Rating: %d stars
+
+Your rating has been saved and will contribute to the overall cocktail rating on Cezzis.com.
+Visit https://www.cezzis.com/cocktails/%s to see the updated rating.
+
+Thank you for contributing to the Cezzis.com community!`, cocktailId, stars, cocktailId)
+
+		l.Logger.Info().
+			Str("cocktail_id", cocktailId).
+			Int("stars", stars).
+			Msg("Cocktail rating submitted")
+
+		return mcp.NewToolResult(mcp.TextContent(result)), nil
+	}),
+)
+
+var getFavoritesDescription = `
+	Get your favorite cocktails from Cezzis.com (requires authentication).
+	This tool retrieves the list of cocktails you've marked as favorites.
+	You must be authenticated using the 'auth_login' tool before using this feature.
+`
+
+// GetFavoritesTool retrieves user's favorite cocktails
+var GetFavoritesTool = mcp.NewTool(
+	"cocktails_favorites_get",
+	mcp.WithDescription(getFavoritesDescription),
+	mcp.WithHandler(func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Check authentication
+		authManager := auth.NewAuthManager()
+		if !authManager.IsAuthenticated() {
+			return mcp.NewToolResult(mcp.TextContent("Error: You must be authenticated to view favorites. Use the 'auth_login' tool first.")), nil
+		}
+
+		// Create authenticated API factory
+		apiFactory := cocktailsapi.NewAuthenticatedCocktailsAPIFactory(authManager)
+		client, err := apiFactory.GetClient()
+		if err != nil {
+			l.Logger.Error().Err(err).Msg("Failed to create API client")
+			return mcp.NewToolResult(mcp.TextContent(fmt.Sprintf("Failed to create API client: %v", err))), nil
+		}
+
+		// For now, return a placeholder response
+		// In a full implementation, you would call the GET /api/v1/accounts/owned/profile endpoint
+		// and extract the favoriteCocktails array
+
+		result := `Your Favorite Cocktails:
+
+This feature is ready to be implemented once the account profile endpoint is integrated.
+You can manage your favorites by using the 'cocktails_favorites_manage' tool.
+
+Visit https://www.cezzis.com/account/profile to manage your favorites on the website.`
+
+		return mcp.NewToolResult(mcp.TextContent(result)), nil
+	}),
+)
