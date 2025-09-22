@@ -49,6 +49,7 @@ clean:
 	rm -rf ./cocktails.mcp/dist/linux && mkdir -p ./cocktails.mcp/dist/linux
 
 copyenv:
+	@mkdir -p ./cocktails.mcp/dist/linux
 	@if [ -f ./cocktails.mcp/src/.env ]; then cp ./cocktails.mcp/src/.env ./cocktails.mcp/dist/linux/.env && echo 'copied .env to dist'; fi
 	@if [ -f ./cocktails.mcp/src/.env.local ]; then cp ./cocktails.mcp/src/.env.local ./cocktails.mcp/dist/linux/.env.local && echo 'copied .env.local to dist'; fi
 

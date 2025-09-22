@@ -15,6 +15,8 @@ import (
 	"fmt"
 
 	"github.com/caarlos0/env/v11"
+
+	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 // AppSettings contains all application configuration settings loaded from environment variables.
@@ -55,23 +57,23 @@ type AppSettings struct {
 func GetAppSettings() *AppSettings {
 	instance := &AppSettings{}
 	if err := env.Parse(instance); err != nil {
-		fmt.Printf("Failed to parse app settings: %v\n", err)
+		l.Logger.Warn().Err(err).Msg("Failed to parse app settings: %v\n")
+	}
 
-		if instance.CocktailsAPIHost == "" {
-			fmt.Printf("Warning: COCKTAILS_API_HOST is not set\n")
-		}
-		if instance.CocktailsAPISubscriptionKey == "" {
-			fmt.Printf("Warning: COCKTAILS_API_XKEY is not set\n")
-		}
-		if instance.AzureAdB2CInstance == "" {
-			fmt.Printf("Warning: AZUREAD_B2C_INSTANCE is not set\n")
-		}
-		if instance.AzureAdB2CDomain == "" {
-			fmt.Printf("Warning: AZUREAD_B2C_DOMAIN is not set\n")
-		}
-		if instance.AzureAdB2CUserFlow == "" {
-			fmt.Printf("Warning: AZUREAD_B2C_USERFLOW is not set\n")
-		}
+	if instance.CocktailsAPIHost == "" {
+		l.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set\n")
+	}
+	if instance.CocktailsAPISubscriptionKey == "" {
+		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set\n")
+	}
+	if instance.AzureAdB2CInstance == "" {
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_INSTANCE is not set\n")
+	}
+	if instance.AzureAdB2CDomain == "" {
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_DOMAIN is not set\n")
+	}
+	if instance.AzureAdB2CUserFlow == "" {
+		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_USERFLOW is not set\n")
 	}
 
 	return instance

@@ -17,6 +17,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
@@ -82,11 +83,20 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
 	}
 
-	rs, callErr := cocktailsAPI.GetCocktailsList(ctx, &cocktailsapi.GetCocktailsListParams{
+	// default to a safe deadline if none present
+	callCtx := ctx
+	if _, ok := ctx.Deadline(); !ok {
+		var cancel context.CancelFunc
+		callCtx, cancel = context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+	}
+
+	rs, callErr := cocktailsAPI.GetCocktailsList(callCtx, &cocktailsapi.GetCocktailsListParams{
 		FreeText: &freeText,
 		Inc:      &[]cocktailsapi.CocktailDataIncludeModel{"mainImages", "searchTiles", "descriptiveTitle"},
 		XKey:     &appSettings.CocktailsAPISubscriptionKey,
 	})
+
 	if callErr != nil {
 		l.Logger.Err(callErr).Msg("MCP Error searching cocktails")
 		return mcp.NewToolResultError(callErr.Error()), callErr

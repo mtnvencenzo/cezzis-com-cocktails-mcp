@@ -48,9 +48,3 @@ formatters:
     goimports:
       local-prefixes:
         - cezzis.com/cezzis-mcp-server
-  exclusions:
-    generated: lax
-    paths:
-      - third_party$
-      - builtin$
-      - examples$

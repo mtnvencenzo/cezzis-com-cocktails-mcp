@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
+	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 // MockCocktailsAPI is a lightweight in-memory implementation of the
@@ -84,7 +85,7 @@ func createHTTPRs(obj any, statusCode int, status string) (*http.Response, error
 	// Create a mock response body
 	jsonData, err := json.Marshal(obj)
 	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
+		l.Logger.Warn().Err(err).Msg("Error marshaling JSON")
 		return nil, err
 	}
 

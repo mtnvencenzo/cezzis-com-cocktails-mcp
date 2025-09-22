@@ -15,7 +15,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -79,7 +78,7 @@ func main() {
 	} else {
 		// Stdio mode (default)
 		if err := server.ServeStdio(mcpServer); err != nil {
-			fmt.Printf("Server error: %v\n", err)
+			l.Logger.Err(err).Msg("Server error: %v\n")
 		}
 	}
 }
@@ -89,7 +88,7 @@ func loadEnv() {
 	// This allows configuration settings to be loaded at runtime.
 	exePath, oserr := os.Executable()
 	if oserr != nil {
-		fmt.Printf("Server error - exe path: %v\n", oserr)
+		l.Logger.Err(oserr).Msg("Server error - exe path")
 	}
 
 	exeDir := filepath.Dir(exePath)

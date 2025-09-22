@@ -18,6 +18,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
@@ -70,7 +72,7 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	if cocktailID == "" {
+	if strings.TrimSpace(cocktailID) == "" {
 		err := errors.New("required argument \"cocktailId\" is empty")
 		return mcp.NewToolResultError(err.Error()), err
 	}
@@ -84,7 +86,15 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
 	}
 
-	rs, callErr := cocktailsAPI.GetCocktail(ctx, cocktailID, &cocktailsapi.GetCocktailParams{
+	// default to a safe deadline if none present
+	callCtx := ctx
+	if _, ok := ctx.Deadline(); !ok {
+		var cancel context.CancelFunc
+		callCtx, cancel = context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+	}
+
+	rs, callErr := cocktailsAPI.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
 
