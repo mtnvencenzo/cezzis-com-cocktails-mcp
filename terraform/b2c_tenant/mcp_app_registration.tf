@@ -7,7 +7,13 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
   fallback_public_client_enabled = true
   identifier_uris                = ["https://${var.tenant_domain_name}/${var.domain}mcp"]
 
+  api {
+    requested_access_token_version = 2
+    mapped_claims_enabled          = true
+  }
+
   web {
+
     redirect_uris = [
       "http://localhost:6098/callback",                                                                                          # For local development
       "https://aca-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}.azurecontainerapps.io/callback", # For production
