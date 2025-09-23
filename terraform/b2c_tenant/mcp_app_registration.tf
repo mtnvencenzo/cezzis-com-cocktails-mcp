@@ -1,6 +1,6 @@
 resource "azuread_application" "cocktails_mcp_app_registration" {
   display_name                   = "appr-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}"
-  sign_in_audience               = "AzureADandPersonalMicrosoftAccount"
+  sign_in_audience               = "AzureADandPersonalMicrosoftAccount"  # Correct for Azure AD B2C
   fallback_public_client_enabled = true
   identifier_uris                = ["https://${var.tenant_domain_name}/${var.domain}mcp"]
 
@@ -9,17 +9,11 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
     mapped_claims_enabled          = true
   }
 
-  web {
-
+  public_client {
     redirect_uris = [
-      "http://localhost:6098/callback",                                                                                          # For local development
+      "http://localhost:6098/callback",                                                                                          # For local development - matches your current code
       "https://aca-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}.azurecontainerapps.io/callback", # For production
     ]
-
-    # implicit_grant {
-    #   access_token_issuance_enabled = true
-    #   id_token_issuance_enabled     = true
-    # }
   }
 
   lifecycle {
