@@ -274,8 +274,8 @@ func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, erro
 	}
 	auth.currentPKCE = pkce
 
-	// Use fixed port 8083 for Azure AD B2C configuration
-	port := 8083
+	// Use fixed port 6097 for Azure AD B2C configuration
+	port := 6097
 
 	// Test if port is available
 	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
