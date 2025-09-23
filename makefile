@@ -30,6 +30,9 @@ imports:
 fmt:
 	cd ./cocktails.mcp/src && gofmt -s -w .
 
+vet:
+	cd ./cocktails.mcp/src && go vet ./...
+
 test:
 	cd ./cocktails.mcp/src && \
 	go test \
@@ -39,7 +42,7 @@ test:
 		-v ./... && \
 	go-ignore-cov --file ../../coverage.out --exclude-globs="**/test/**,cmd/**" && \
 	gocover-cobertura < ../../coverage.out > ../../cobertura.xml && \
-	go tool cover -html=../../coverage.out
+	go tool cover -func=../../coverage.out
 
 # ------------------------------------------------------------
 # build
@@ -55,6 +58,8 @@ copyenv:
 
 build:
 	cd ./cocktails.mcp/src && CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags "-s -w" -o ../dist/linux/cezzis-cocktails ./cmd
+
+prepare: tidy imports fmt vet lint test
 
 compile: clean build copyenv
 

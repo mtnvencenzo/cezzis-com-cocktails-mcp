@@ -263,26 +263,13 @@ func (auth *Manager) Authenticate(ctx context.Context) (*TokenResponse, error) {
 
 // isContainerEnvironment detects if we're running in a containerized environment
 func (auth *Manager) isContainerEnvironment() bool {
-	// Check for common container environment indicators
-	if os.Getenv("KUBERNETES_SERVICE_HOST") != "" {
-		return true
-	}
-	if os.Getenv("CONTAINER_APP_NAME") != "" {
-		return true
-	}
-	if os.Getenv("WEBSITE_SITE_NAME") != "" { // Azure App Service
-		return true
-	}
-	if os.Getenv("ENV") == "production" || os.Getenv("ENV") == "staging" {
-		return true
-	}
-
-	// Check if we're running as a server (HTTP mode vs stdio)
-	// You could add a command line flag or env var for this
+	// Check if we're running in HTTP mode (should use device code flow)
 	if os.Getenv("MCP_MODE") == "http" {
+		l.Logger.Debug().Msg("HTTP mode detected via MCP_MODE environment variable")
 		return true
 	}
 
+	l.Logger.Debug().Msg("Local stdio environment detected")
 	return false
 }
 

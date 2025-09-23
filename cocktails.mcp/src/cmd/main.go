@@ -83,7 +83,11 @@ func main() {
 	// Proper error handling ensures that any issues during startup are logged.
 	// The server will run until it is manually stopped or encounters a fatal error.
 	if *httpAddr != "" {
-		// HTTP mode
+		// HTTP mode - set environment variable for auth manager detection
+		if err := os.Setenv("MCP_MODE", "http"); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to set MCP_MODE environment variable")
+		}
+
 		httpServer := internalServer.NewMCPHTTPServer(*httpAddr, mcpServer, Version)
 
 		if err := httpServer.Start(); err != nil {
