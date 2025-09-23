@@ -4,7 +4,10 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
   fallback_public_client_enabled = true
   # identifier_uris removed - not needed for client apps
 
-  # api block removed - this app is a client, not an API
+  # api block is needed for requested_access_token_version
+  api {
+    requested_access_token_version = 2
+  }
 
   web {
     redirect_uris = [
