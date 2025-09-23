@@ -23,6 +23,8 @@ type MockCocktailsAPI struct {
 	cocktailsRsInitalized     bool
 	cocktailsListRs           cocktailsapi.CocktailsListRs
 	cocktailsListRsInitalized bool
+	cocktailsRateRs           cocktailsapi.RateCocktailRs
+	cocktailsRateRsInitalized bool
 }
 
 var _ cocktailsapi.ICocktailsAPI = (*MockCocktailsAPI)(nil)
@@ -61,6 +63,17 @@ func (api MockCocktailsAPI) GetCocktailsList(ctx context.Context, params *cockta
 	return createHTTPRs(getGenericProblemDetails("GetCocktailsList"), 500, "OK")
 }
 
+// RateCocktailWithApplicationJSONXAPIVersion10Body simulates the API call to rate a cocktail using the
+// "application/json; x-api-version=1.0" content type. It accepts a context, request parameters, the request body,
+// and optional request editors. Returns the HTTP response and an error, if any.
+func (api MockCocktailsAPI) RateCocktailWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *cocktailsapi.RateCocktailParams, body cocktailsapi.RateCocktailApplicationJSONXAPIVersion10RequestBody, reqEditors ...cocktailsapi.RequestEditorFn) (*http.Response, error) {
+	if api.cocktailsRateRsInitalized {
+		return createHTTPRs(api.cocktailsRateRs, 200, "OK")
+	}
+
+	return createHTTPRs(getGenericProblemDetails("RateCocktail"), 500, "OK")
+}
+
 // SetCocktailRs assigns a CocktailRs that this mock client can return
 // when GetCocktail is invoked. The method returns the modified mock
 // allowing fluent chaining during test setup. The provided pointer is
@@ -81,6 +94,15 @@ func (api *MockCocktailsAPI) SetCocktailRs(rs cocktailsapi.CocktailRs) {
 func (api *MockCocktailsAPI) SetCocktailListRs(rs cocktailsapi.CocktailsListRs) {
 	api.cocktailsListRs = rs
 	api.cocktailsListRsInitalized = true
+}
+
+// SetCocktailsRateRs assigns a RateCocktailRs that this mock client can
+// return when RateCocktailWithApplicationJSONXAPIVersion10Body is invoked.
+// Like SetCocktailRs it returns a modified copy of the mock to support
+// fluent construction in tests.
+func (api *MockCocktailsAPI) SetCocktailsRateRs(rs cocktailsapi.RateCocktailRs) {
+	api.cocktailsRateRs = rs
+	api.cocktailsRateRsInitalized = true
 }
 
 func createHTTPRs(obj any, statusCode int, status string) (*http.Response, error) {
