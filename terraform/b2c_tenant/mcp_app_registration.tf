@@ -1,7 +1,6 @@
 resource "azuread_application" "cocktails_mcp_app_registration" {
-  display_name                   = "appr-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}"
-  sign_in_audience               = "AzureADandPersonalMicrosoftAccount"
-  fallback_public_client_enabled = true
+  display_name     = "appr-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}"
+  sign_in_audience = "AzureADandPersonalMicrosoftAccount"
   # identifier_uris removed - not needed for client apps
 
   # api block is needed for requested_access_token_version
@@ -9,15 +8,10 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
     requested_access_token_version = 2
   }
 
-  web {
+  public_client {
     redirect_uris = [
       "http://localhost:6097/callback",
     ]
-
-    implicit_grant {
-      access_token_issuance_enabled = true
-      id_token_issuance_enabled     = true
-    }
   }
 
   lifecycle {
