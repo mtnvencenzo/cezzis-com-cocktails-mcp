@@ -2,18 +2,20 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
   display_name                   = "appr-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}"
   sign_in_audience               = "AzureADandPersonalMicrosoftAccount"
   fallback_public_client_enabled = true
-  identifier_uris                = ["https://${var.tenant_domain_name}/${var.domain}mcp"]
+  # identifier_uris removed - not needed for client apps
 
-  api {
-    requested_access_token_version = 2
-    mapped_claims_enabled          = true
-  }
+  # api block removed - this app is a client, not an API
 
-  public_client {
+  web {
     redirect_uris = [
       "http://localhost:6098/callback",                                                                                          # For local development - matches your current code
       "https://aca-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}.azurecontainerapps.io/callback", # For production
     ]
+
+    implicit_grant {
+      access_token_issuance_enabled = true
+      id_token_issuance_enabled     = true
+    }
   }
 
   lifecycle {
