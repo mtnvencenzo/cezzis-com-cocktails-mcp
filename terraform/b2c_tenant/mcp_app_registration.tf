@@ -8,7 +8,7 @@ resource "azuread_application" "cocktails_mcp_app_registration" {
 
   web {
     redirect_uris = [
-      "http://localhost:6097/callback",                                                                                          # For local development - matches your current code
+      "http://localhost:6097/callback",
     ]
 
     implicit_grant {
