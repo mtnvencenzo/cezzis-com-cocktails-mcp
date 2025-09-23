@@ -40,8 +40,8 @@ func NewAuthLoginToolHandler(authManager *auth.Manager) *AuthLoginToolHandler {
 
 // Handle handles authentication login requests
 func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	// Start browser-based authentication
-	tokens, err := handler.authManager.StartBrowserAuth(ctx)
+	// Start authentication (with automatic environment detection)
+	tokens, err := handler.authManager.Authenticate(ctx)
 	if err != nil {
 		l.Logger.Error().Err(err).Msg("Failed to complete authentication")
 		return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil

@@ -3,12 +3,15 @@ package tools
 import (
 	"context"
 	"fmt"
+	"io"
 	"strconv"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
+	"cezzis.com/cezzis-mcp-server/internal/config"
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
@@ -75,6 +78,52 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	// Check authentication
 	if !handler.authManager.IsAuthenticated() {
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'auth_login' tool first."), nil
+	}
+
+	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
+	if cliErr != nil {
+		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
+	}
+
+	// default to a safe deadline if none present
+	callCtx := ctx
+	if _, ok := ctx.Deadline(); !ok {
+		var cancel context.CancelFunc
+		callCtx, cancel = context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+	}
+
+	appSettings := config.GetAppSettings()
+
+	rs, callErr := cocktailsAPI.RateCocktailWithApplicationJSONXAPIVersion10Body(callCtx, &cocktailsapi.RateCocktailParams{
+		XKey: &appSettings.CocktailsAPISubscriptionKey,
+	}, cocktailsapi.RateCocktailApplicationJSONXAPIVersion10RequestBody{
+		CocktailId: cocktailID,
+		Stars:      int32(stars),
+	}, cocktailsapi.AuthenticatedRequestEditor(handler.authManager))
+
+	if callErr != nil {
+		l.Logger.Err(callErr).Msg("MCP Error rating cocktail: " + cocktailID)
+		return mcp.NewToolResultError(callErr.Error()), callErr
+	}
+
+	defer func() {
+		if closeErr := rs.Body.Close(); closeErr != nil {
+			l.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
+		}
+	}()
+
+	bodyBytes, readErr := io.ReadAll(rs.Body)
+	if readErr != nil {
+		l.Logger.Err(readErr).Msg("MCP Error getting cocktail rs body: " + cocktailID)
+		return mcp.NewToolResultError(readErr.Error()), readErr
+	}
+
+	// Convert the byte slice to a string
+	bodyString := string(bodyBytes)
+
+	if bodyString == "" {
+		l.Logger.Warn().Msg("MCP Warning: empty response body when rating cocktail: " + cocktailID)
 	}
 
 	// Note: This is a placeholder implementation

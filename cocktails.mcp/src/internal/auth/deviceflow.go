@@ -92,6 +92,64 @@ func NewManager() *Manager {
 	return manager
 }
 
+// StartDeviceFlow initiates the device code authentication flow
+func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
+	// Try the standard Azure AD B2C device code endpoint first
+	deviceEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/devicecode",
+		auth.appSettings.AzureAdB2CInstance,
+		auth.appSettings.AzureAdB2CDomain,
+		auth.appSettings.AzureAdB2CUserFlow)
+
+	data := url.Values{
+		"client_id": {auth.appSettings.AzureAdB2CClientID},
+		"scope":     {"https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write"},
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", deviceEndpoint, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create device code request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := auth.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to request device code: %w", err)
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to close response body")
+		}
+	}()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read device code response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		l.Logger.Error().
+			Int("status_code", resp.StatusCode).
+			Str("response_body", string(body)).
+			Str("device_endpoint", deviceEndpoint).
+			Msg("Device code request failed")
+
+		return nil, fmt.Errorf("device code request failed (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var deviceResp DeviceCodeResponse
+	if err := json.Unmarshal(body, &deviceResp); err != nil {
+		return nil, fmt.Errorf("failed to parse device code response: %w", err)
+	}
+
+	l.Logger.Info().
+		Str("user_code", deviceResp.UserCode).
+		Str("verification_uri", deviceResp.VerificationURI).
+		Msg("Device code flow started")
+
+	return &deviceResp, nil
+}
+
 // PollForTokens polls for tokens after user completes device authentication
 //
 //nolint:gocyclo
@@ -189,6 +247,63 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 		l.Logger.Warn().Str("response", string(body)).Msg("Unexpected token response")
 		time.Sleep(pollInterval)
 	}
+}
+
+// Authenticate initiates the appropriate authentication flow based on the environment
+func (auth *Manager) Authenticate(ctx context.Context) (*TokenResponse, error) {
+	// Check if we're running in a container/cloud environment
+	if auth.isContainerEnvironment() {
+		l.Logger.Info().Msg("Container environment detected, using device code flow")
+		return auth.authenticateDeviceCode(ctx)
+	}
+
+	l.Logger.Info().Msg("Local environment detected, using browser flow")
+	return auth.StartBrowserAuth(ctx)
+}
+
+// isContainerEnvironment detects if we're running in a containerized environment
+func (auth *Manager) isContainerEnvironment() bool {
+	// Check for common container environment indicators
+	if os.Getenv("KUBERNETES_SERVICE_HOST") != "" {
+		return true
+	}
+	if os.Getenv("CONTAINER_APP_NAME") != "" {
+		return true
+	}
+	if os.Getenv("WEBSITE_SITE_NAME") != "" { // Azure App Service
+		return true
+	}
+	if os.Getenv("ENV") == "production" || os.Getenv("ENV") == "staging" {
+		return true
+	}
+
+	// Check if we're running as a server (HTTP mode vs stdio)
+	// You could add a command line flag or env var for this
+	if os.Getenv("MCP_MODE") == "http" {
+		return true
+	}
+
+	return false
+}
+
+// authenticateDeviceCode handles device code flow for container environments
+func (auth *Manager) authenticateDeviceCode(ctx context.Context) (*TokenResponse, error) {
+	// Start device code flow
+	deviceCode, err := auth.StartDeviceFlow(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start device code flow: %w", err)
+	}
+
+	// Return instructions to the user instead of trying to open browser
+	l.Logger.Info().
+		Str("user_code", deviceCode.UserCode).
+		Str("verification_uri", deviceCode.VerificationURI).
+		Str("message", deviceCode.Message).
+		Msg("Device authentication required")
+
+	// For HTTP mode, you might want to return this information to the client
+	// instead of polling automatically
+	return auth.PollForTokens(ctx, deviceCode)
 }
 
 // GetAccessToken returns the current access token, refreshing if necessary
