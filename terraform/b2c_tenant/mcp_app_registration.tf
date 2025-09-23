@@ -1,6 +1,6 @@
 resource "azuread_application" "cocktails_mcp_app_registration" {
   display_name                   = "appr-${var.sub}-${var.region}-${var.environment}-${var.domain}mcp-${var.sequence}"
-  sign_in_audience               = "AzureADandPersonalMicrosoftAccount"  # Correct for Azure AD B2C
+  sign_in_audience               = "AzureADandPersonalMicrosoftAccount"
   fallback_public_client_enabled = true
   identifier_uris                = ["https://${var.tenant_domain_name}/${var.domain}mcp"]
 
