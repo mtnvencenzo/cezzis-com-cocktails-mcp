@@ -96,10 +96,10 @@ The server requires several environment variables for API access and authenticat
 COCKTAILS_API_HOST=https://api.cezzis.com/prd/cocktails
 COCKTAILS_API_XKEY=your_api_subscription_key_here
 
-# Required: Azure AD B2C Configuration (for authentication)
-AZUREAD_B2C_INSTANCE=https://your_tenant.b2clogin.com
-AZUREAD_B2C_DOMAIN=your_tenant.onmicrosoft.com  
-AZUREAD_B2C_USERFLOW=B2C_1_SignInSignUp_Policy
+# Required: Azure Entra External Id Tenant Configuration (for authentication)
+AZURE_CIAM_INSTANCE=https://your_tenant.b2clogin.com
+AZURE_CIAM_DOMAIN=your_tenant.onmicrosoft.com  
+AZURE_CIAM_USERFLOW=sisu-p
 
 # Optional: Application Insights (for telemetry)
 APPLICATIONINSIGHTS_INSTRUMENTATIONKEY=your_app_insights_key

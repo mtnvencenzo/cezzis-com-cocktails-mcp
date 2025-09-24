@@ -1,14 +1,14 @@
 // Package cocktailsapi provides HTTP client functionality and authentication middleware
 // for interacting with the Cocktails API service. It includes generated API client code
-// and custom authentication middleware for Azure AD B2C integration.
+// and custom authentication middleware for Azure Entra External ID integration.
 //
 // The package features:
 //   - Auto-generated HTTP client code from OpenAPI specifications
-//   - Azure AD B2C JWT token validation middleware
+//   - Azure Entra External ID JWT token validation middleware
 //   - JSON Web Key Set (JWKS) integration for secure token verification
 //   - Scope-based authorization with configurable required permissions
 //
-// The authentication middleware supports graceful degradation - if Azure AD B2C
+// The authentication middleware supports graceful degradation - if Azure Entra External ID
 // configuration is missing or invalid, the middleware will allow all requests
 // through without authentication, making it suitable for development environments.
 package cocktailsapi
@@ -36,10 +36,10 @@ var jwks *keyfunc.JWKS
 
 func init() {
 	appSettings := config.GetAppSettings()
-	uri := appSettings.GetAzureAdB2CDiscoveryKeysURI()
+	uri := appSettings.GetAzureCIAMDiscoveryKeysURI()
 
 	if uri == "" {
-		l.Logger.Warn().Msg("Warning: Azure AD B2C discovery URI not configured\n")
+		l.Logger.Warn().Msg("Warning: Azure CIAM discovery URI not configured\n")
 		if strings.ToLower(os.Getenv("ENV")) != "local" && strings.ToLower(os.Getenv("ENV")) != "test" {
 			// In non-local, do not disable auth silently
 			return
@@ -50,7 +50,7 @@ func init() {
 
 	if uri == "" {
 		// Don't panic, just log a warning and continue without auth
-		l.Logger.Warn().Msg("Warning: Azure AD B2C discovery URI not configured, auth middleware will be disabled\n")
+		l.Logger.Warn().Msg("Warning: Azure CIAM discovery URI not configured, auth middleware will be disabled\n")
 		return
 	}
 
@@ -63,7 +63,7 @@ func init() {
 	}
 }
 
-// AuthMiddleware creates an HTTP middleware function that validates Azure AD B2C JWT tokens
+// AuthMiddleware creates an HTTP middleware function that validates Azure Entra External ID JWT tokens
 // and enforces scope-based authorization. The middleware can be configured to require
 // specific scopes for access to protected endpoints.
 //
@@ -72,7 +72,7 @@ func init() {
 //     If empty, no authentication is required and all requests are allowed through.
 //
 // Behavior:
-//   - If Azure AD B2C is not configured (JWKS is nil), all requests are allowed through
+//   - If Azure Entra External ID is not configured (JWKS is nil), all requests are allowed through
 //   - If no scopes are required, all requests are allowed through
 //   - Validates the Authorization header format (must start with "Bearer ")
 //   - Verifies JWT token signature using the configured JWKS
