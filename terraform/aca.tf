@@ -75,7 +75,7 @@ module "aca_cocktails_mcp" {
     },
     {
       name  = "AZUREAD_B2C_CLIENT_ID"
-      value = "00000000-0000-0000-0000-000000000000" # module.mcp_b2c_tenant.cocktails_mcp_app_registration_client_id
+      value = module.mcp_b2c_tenant.cocktails_mcp_app_registration_client_id
     },
     {
       name  = "AZUREAD_B2C_USERFLOW"
