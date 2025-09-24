@@ -1,4 +1,4 @@
-environment            = "prd"
+environment             = "prd"
 ciam_tenant_id          = "fb512a9c-5b44-41ab-8042-6465769f16c9"
 ciam_tenant_name        = "cezzis"
 ciam_tenant_domain_name = "cezzis.onmicrosoft.com"
