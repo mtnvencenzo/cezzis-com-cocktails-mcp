@@ -6,7 +6,7 @@ variable "tenant_domain_name" {
   type = string
 }
 
-variable "b2c_tenant_name" {
+variable "ciam_tenant_name" {
   type = string
 }
 

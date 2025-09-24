@@ -12,9 +12,9 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 
 	// arrange
 	expectedCocktailsAPIHost := "https://testapi.cezzis.com/prd/cocktails"
-	expectedAzureAdB2CDomain := "cezzis.onmicrosoft.com"
-	expectedAzureAdB2CInstance := "https://testlogin.cezzis.com"
-	expectedAzureAdB2CUserFlow := "B2C_1_SignInSignUp_Policy"
+	expectedAzureCIAMDomain := "cezzis.onmicrosoft.com"
+	expectedAzureCIAMInstance := "https://testlogin.cezzis.com"
+	expectedAzureCIAMUserFlow := "sisu-p"
 	expectedCocktailsAPISubscriptionKey := "00000000-0000-0000-0000-000000000000"
 
 	// act
@@ -25,16 +25,16 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 		t.Errorf("Expected CocktailsAPIHost to be %s, got %s", expectedCocktailsAPIHost, appSettings.CocktailsAPIHost)
 	}
 
-	if appSettings.AzureAdB2CDomain != expectedAzureAdB2CDomain {
-		t.Errorf("Expected AzureAdB2CDomain to be %s, got %s", expectedAzureAdB2CDomain, appSettings.AzureAdB2CDomain)
+	if appSettings.AzureCIAMDomain != expectedAzureCIAMDomain {
+		t.Errorf("Expected AzureCIAMDomain to be %s, got %s", expectedAzureCIAMDomain, appSettings.AzureCIAMDomain)
 	}
 
-	if appSettings.AzureAdB2CInstance != expectedAzureAdB2CInstance {
-		t.Errorf("Expected AzureAdB2CInstance to be %s, got %s", expectedAzureAdB2CInstance, appSettings.AzureAdB2CInstance)
+	if appSettings.AzureCIAMInstance != expectedAzureCIAMInstance {
+		t.Errorf("Expected AzureCIAMInstance to be %s, got %s", expectedAzureCIAMInstance, appSettings.AzureCIAMInstance)
 	}
 
-	if appSettings.AzureAdB2CUserFlow != expectedAzureAdB2CUserFlow {
-		t.Errorf("Expected AzureAdB2CUserFlow to be %s, got %s", expectedAzureAdB2CUserFlow, appSettings.AzureAdB2CUserFlow)
+	if appSettings.AzureCIAMUserFlow != expectedAzureCIAMUserFlow {
+		t.Errorf("Expected AzureCIAMUserFlow to be %s, got %s", expectedAzureCIAMUserFlow, appSettings.AzureCIAMUserFlow)
 	}
 
 	if appSettings.CocktailsAPISubscriptionKey != expectedCocktailsAPISubscriptionKey {
@@ -46,14 +46,14 @@ func Test_appsettings_produces_correct_discovery_keys_url(t *testing.T) {
 	testutils.LoadEnvironment("..", "..")
 
 	// arrange
-	expectedAzureAdB2CDiscoveryKeysURI := "https://testlogin.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/discovery/v2.0/keys"
+	expectedAzureCIAMDiscoveryKeysURI := "https://testlogin.cezzis.com/cezzis.onmicrosoft.com/sisu-p/discovery/v2.0/keys"
 
 	// act
 	appSettings := config.GetAppSettings()
-	azureAdB2CDiscoveryKeysURI := appSettings.GetAzureAdB2CDiscoveryKeysURI()
+	azureCIAMDiscoveryKeysURI := appSettings.GetAzureCIAMDiscoveryKeysURI()
 
 	// asert
-	if azureAdB2CDiscoveryKeysURI != expectedAzureAdB2CDiscoveryKeysURI {
-		t.Errorf("Expected GetAzureAdB2CDiscoveryKeysURI() to be %s, got %s", expectedAzureAdB2CDiscoveryKeysURI, azureAdB2CDiscoveryKeysURI)
+	if azureCIAMDiscoveryKeysURI != expectedAzureCIAMDiscoveryKeysURI {
+		t.Errorf("Expected GetAzureCIAMDiscoveryKeysURI() to be %s, got %s", expectedAzureCIAMDiscoveryKeysURI, azureCIAMDiscoveryKeysURI)
 	}
 }

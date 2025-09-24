@@ -66,20 +66,20 @@ module "aca_cocktails_mcp" {
       value = "https://api.cezzis.com/prd/cocktails"
     },
     {
-      name  = "AZUREAD_B2C_INSTANCE"
+      name  = "AZURE_CIAM_INSTANCE"
       value = "https://login.cezzis.com"
     },
     {
-      name  = "AZUREAD_B2C_DOMAIN"
+      name  = "AZURE_CIAM_DOMAIN"
       value = "cezzis.onmicrosoft.com"
     },
     {
-      name  = "AZUREAD_B2C_CLIENT_ID"
-      value = module.mcp_b2c_tenant.cocktails_mcp_app_registration_client_id
+      name  = "AZURE_CIAM_CLIENT_ID"
+      value = module.mcp_ciam_tenant.cocktails_mcp_app_registration_client_id
     },
     {
-      name  = "AZUREAD_B2C_USERFLOW"
-      value = "B2C_1_SignInSignUp_Policy"
+      name  = "AZURE_CIAM_USERFLOW"
+      value = "sisu-p"
     },
     {
       name  = "ENV"

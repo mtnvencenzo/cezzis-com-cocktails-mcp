@@ -1,13 +1,13 @@
-module "mcp_b2c_tenant" {
-  source             = "./b2c_tenant"
+module "mcp_ciam_tenant" {
+  source             = "./ciam_tenant"
   environment        = var.environment
   region             = var.region
   domain             = var.domain
-  tenant_id          = var.b2c_tenant_id
-  tenant_domain_name = var.b2c_tenant_domain_name
+  tenant_id          = var.ciam_tenant_id
+  tenant_domain_name = var.ciam_tenant_domain_name
   sub                = var.sub
   sequence           = var.sequence
-  b2c_tenant_name    = var.b2c_tenant_name
+  ciam_tenant_name   = var.ciam_tenant_name
 
   cocktails_api_scope_account_read  = var.cocktails_api_scope_account_read
   cocktails_api_scope_account_write = var.cocktails_api_scope_account_write
