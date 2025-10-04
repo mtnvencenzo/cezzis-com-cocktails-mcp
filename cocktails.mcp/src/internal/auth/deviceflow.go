@@ -1,5 +1,5 @@
 // Package auth provides OAuth authentication functionality for the MCP server.
-// It implements device code flow for Azure AD B2C authentication.
+// It implements device code flow for Azure Entra External Id Tenant authentication.
 package auth
 
 import (
@@ -94,14 +94,14 @@ func NewManager() *Manager {
 
 // StartDeviceFlow initiates the device code authentication flow
 func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
-	// Try the standard Azure AD B2C device code endpoint first
+	// Try the standard Azure CIAM device code endpoint first
 	deviceEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/devicecode",
-		auth.appSettings.AzureAdB2CInstance,
-		auth.appSettings.AzureAdB2CDomain,
-		auth.appSettings.AzureAdB2CUserFlow)
+		auth.appSettings.AzureCIAMInstance,
+		auth.appSettings.AzureCIAMDomain,
+		auth.appSettings.AzureCIAMUserFlow)
 
 	data := url.Values{
-		"client_id": {auth.appSettings.AzureAdB2CClientID},
+		"client_id": {auth.appSettings.AzureCIAMClientID},
 		"scope":     {"https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write"},
 	}
 
@@ -155,9 +155,9 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 //nolint:gocyclo
 func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeResponse) (*TokenResponse, error) {
 	tokenEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
-		auth.appSettings.AzureAdB2CInstance,
-		auth.appSettings.AzureAdB2CDomain,
-		auth.appSettings.AzureAdB2CUserFlow)
+		auth.appSettings.AzureCIAMInstance,
+		auth.appSettings.AzureCIAMDomain,
+		auth.appSettings.AzureCIAMUserFlow)
 
 	pollInterval := time.Duration(deviceCode.Interval) * time.Second
 	if pollInterval < 5*time.Second {
@@ -179,7 +179,7 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 
 		data := url.Values{
 			"grant_type":  {"urn:ietf:params:oauth:grant-type:device_code"},
-			"client_id":   {auth.appSettings.AzureAdB2CClientID},
+			"client_id":   {auth.appSettings.AzureCIAMClientID},
 			"device_code": {deviceCode.DeviceCode},
 		}
 
@@ -314,13 +314,13 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 		return nil, fmt.Errorf("no refresh token available")
 	}
 	tokenURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
-		auth.appSettings.AzureAdB2CInstance,
-		auth.appSettings.AzureAdB2CDomain,
-		auth.appSettings.AzureAdB2CUserFlow)
+		auth.appSettings.AzureCIAMInstance,
+		auth.appSettings.AzureCIAMDomain,
+		auth.appSettings.AzureCIAMUserFlow)
 
 	data := url.Values{
 		"grant_type":    {"refresh_token"},
-		"client_id":     {auth.appSettings.AzureAdB2CClientID},
+		"client_id":     {auth.appSettings.AzureCIAMClientID},
 		"refresh_token": {auth.currentTokens.RefreshToken},
 		// Let the server infer scopes; if needed, reuse previously granted scopes:
 		// "scope": {auth.currentTokens.Scope},
@@ -376,7 +376,7 @@ func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, erro
 	}
 	auth.currentPKCE = pkce
 
-	// Use fixed port 6097 for Azure AD B2C configuration
+	// Use fixed port 6097 for Azure Entra External Id Tenant configuration
 	port := 6097
 
 	// Test if port is available
@@ -400,12 +400,12 @@ func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, erro
 
 	// Build authorization URL
 	authURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/authorize",
-		auth.appSettings.AzureAdB2CInstance,
-		auth.appSettings.AzureAdB2CDomain,
-		auth.appSettings.AzureAdB2CUserFlow)
+		auth.appSettings.AzureCIAMInstance,
+		auth.appSettings.AzureCIAMDomain,
+		auth.appSettings.AzureCIAMUserFlow)
 
 	params := url.Values{
-		"client_id":             {auth.appSettings.AzureAdB2CClientID},
+		"client_id":             {auth.appSettings.AzureCIAMClientID},
 		"response_type":         {"code"},
 		"redirect_uri":          {redirectURI},
 		"scope":                 {"openid offline_access https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write openid"},
@@ -539,13 +539,13 @@ func generatePKCEChallenge() (*PKCEChallenge, error) {
 // exchangeCodeForTokens exchanges authorization code for tokens
 func (auth *Manager) exchangeCodeForTokens(ctx context.Context, code string) (*TokenResponse, error) {
 	tokenURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
-		auth.appSettings.AzureAdB2CInstance,
-		auth.appSettings.AzureAdB2CDomain,
-		auth.appSettings.AzureAdB2CUserFlow)
+		auth.appSettings.AzureCIAMInstance,
+		auth.appSettings.AzureCIAMDomain,
+		auth.appSettings.AzureCIAMUserFlow)
 
 	data := url.Values{
 		"grant_type":    {"authorization_code"},
-		"client_id":     {auth.appSettings.AzureAdB2CClientID},
+		"client_id":     {auth.appSettings.AzureCIAMClientID},
 		"code":          {code},
 		"redirect_uri":  {auth.currentRedirectURI},
 		"code_verifier": {auth.currentPKCE.CodeVerifier},

@@ -4,7 +4,7 @@
 //
 // The package supports configuration for:
 //   - Cocktails API connection settings (host and subscription key)
-//   - Azure AD B2C authentication settings (instance, domain, and user flow)
+//   - Azure Entra External Id Tenant authentication settings (instance, domain, and user flow)
 //
 // Configuration is loaded from environment variables and .env files located in the
 // executable directory. The package uses a thread-safe singleton pattern to ensure
@@ -30,21 +30,21 @@ type AppSettings struct {
 	// requests to the Cocktails API service.
 	CocktailsAPISubscriptionKey string `env:"COCKTAILS_API_XKEY"`
 
-	// AzureAdB2CInstance is the Azure AD B2C tenant instance URL.
+	// AzureCIAMInstance is the Azure Entra External Id Tenant instance URL.
 	// Example: "https://your-tenant.b2clogin.com"
-	AzureAdB2CInstance string `env:"AZUREAD_B2C_INSTANCE"`
+	AzureCIAMInstance string `env:"AZURE_CIAM_INSTANCE"`
 
-	// AzureAdB2CDomain is the Azure AD B2C tenant domain name.
+	// AzureCIAMDomain is the Azure CIAM tenant domain name.
 	// Example: "your-tenant.onmicrosoft.com"
-	AzureAdB2CDomain string `env:"AZUREAD_B2C_DOMAIN"`
+	AzureCIAMDomain string `env:"AZURE_CIAM_DOMAIN"`
 
-	// AzureAdB2CUserFlow is the name of the Azure AD B2C user flow for authentication.
-	// Example: "B2C_1_signupsignin"
-	AzureAdB2CUserFlow string `env:"AZUREAD_B2C_USERFLOW"`
+	// AzureCIAMUserFlow is the name of the Azure CIAM user flow for authentication.
+	// Example: "sisu-p"
+	AzureCIAMUserFlow string `env:"AZURE_CIAM_USERFLOW"`
 
-	// AzureAdB2CClientID is the client ID of the Azure AD B2C app registration.
+	// AzureCIAMClientID is the client ID of the Azure External Id Tenant app registration.
 	// Example: "84744194-da27-410f-ae0e-74f5589d4c96"
-	AzureAdB2CClientID string `env:"AZUREAD_B2C_CLIENT_ID"`
+	AzureCIAMClientID string `env:"AZURE_CIAM_CLIENT_ID"`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
@@ -70,26 +70,26 @@ func GetAppSettings() *AppSettings {
 	if instance.CocktailsAPISubscriptionKey == "" {
 		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
 	}
-	if instance.AzureAdB2CInstance == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_INSTANCE is not set")
+	if instance.AzureCIAMInstance == "" {
+		l.Logger.Warn().Msg("Warning: AZURE_CIAM_INSTANCE is not set")
 	}
-	if instance.AzureAdB2CDomain == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_DOMAIN is not set")
+	if instance.AzureCIAMDomain == "" {
+		l.Logger.Warn().Msg("Warning: AZURE_CIAM_DOMAIN is not set")
 	}
-	if instance.AzureAdB2CUserFlow == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_USERFLOW is not set")
+	if instance.AzureCIAMUserFlow == "" {
+		l.Logger.Warn().Msg("Warning: AZURE_CIAM_USERFLOW is not set")
 	}
-	if instance.AzureAdB2CClientID == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_CLIENT_ID is not set")
+	if instance.AzureCIAMClientID == "" {
+		l.Logger.Warn().Msg("Warning: AZURE_CIAM_CLIENT_ID is not set")
 	}
 
 	return instance
 }
 
-// GetAzureAdB2CDiscoveryKeysURI constructs the Azure AD B2C discovery keys URI
+// GetAzureCIAMDiscoveryKeysURI constructs the Azure CIAM discovery keys URI
 // by combining the instance, domain, and user flow settings.
 // This URI is used to fetch the JSON Web Key Set (JWKS) for JWT token validation.
-// Returns a formatted string like: "https://your-tenant.b2clogin.com/your-tenant.onmicrosoft.com/B2C_1_signupsignin/discovery/v2.0/keys"
-func (a *AppSettings) GetAzureAdB2CDiscoveryKeysURI() string {
-	return fmt.Sprintf("%s/%s/%s/discovery/v2.0/keys", a.AzureAdB2CInstance, a.AzureAdB2CDomain, a.AzureAdB2CUserFlow)
+// Returns a formatted string like: "https://your-tenant.b2clogin.com/your-tenant.onmicrosoft.com/sisu-p/discovery/v2.0/keys"
+func (a *AppSettings) GetAzureCIAMDiscoveryKeysURI() string {
+	return fmt.Sprintf("%s/%s/%s/discovery/v2.0/keys", a.AzureCIAMInstance, a.AzureCIAMDomain, a.AzureCIAMUserFlow)
 }

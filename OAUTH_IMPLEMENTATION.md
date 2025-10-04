@@ -6,7 +6,7 @@ This document outlines multiple approaches to implement OAuth authentication for
 
 ## Challenge
 
-MCP servers typically run in headless environments without direct browser access, making traditional OAuth redirect flows challenging. The Cezzis API uses Azure AD B2C with OAuth2 authorization code flow with PKCE.
+MCP servers typically run in headless environments without direct browser access, making traditional OAuth redirect flows challenging. The Cezzis API uses Azure Entra External Ids with OAuth2 authorization code flow with PKCE.
 
 ## Implementation Approaches
 
@@ -15,7 +15,7 @@ MCP servers typically run in headless environments without direct browser access
 **Best for**: MCP servers that need user authentication without browser redirects.
 
 **How it works**:
-1. MCP server requests a device code from Azure AD B2C
+1. MCP server requests a device code from Azure Entra External Id Tenant
 2. User opens browser separately and enters the device code
 3. MCP server polls for tokens until authentication completes
 4. Tokens are securely stored and used for API calls
@@ -122,13 +122,13 @@ tokenResponse := httpClient.Post("https://auth-service.com/token", authRequest)
    → Shows current authentication status
    ```
 
-## Azure AD B2C Configuration
+## Azure Entra External Id Tenant Configuration
 
 Based on your API specification, the authentication endpoints are:
 
-- **Authorization URL**: `https://login.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/oauth2/v2.0/authorize`
-- **Token URL**: `https://login.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/oauth2/v2.0/token`
-- **Device Code URL**: `https://login.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/oauth2/v2.0/devicecode`
+- **Authorization URL**: `https://login.cezzis.com/cezzis.onmicrosoft.com/sisu-p/oauth2/v2.0/authorize`
+- **Token URL**: `https://login.cezzis.com/cezzis.onmicrosoft.com/sisu-p/oauth2/v2.0/token`
+- **Device Code URL**: `https://login.cezzis.com/cezzis.onmicrosoft.com/sisu-p/oauth2/v2.0/devicecode`
 
 **Scopes Required**:
 - `https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read`
@@ -178,7 +178,7 @@ account_settings_update --givenName="John" --familyName="Doe"
 
 ## Deployment Considerations
 
-1. **Environment Variables**: Configure Azure AD B2C settings
+1. **Environment Variables**: Configure Azure Entra External Id Tenant settings
 2. **File Permissions**: Ensure secure token storage
 3. **Network Access**: Required for authentication endpoints
 4. **User Experience**: Clear instructions for device flow
