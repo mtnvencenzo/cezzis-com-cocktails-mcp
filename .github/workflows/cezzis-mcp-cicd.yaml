@@ -93,7 +93,6 @@ jobs:
     secrets:
       arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
       terraform_module_repo_access_key_secret: ${{ secrets.TERRAFORM_MODULE_REPO_ACCESS_KEY_SECRET }}
-      command_line_args: '-var "ciam_terraform_app_registration_client_id=${{ secrets.PRD_CIAM_TERRAFORM_APP_REGISTRATION_CLIENT_ID }}" -var "ciam_terraform_app_registration_client_secret=${{ secrets.PRD_CIAM_TERRAFORM_APP_REGISTRATION_CLIENT_SECRET }}"'
     
   create_release_prd:
     name: Create release
@@ -108,8 +107,8 @@ jobs:
         with:
           version: ${{ needs.gitVersion.outputs.semVer }}
 
-  version_check_prd:
-    name: Check deployed version
+  verify_prd:
+    name: Verify prd
     if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     permissions:
       contents: write
@@ -125,16 +124,13 @@ jobs:
           property_name: version
           timeout_seconds: 180
 
-  warmup_prd:
-    name: Warmup prd
-    permissions:
-      contents: write
-    uses: mtnvencenzo/workflows/.github/workflows/warmup-request.yaml@main
-    needs: [docker, gitVersion, terraform_deploy_prd, create_release_prd, version_check_prd]
-    with:
-      allow_warmup: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
-      url: https://api.cezzis.com/prd/cocktails/mcp/v1/healthz
-      statusCode: 200
-      authHeader: X-Key
-    secrets:
-      authValue: 'na'
+      - name: Warmup api
+        uses: mtnvencenzo/workflows/.github/actions/api-call@main
+        with:
+          enabled: true
+          url: https://api.cezzis.com/prd/cocktails/mcp/v1/healthz
+          statusCode: 200
+          authHeader: X-Key
+          method: GET
+        env:
+          AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}

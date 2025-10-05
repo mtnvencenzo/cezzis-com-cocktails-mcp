@@ -66,20 +66,20 @@ module "aca_cocktails_mcp" {
       value = "https://api.cezzis.com/prd/cocktails"
     },
     {
-      name  = "AZURE_CIAM_INSTANCE"
-      value = "https://login.cezzis.com"
+      name  = "AUTH0_AUDIENCE"
+      value = var.auth0_audience
     },
     {
-      name  = "AZURE_CIAM_DOMAIN"
-      value = "cezzis.onmicrosoft.com"
+      name  = "AUTH0_CLIENT_ID"
+      value = var.auth0_naive_client_id
     },
     {
-      name  = "AZURE_CIAM_CLIENT_ID"
-      value = module.mcp_ciam_tenant.cocktails_mcp_app_registration_client_id
+      name  = "AUTH0_DOMAIN"
+      value = var.auth0_domain
     },
     {
-      name  = "AZURE_CIAM_USERFLOW"
-      value = "sisu-p"
+      name  = "AUTH0_SCOPES"
+      value = var.auth0_scopes
     },
     {
       name  = "ENV"
