@@ -63,9 +63,10 @@ prepare: tidy imports fmt vet lint test
 
 compile: clean build copyenv
 
-compile-ci: clean build
-
 docker-build:
-	cd ./cocktails.mcp && docker build -t cocktails-mcp -f ./Dockerfile-CI .
+	cd ./cocktails.mcp && docker build -t cocktails-mcp -f ./Dockerfile .
 
 compile-docker: clean build copyenv docker-build
+
+run-docker:
+	docker run --restart=always -d --name cocktails-mcp -p 3001:7999 cocktails-mcp

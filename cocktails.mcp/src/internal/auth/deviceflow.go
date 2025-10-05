@@ -1,5 +1,5 @@
 // Package auth provides OAuth authentication functionality for the MCP server.
-// It implements device code flow for Azure Entra External Id Tenant authentication.
+// It implements Authorization Code with PKCE and Device Code flows for Auth0.
 package auth
 
 import (
@@ -94,15 +94,17 @@ func NewManager() *Manager {
 
 // StartDeviceFlow initiates the device code authentication flow
 func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
-	// Try the standard Azure CIAM device code endpoint first
-	deviceEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/devicecode",
-		auth.appSettings.AzureCIAMInstance,
-		auth.appSettings.AzureCIAMDomain,
-		auth.appSettings.AzureCIAMUserFlow)
+	if strings.TrimSpace(auth.appSettings.Auth0Domain) == "" || strings.TrimSpace(auth.appSettings.Auth0ClientID) == "" {
+		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
+	}
+	deviceEndpoint := fmt.Sprintf("https://%s/oauth/device/code", strings.TrimRight(auth.appSettings.Auth0Domain, "/"))
 
 	data := url.Values{
-		"client_id": {auth.appSettings.AzureCIAMClientID},
-		"scope":     {"https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write"},
+		"client_id": {auth.appSettings.Auth0ClientID},
+		"scope":     {firstNonEmpty(auth.appSettings.Auth0Scopes, "openid profile email offline_access")},
+	}
+	if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
+		data.Set("audience", aud)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", deviceEndpoint, strings.NewReader(data.Encode()))
@@ -154,10 +156,7 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 //
 //nolint:gocyclo
 func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeResponse) (*TokenResponse, error) {
-	tokenEndpoint := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
-		auth.appSettings.AzureCIAMInstance,
-		auth.appSettings.AzureCIAMDomain,
-		auth.appSettings.AzureCIAMUserFlow)
+	tokenEndpoint := fmt.Sprintf("https://%s/oauth/token", strings.TrimRight(auth.appSettings.Auth0Domain, "/"))
 
 	pollInterval := time.Duration(deviceCode.Interval) * time.Second
 	if pollInterval < 5*time.Second {
@@ -179,8 +178,11 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 
 		data := url.Values{
 			"grant_type":  {"urn:ietf:params:oauth:grant-type:device_code"},
-			"client_id":   {auth.appSettings.AzureCIAMClientID},
+			"client_id":   {auth.appSettings.Auth0ClientID},
 			"device_code": {deviceCode.DeviceCode},
+		}
+		if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
+			data.Set("audience", aud)
 		}
 
 		req, err := http.NewRequestWithContext(ctx, "POST", tokenEndpoint, strings.NewReader(data.Encode()))
@@ -313,14 +315,14 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 	if auth.currentTokens == nil || auth.currentTokens.RefreshToken == "" {
 		return nil, fmt.Errorf("no refresh token available")
 	}
-	tokenURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
-		auth.appSettings.AzureCIAMInstance,
-		auth.appSettings.AzureCIAMDomain,
-		auth.appSettings.AzureCIAMUserFlow)
+	if strings.TrimSpace(auth.appSettings.Auth0Domain) == "" || strings.TrimSpace(auth.appSettings.Auth0ClientID) == "" {
+		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
+	}
+	tokenURL := fmt.Sprintf("https://%s/oauth/token", strings.TrimRight(auth.appSettings.Auth0Domain, "/"))
 
 	data := url.Values{
 		"grant_type":    {"refresh_token"},
-		"client_id":     {auth.appSettings.AzureCIAMClientID},
+		"client_id":     {auth.appSettings.Auth0ClientID},
 		"refresh_token": {auth.currentTokens.RefreshToken},
 		// Let the server infer scopes; if needed, reuse previously granted scopes:
 		// "scope": {auth.currentTokens.Scope},
@@ -398,23 +400,34 @@ func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, erro
 	}
 	state := base64.RawURLEncoding.EncodeToString(stateBytes)
 
-	// Build authorization URL
-	authURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/authorize",
-		auth.appSettings.AzureCIAMInstance,
-		auth.appSettings.AzureCIAMDomain,
-		auth.appSettings.AzureCIAMUserFlow)
-
-	params := url.Values{
-		"client_id":             {auth.appSettings.AzureCIAMClientID},
-		"response_type":         {"code"},
-		"redirect_uri":          {redirectURI},
-		"scope":                 {"openid offline_access https://cezzis.onmicrosoft.com/cocktailsapi/Account.Read https://cezzis.onmicrosoft.com/cocktailsapi/Account.Write openid"},
-		"state":                 {state},
-		"code_challenge":        {pkce.CodeChallenge},
-		"code_challenge_method": {"S256"},
+	// Build authorization URL for Auth0
+	var fullAuthURL string
+	if domain := strings.TrimSpace(auth.appSettings.Auth0Domain); domain != "" && auth.appSettings.Auth0ClientID != "" {
+		// Auth0
+		u, err := url.Parse("https://" + strings.TrimRight(domain, "/") + "/authorize")
+		if err != nil {
+			return nil, fmt.Errorf("invalid AUTH0_DOMAIN: %w", err)
+		}
+		q := u.Query()
+		q.Set("response_type", "code")
+		q.Set("client_id", auth.appSettings.Auth0ClientID)
+		q.Set("redirect_uri", redirectURI)
+		scopes := auth.appSettings.Auth0Scopes
+		if scopes == "" {
+			scopes = "openid profile email offline_access"
+		}
+		q.Set("scope", scopes)
+		if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
+			q.Set("audience", aud)
+		}
+		q.Set("code_challenge", pkce.CodeChallenge)
+		q.Set("code_challenge_method", "S256")
+		q.Set("state", state)
+		u.RawQuery = q.Encode()
+		fullAuthURL = u.String()
+	} else {
+		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
 	}
-
-	fullAuthURL := authURL + "?" + params.Encode()
 
 	// Channel to receive callback result
 	resultChan := make(chan CallbackResult, 1)
@@ -475,14 +488,19 @@ func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, erro
 		}
 	}()
 
-	// Try to open browser
-	l.Logger.Info().
-		Str("auth_url", fullAuthURL).
-		Int("port", port).
-		Msg("Opening browser for authentication")
+	// If running in HTTP/container mode, don't open a browser here; log/return URL and wait for callback
+	if auth.isContainerEnvironment() {
+		l.Logger.Info().Str("auth_url", fullAuthURL).Msg("HTTP mode detected; not opening browser. Please navigate to the URL to authenticate.")
+	} else {
+		// Try to open browser
+		l.Logger.Info().
+			Str("auth_url", fullAuthURL).
+			Int("port", port).
+			Msg("Opening browser for authentication")
 
-	if err := openBrowser(fullAuthURL); err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to open browser automatically")
+		if err := openBrowser(fullAuthURL); err != nil {
+			l.Logger.Warn().Err(err).Msg("Failed to open browser automatically")
+		}
 	}
 
 	// Wait for callback with timeout
@@ -538,14 +556,17 @@ func generatePKCEChallenge() (*PKCEChallenge, error) {
 
 // exchangeCodeForTokens exchanges authorization code for tokens
 func (auth *Manager) exchangeCodeForTokens(ctx context.Context, code string) (*TokenResponse, error) {
-	tokenURL := fmt.Sprintf("%s/%s/%s/oauth2/v2.0/token",
-		auth.appSettings.AzureCIAMInstance,
-		auth.appSettings.AzureCIAMDomain,
-		auth.appSettings.AzureCIAMUserFlow)
+	// Auth0 token endpoint
+	var tokenURL string
+	if domain := strings.TrimSpace(auth.appSettings.Auth0Domain); domain != "" && auth.appSettings.Auth0ClientID != "" {
+		tokenURL = "https://" + strings.TrimRight(domain, "/") + "/oauth/token"
+	} else {
+		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
+	}
 
 	data := url.Values{
 		"grant_type":    {"authorization_code"},
-		"client_id":     {auth.appSettings.AzureCIAMClientID},
+		"client_id":     {auth.appSettings.Auth0ClientID},
 		"code":          {code},
 		"redirect_uri":  {auth.currentRedirectURI},
 		"code_verifier": {auth.currentPKCE.CodeVerifier},
@@ -597,6 +618,16 @@ func (auth *Manager) exchangeCodeForTokens(ctx context.Context, code string) (*T
 	return &tokens, nil
 }
 
+// firstNonEmpty returns the first non-empty string
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if strings.TrimSpace(v) != "" {
+			return v
+		}
+	}
+	return ""
+}
+
 // openBrowser opens URL in default browser
 func openBrowser(targetURL string) error {
 	var cmd *exec.Cmd
@@ -630,4 +661,29 @@ func (auth *Manager) Logout() error {
 
 	l.Logger.Info().Msg("Successfully logged out")
 	return nil
+}
+
+// IsHTTPMode returns true if the server is running in HTTP/container mode
+// This is used by tools to select the appropriate user interaction (e.g., device code)
+func (auth *Manager) IsHTTPMode() bool {
+	return auth.isContainerEnvironment()
+}
+
+// BeginDeviceAuth starts the device code flow and begins polling in the background.
+// It returns the verification details for the user to complete in their browser.
+func (auth *Manager) BeginDeviceAuth(ctx context.Context) (*DeviceCodeResponse, error) {
+	deviceCode, err := auth.StartDeviceFlow(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// Start polling in the background; tokens will be saved to storage on success
+	go func() {
+		// Use a generous timeout independent of the tool request context
+		bgCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+		defer cancel()
+		if _, err := auth.PollForTokens(bgCtx, deviceCode); err != nil {
+			l.Logger.Warn().Err(err).Msg("Device code polling ended without tokens")
+		}
+	}()
+	return deviceCode, nil
 }

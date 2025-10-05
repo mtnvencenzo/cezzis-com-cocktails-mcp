@@ -1,14 +1,14 @@
 // Package cocktailsapi provides HTTP client functionality and authentication middleware
 // for interacting with the Cocktails API service. It includes generated API client code
-// and custom authentication middleware for Azure Entra External ID integration.
+// and custom authentication middleware for Auth0 integration.
 //
 // The package features:
 //   - Auto-generated HTTP client code from OpenAPI specifications
-//   - Azure Entra External ID JWT token validation middleware
+//   - Auth0 JWT token validation middleware
 //   - JSON Web Key Set (JWKS) integration for secure token verification
 //   - Scope-based authorization with configurable required permissions
 //
-// The authentication middleware supports graceful degradation - if Azure Entra External ID
+// The authentication middleware supports graceful degradation - if Auth0
 // configuration is missing or invalid, the middleware will allow all requests
 // through without authentication, making it suitable for development environments.
 package cocktailsapi
@@ -36,21 +36,15 @@ var jwks *keyfunc.JWKS
 
 func init() {
 	appSettings := config.GetAppSettings()
-	uri := appSettings.GetAzureCIAMDiscoveryKeysURI()
+	uri := appSettings.GetAuth0JWKSURI()
 
 	if uri == "" {
-		l.Logger.Warn().Msg("Warning: Azure CIAM discovery URI not configured\n")
+		l.Logger.Warn().Msg("Warning: Auth0 JWKS URI not configured\n")
 		if strings.ToLower(os.Getenv("ENV")) != "local" && strings.ToLower(os.Getenv("ENV")) != "test" {
 			// In non-local, do not disable auth silently
 			return
 		}
 		// local/test: leave jwks nil to permit fail-open
-		return
-	}
-
-	if uri == "" {
-		// Don't panic, just log a warning and continue without auth
-		l.Logger.Warn().Msg("Warning: Azure CIAM discovery URI not configured, auth middleware will be disabled\n")
 		return
 	}
 
@@ -63,7 +57,7 @@ func init() {
 	}
 }
 
-// AuthMiddleware creates an HTTP middleware function that validates Azure Entra External ID JWT tokens
+// AuthMiddleware creates an HTTP middleware function that validates Auth0 JWT tokens
 // and enforces scope-based authorization. The middleware can be configured to require
 // specific scopes for access to protected endpoints.
 //
@@ -72,7 +66,7 @@ func init() {
 //     If empty, no authentication is required and all requests are allowed through.
 //
 // Behavior:
-//   - If Azure Entra External ID is not configured (JWKS is nil), all requests are allowed through
+//   - If Auth0 is not configured (JWKS is nil), all requests are allowed through in local/test
 //   - If no scopes are required, all requests are allowed through
 //   - Validates the Authorization header format (must start with "Bearer ")
 //   - Verifies JWT token signature using the configured JWKS
@@ -120,7 +114,11 @@ func AuthMiddleware(requiredScopes []string) func(http.Handler) http.Handler {
 				return
 			}
 
-			scopes, ok := claims["scp"].(string) // or "roles" or "scope" depending on your config
+			// Auth0 typically uses "scope" (space-separated). Some providers use "scp".
+			scopes, ok := claims["scope"].(string)
+			if !ok {
+				scopes, _ = claims["scp"].(string)
+			}
 			if !ok {
 				http.Error(w, "Insufficient scope", http.StatusForbidden)
 				return
@@ -128,19 +126,9 @@ func AuthMiddleware(requiredScopes []string) func(http.Handler) http.Handler {
 
 			scopesList := strings.Split(scopes, " ")
 
-			// Check for all required scopes
-			for _, required := range requiredScopes {
-				found := false
-				for _, s := range scopesList {
-					if s == required {
-						found = true
-						break
-					}
-				}
-				if !found {
-					http.Error(w, "Insufficient scope: "+required, http.StatusForbidden)
-					return
-				}
+			if !hasAllScopes(scopesList, requiredScopes) {
+				http.Error(w, "Insufficient scope", http.StatusForbidden)
+				return
 			}
 
 			// Optionally, set user info in context
@@ -148,4 +136,21 @@ func AuthMiddleware(requiredScopes []string) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+// hasAllScopes returns true if all required scopes are present in the provided list
+func hasAllScopes(have []string, required []string) bool {
+	for _, req := range required {
+		found := false
+		for _, s := range have {
+			if s == req {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
 }

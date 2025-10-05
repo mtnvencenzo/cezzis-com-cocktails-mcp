@@ -61,7 +61,24 @@ func (s *MCPHTTPServer) Start() error {
 
 	// Use the official streamable HTTP server for MCP
 	streamableHTTP := server.NewStreamableHTTPServer(s.mcpServer)
-	http.Handle("/mcp", middleware.RequestLogger(streamableHTTP))
+	// Wrap the MCP route to support GET probes and POST for MCP
+	mcpHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"status":"ok","sse":false}`))
+			return
+		case http.MethodPost:
+			streamableHTTP.ServeHTTP(w, r)
+			return
+		default:
+			w.Header().Set("Allow", "GET, POST")
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+			return
+		}
+	})
+	http.Handle("/mcp", middleware.RequestLogger(mcpHandler))
 
 	l.Logger.Info().
 		Str("port", s.addr).

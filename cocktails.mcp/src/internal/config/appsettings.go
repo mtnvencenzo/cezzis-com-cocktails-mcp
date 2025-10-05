@@ -4,7 +4,7 @@
 //
 // The package supports configuration for:
 //   - Cocktails API connection settings (host and subscription key)
-//   - Azure Entra External Id Tenant authentication settings (instance, domain, and user flow)
+//   - Auth0 authentication settings (domain, client id, audience, scopes)
 //
 // Configuration is loaded from environment variables and .env files located in the
 // executable directory. The package uses a thread-safe singleton pattern to ensure
@@ -30,21 +30,20 @@ type AppSettings struct {
 	// requests to the Cocktails API service.
 	CocktailsAPISubscriptionKey string `env:"COCKTAILS_API_XKEY"`
 
-	// AzureCIAMInstance is the Azure Entra External Id Tenant instance URL.
-	// Example: "https://your-tenant.b2clogin.com"
-	AzureCIAMInstance string `env:"AZURE_CIAM_INSTANCE"`
+	// Auth0Domain is your Auth0 domain or custom domain.
+	// Example: "your-tenant.us.auth0.com" or "login.cezzis.com"
+	Auth0Domain string `env:"AUTH0_DOMAIN"`
 
-	// AzureCIAMDomain is the Azure CIAM tenant domain name.
-	// Example: "your-tenant.onmicrosoft.com"
-	AzureCIAMDomain string `env:"AZURE_CIAM_DOMAIN"`
+	// Auth0ClientID is the public client identifier for your Auth0 Application (Native/Public).
+	Auth0ClientID string `env:"AUTH0_CLIENT_ID"`
 
-	// AzureCIAMUserFlow is the name of the Azure CIAM user flow for authentication.
-	// Example: "sisu-p"
-	AzureCIAMUserFlow string `env:"AZURE_CIAM_USERFLOW"`
+	// Auth0Audience is the API Identifier to request an access token for.
+	// Example: "https://api.cezzis.com/cocktails"
+	Auth0Audience string `env:"AUTH0_AUDIENCE"`
 
-	// AzureCIAMClientID is the client ID of the Azure External Id Tenant app registration.
-	// Example: "84744194-da27-410f-ae0e-74f5589d4c96"
-	AzureCIAMClientID string `env:"AZURE_CIAM_CLIENT_ID"`
+	// Auth0Scopes is the list of scopes to request.
+	// Example: "openid profile email offline_access cocktails:read cocktails:write"
+	Auth0Scopes string `env:"AUTH0_SCOPES"`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
@@ -70,26 +69,25 @@ func GetAppSettings() *AppSettings {
 	if instance.CocktailsAPISubscriptionKey == "" {
 		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
 	}
-	if instance.AzureCIAMInstance == "" {
-		l.Logger.Warn().Msg("Warning: AZURE_CIAM_INSTANCE is not set")
+	// Warn if Auth0 is not configured
+	if instance.Auth0Domain == "" {
+		l.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
 	}
-	if instance.AzureCIAMDomain == "" {
-		l.Logger.Warn().Msg("Warning: AZURE_CIAM_DOMAIN is not set")
+	if instance.Auth0Domain == "" {
+		l.Logger.Debug().Msg("Note: AUTH0_DOMAIN is not set (Auth0 disabled)")
 	}
-	if instance.AzureCIAMUserFlow == "" {
-		l.Logger.Warn().Msg("Warning: AZURE_CIAM_USERFLOW is not set")
-	}
-	if instance.AzureCIAMClientID == "" {
-		l.Logger.Warn().Msg("Warning: AZURE_CIAM_CLIENT_ID is not set")
+	if instance.Auth0ClientID == "" {
+		l.Logger.Debug().Msg("Note: AUTH0_CLIENT_ID is not set (Auth0 disabled)")
 	}
 
 	return instance
 }
 
-// GetAzureCIAMDiscoveryKeysURI constructs the Azure CIAM discovery keys URI
-// by combining the instance, domain, and user flow settings.
-// This URI is used to fetch the JSON Web Key Set (JWKS) for JWT token validation.
-// Returns a formatted string like: "https://your-tenant.b2clogin.com/your-tenant.onmicrosoft.com/sisu-p/discovery/v2.0/keys"
-func (a *AppSettings) GetAzureCIAMDiscoveryKeysURI() string {
-	return fmt.Sprintf("%s/%s/%s/discovery/v2.0/keys", a.AzureCIAMInstance, a.AzureCIAMDomain, a.AzureCIAMUserFlow)
+// GetAuth0JWKSURI returns the JWKS URL for Auth0.
+// Example: https://YOUR_DOMAIN/.well-known/jwks.json
+func (a *AppSettings) GetAuth0JWKSURI() string {
+	if a.Auth0Domain == "" {
+		return ""
+	}
+	return fmt.Sprintf("https://%s/.well-known/jwks.json", a.Auth0Domain)
 }

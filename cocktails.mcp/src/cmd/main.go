@@ -15,6 +15,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -110,6 +111,7 @@ func loadEnv() {
 	exeDir := filepath.Dir(exePath)
 
 	envFileDir := exeDir
+	fmt.Println("Exe dir:", exeDir)
 
 	if os.Getenv("ENV_DIR_OVERRIDE") != "" {
 		envFileDir = os.Getenv("ENV_DIR_OVERRIDE")
@@ -126,6 +128,7 @@ func loadEnv() {
 	toLoad := make([]string, 0, len(candidates))
 	for _, f := range candidates {
 		if _, err := os.Stat(f); err == nil {
+			fmt.Println("Loading env file:", f)
 			toLoad = append(toLoad, f)
 		}
 	}

@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM golang:1.25-alpine
 WORKDIR /
 COPY ./dist/linux/cezzis-cocktails /cezzis-cocktails
 COPY ./dist/linux/.env* ./

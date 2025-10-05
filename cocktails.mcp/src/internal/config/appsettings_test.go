@@ -12,9 +12,8 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 
 	// arrange
 	expectedCocktailsAPIHost := "https://testapi.cezzis.com/prd/cocktails"
-	expectedAzureCIAMDomain := "cezzis.onmicrosoft.com"
-	expectedAzureCIAMInstance := "https://testlogin.cezzis.com"
-	expectedAzureCIAMUserFlow := "sisu-p"
+	expectedAuth0Domain := "login.test.cezzis.com"
+	expectedAuth0ClientID := "00000000-0000-0000-0000-000000000000"
 	expectedCocktailsAPISubscriptionKey := "00000000-0000-0000-0000-000000000000"
 
 	// act
@@ -25,16 +24,11 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 		t.Errorf("Expected CocktailsAPIHost to be %s, got %s", expectedCocktailsAPIHost, appSettings.CocktailsAPIHost)
 	}
 
-	if appSettings.AzureCIAMDomain != expectedAzureCIAMDomain {
-		t.Errorf("Expected AzureCIAMDomain to be %s, got %s", expectedAzureCIAMDomain, appSettings.AzureCIAMDomain)
+	if appSettings.Auth0Domain != expectedAuth0Domain {
+		t.Errorf("Expected Auth0Domain to be %s, got %s", expectedAuth0Domain, appSettings.Auth0Domain)
 	}
-
-	if appSettings.AzureCIAMInstance != expectedAzureCIAMInstance {
-		t.Errorf("Expected AzureCIAMInstance to be %s, got %s", expectedAzureCIAMInstance, appSettings.AzureCIAMInstance)
-	}
-
-	if appSettings.AzureCIAMUserFlow != expectedAzureCIAMUserFlow {
-		t.Errorf("Expected AzureCIAMUserFlow to be %s, got %s", expectedAzureCIAMUserFlow, appSettings.AzureCIAMUserFlow)
+	if appSettings.Auth0ClientID != expectedAuth0ClientID {
+		t.Errorf("Expected Auth0ClientID to be %s, got %s", expectedAuth0ClientID, appSettings.Auth0ClientID)
 	}
 
 	if appSettings.CocktailsAPISubscriptionKey != expectedCocktailsAPISubscriptionKey {
@@ -42,18 +36,18 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 	}
 }
 
-func Test_appsettings_produces_correct_discovery_keys_url(t *testing.T) {
+func Test_appsettings_produces_correct_jwks_url(t *testing.T) {
 	testutils.LoadEnvironment("..", "..")
 
 	// arrange
-	expectedAzureCIAMDiscoveryKeysURI := "https://testlogin.cezzis.com/cezzis.onmicrosoft.com/sisu-p/discovery/v2.0/keys"
+	expectedJWKS := "https://login.test.cezzis.com/.well-known/jwks.json"
 
 	// act
 	appSettings := config.GetAppSettings()
-	azureCIAMDiscoveryKeysURI := appSettings.GetAzureCIAMDiscoveryKeysURI()
+	jwks := appSettings.GetAuth0JWKSURI()
 
 	// asert
-	if azureCIAMDiscoveryKeysURI != expectedAzureCIAMDiscoveryKeysURI {
-		t.Errorf("Expected GetAzureCIAMDiscoveryKeysURI() to be %s, got %s", expectedAzureCIAMDiscoveryKeysURI, azureCIAMDiscoveryKeysURI)
+	if jwks != expectedJWKS {
+		t.Errorf("Expected GetAuth0JWKSURI() to be %s, got %s", expectedJWKS, jwks)
 	}
 }
