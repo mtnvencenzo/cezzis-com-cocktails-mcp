@@ -46,7 +46,7 @@ Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Az
 
 ### Authentication & Security
 - **API Access**: `COCKTAILS_API_XKEY` subscription key injected via env/Key Vault
-- **Azure Entra External ID (CIAM)**: Optional configuration to obtain auth tokens for specific flows
+- **Auth0 OAuth 2.1 / OIDC**: End‑user authentication for personalized features (favorites, ratings, profile)
 - **Secrets**: Managed via environment files locally and Azure Key Vault in cloud
 - **Transport**: HTTPS for HTTP mode; stdio for MCP mode
 
@@ -90,10 +90,13 @@ cocktails.mcp/
    COCKTAILS_API_HOST=https://api.cezzis.com/prd/cocktails
    COCKTAILS_API_XKEY=your_api_subscription_key_here
 
-   # Optional: Azure Entra External Id Tenant Configuration (for auth flows)
-   AZURE_CIAM_INSTANCE=https://your_tenant.b2clogin.com
-   AZURE_CIAM_DOMAIN=your_tenant.onmicrosoft.com
-   AZURE_CIAM_USERFLOW=sisu-p
+  # Auth0 (required for user-authenticated features)
+  AUTH0_DOMAIN=your-tenant.us.auth0.com
+  AUTH0_CLIENT_ID=your_public_client_id
+  # Optional audience if the API expects a specific identifier
+  AUTH0_AUDIENCE=https://api.cezzis.com/prd/cocktails
+  # Optional scopes (defaults: openid profile email offline_access)
+  AUTH0_SCOPES=openid profile email offline_access
 
    # Optional: Application Insights (telemetry)
    APPLICATIONINSIGHTS_INSTRUMENTATIONKEY=your_app_insights_key
@@ -141,7 +144,38 @@ The server exposes two primary tools to AI clients:
 - `GET /health` – Health check
 - MCP protocol over HTTP for debugging
 
-## 💻 MCP Client Setup
+## � OAuth and Authentication
+
+This MCP server uses Auth0 for end‑user authentication to enable personalized features (e.g., favorites, ratings).
+
+Supported flows:
+
+- Stdio/local: Authorization Code Flow with PKCE
+  - The server opens your browser to Auth0’s authorize endpoint.
+  - A local callback listener on http://localhost:6097/callback receives the authorization code.
+  - The server exchanges the code for tokens and stores them securely (encrypted) for reuse.
+
+- HTTP/container mode: Device Authorization Grant (Device Code)
+  - The server returns a verification URL and user code.
+  - You visit the URL in any browser, enter the code, and complete login.
+  - The server polls Auth0 for tokens and stores them when available.
+
+Token handling:
+- Access and refresh tokens are stored encrypted under `~/.cezzis/.cezzis_tokens.enc`.
+- Tokens are automatically refreshed using the refresh token when near expiry.
+- Logout clears stored tokens.
+
+Required settings:
+- `AUTH0_DOMAIN` – e.g., `your-tenant.us.auth0.com`
+- `AUTH0_CLIENT_ID` – public SPA/native client ID configured in Auth0
+- Optional: `AUTH0_AUDIENCE` if the API expects a specific audience
+- Optional: `AUTH0_SCOPES` (default: `openid profile email offline_access`)
+
+Auth tools available to MCP clients:
+- `auth_login` – Initiates login. In stdio mode, triggers PKCE browser flow; in HTTP mode, returns device code instructions.
+- `auth_status` – Returns whether you’re currently authenticated.
+
+## �💻 MCP Client Setup
 
 ### Claude Desktop
 Configure `~/.config/Claude/claude_desktop_config.json`:
