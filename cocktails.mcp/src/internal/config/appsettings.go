@@ -22,7 +22,7 @@ import (
 // DefaultAuth0Scopes defines the default OAuth2 scopes to request when no AUTH0_SCOPES
 // environment variable is configured. These scopes provide basic authentication and
 // account access capabilities.
-const DefaultAuth0Scopes = "openid offline_access profile email read:owned-accounts write:owned-accounts"
+const DefaultAuth0Scopes = "openid offline_access profile email read:owned-account write:owned-account"
 
 // AppSettings contains all application configuration settings loaded from environment variables.
 // It provides a centralized way to access configuration values throughout the application.

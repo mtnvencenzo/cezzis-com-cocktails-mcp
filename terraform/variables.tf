@@ -87,5 +87,5 @@ variable "auth0_naive_client_id" {
 variable "auth0_scopes" {
   type        = string
   description = "Auth0 scopes for the application"
-  default     = "openid offline_access profile email read:owned-accounts write:owned-accounts"
+  default     = "openid offline_access profile email read:owned-account write:owned-account"
 }
