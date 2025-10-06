@@ -99,13 +99,19 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 	}
 	deviceEndpoint := fmt.Sprintf("https://%s/oauth/device/code", strings.TrimRight(auth.appSettings.Auth0Domain, "/"))
 
+	requestedScopes := firstNonEmpty(auth.appSettings.Auth0Scopes, config.DefaultAuth0Scopes)
 	data := url.Values{
 		"client_id": {auth.appSettings.Auth0ClientID},
-		"scope":     {firstNonEmpty(auth.appSettings.Auth0Scopes, config.DefaultAuth0Scopes)},
+		"scope":     {requestedScopes},
 	}
 	if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
 		data.Set("audience", aud)
 	}
+
+	l.Logger.Info().
+		Str("scopes_requested", requestedScopes).
+		Str("audience", auth.appSettings.Auth0Audience).
+		Msg("Starting device flow authentication")
 
 	req, err := http.NewRequestWithContext(ctx, "POST", deviceEndpoint, strings.NewReader(data.Encode()))
 	if err != nil {
@@ -229,7 +235,9 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 				}
 			}
 
-			l.Logger.Info().Msg("Successfully obtained access tokens")
+			l.Logger.Info().
+				Str("scopes_granted", tokenResp.Scope).
+				Msg("Successfully obtained access tokens")
 			return &tokenResp, nil
 		}
 
@@ -324,8 +332,10 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 		"grant_type":    {"refresh_token"},
 		"client_id":     {auth.appSettings.Auth0ClientID},
 		"refresh_token": {auth.currentTokens.RefreshToken},
-		// Let the server infer scopes; if needed, reuse previously granted scopes:
-		// "scope": {auth.currentTokens.Scope},
+		"scope":         {auth.currentTokens.Scope},
+	}
+	if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
+		data.Set("audience", aud)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
@@ -364,6 +374,11 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 	if auth.storage != nil {
 		_ = auth.storage.SaveTokens(&tokens)
 	}
+
+	l.Logger.Info().
+		Str("scopes_granted", tokens.Scope).
+		Msg("Successfully refreshed access tokens")
+
 	return &tokens, nil
 }
 
