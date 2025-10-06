@@ -19,6 +19,11 @@ import (
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
+// DefaultAuth0Scopes defines the default OAuth2 scopes to request when no AUTH0_SCOPES
+// environment variable is configured. These scopes provide basic authentication and
+// account access capabilities.
+const DefaultAuth0Scopes = "openid offline_access profile email read:owned-accounts write:owned-accounts"
+
 // AppSettings contains all application configuration settings loaded from environment variables.
 // It provides a centralized way to access configuration values throughout the application.
 type AppSettings struct {
@@ -73,11 +78,9 @@ func GetAppSettings() *AppSettings {
 	if instance.Auth0Domain == "" {
 		l.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
 	}
-	if instance.Auth0Domain == "" {
-		l.Logger.Debug().Msg("Note: AUTH0_DOMAIN is not set (Auth0 disabled)")
-	}
+
 	if instance.Auth0ClientID == "" {
-		l.Logger.Debug().Msg("Note: AUTH0_CLIENT_ID is not set (Auth0 disabled)")
+		l.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
 	}
 
 	return instance

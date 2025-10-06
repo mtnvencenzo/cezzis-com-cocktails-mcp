@@ -101,7 +101,7 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 
 	data := url.Values{
 		"client_id": {auth.appSettings.Auth0ClientID},
-		"scope":     {firstNonEmpty(auth.appSettings.Auth0Scopes, "openid profile email offline_access")},
+		"scope":     {firstNonEmpty(auth.appSettings.Auth0Scopes, config.DefaultAuth0Scopes)},
 	}
 	if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
 		data.Set("audience", aud)
@@ -414,7 +414,7 @@ func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, erro
 		q.Set("redirect_uri", redirectURI)
 		scopes := auth.appSettings.Auth0Scopes
 		if scopes == "" {
-			scopes = "openid profile email offline_access"
+			scopes = config.DefaultAuth0Scopes
 		}
 		q.Set("scope", scopes)
 		if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
