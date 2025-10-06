@@ -8,7 +8,7 @@ RUN apk add --no-cache go make
 RUN cd ../ && make compile
 
 
-FROM golang:1.25-alpine AS final
+FROM alpine:latest AS final
 WORKDIR /
 COPY ./dist/linux/cezzis-cocktails /cezzis-cocktails/cezzis-cocktails
 # Copy environment files if they exist
