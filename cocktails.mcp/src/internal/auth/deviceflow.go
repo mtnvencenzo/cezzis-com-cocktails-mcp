@@ -104,13 +104,16 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 		"client_id": {auth.appSettings.Auth0ClientID},
 		"scope":     {requestedScopes},
 	}
-	if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
-		data.Set("audience", aud)
+	audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
+	if audience != "" {
+		data.Set("audience", audience)
 	}
 
 	l.Logger.Info().
 		Str("scopes_requested", requestedScopes).
-		Str("audience", auth.appSettings.Auth0Audience).
+		Str("audience", audience).
+		Bool("audience_included", audience != "").
+		Str("request_params", data.Encode()).
 		Msg("Starting device flow authentication")
 
 	req, err := http.NewRequestWithContext(ctx, "POST", deviceEndpoint, strings.NewReader(data.Encode()))
@@ -187,9 +190,15 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 			"client_id":   {auth.appSettings.Auth0ClientID},
 			"device_code": {deviceCode.DeviceCode},
 		}
-		if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
-			data.Set("audience", aud)
+		audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
+		if audience != "" {
+			data.Set("audience", audience)
 		}
+
+		l.Logger.Debug().
+			Str("audience", audience).
+			Bool("audience_included", audience != "").
+			Msg("Polling for tokens")
 
 		req, err := http.NewRequestWithContext(ctx, "POST", tokenEndpoint, strings.NewReader(data.Encode()))
 		if err != nil {
@@ -334,9 +343,16 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 		"refresh_token": {auth.currentTokens.RefreshToken},
 		"scope":         {auth.currentTokens.Scope},
 	}
-	if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
-		data.Set("audience", aud)
+	audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
+	if audience != "" {
+		data.Set("audience", audience)
 	}
+
+	l.Logger.Info().
+		Str("audience", audience).
+		Bool("audience_included", audience != "").
+		Str("scope", auth.currentTokens.Scope).
+		Msg("Refreshing access token")
 
 	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
 	if err != nil {
@@ -586,6 +602,15 @@ func (auth *Manager) exchangeCodeForTokens(ctx context.Context, code string) (*T
 		"redirect_uri":  {auth.currentRedirectURI},
 		"code_verifier": {auth.currentPKCE.CodeVerifier},
 	}
+	audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
+	if audience != "" {
+		data.Set("audience", audience)
+	}
+
+	l.Logger.Info().
+		Str("audience", audience).
+		Bool("audience_included", audience != "").
+		Msg("Exchanging authorization code for tokens")
 
 	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
 	if err != nil {
