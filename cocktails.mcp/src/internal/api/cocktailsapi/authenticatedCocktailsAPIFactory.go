@@ -1,3 +1,4 @@
+// Package cocktailsapi provides primitives to interact with the openapi HTTP API.
 package cocktailsapi
 
 import (
@@ -34,17 +35,6 @@ func AuthenticatedRequestEditor(authManager *auth.Manager) RequestEditorFn {
 	}
 }
 
-// SubscriptionKeyRequestEditor creates a request editor that only adds the subscription key
-func SubscriptionKeyRequestEditor() RequestEditorFn {
-	return func(ctx context.Context, req *http.Request) error {
-		appSettings := config.GetAppSettings()
-		if appSettings.CocktailsAPISubscriptionKey != "" {
-			req.Header.Set("X-Key", appSettings.CocktailsAPISubscriptionKey)
-		}
-		return nil
-	}
-}
-
 // AuthenticatedCocktailsAPIFactory extends the base factory with authentication support
 type AuthenticatedCocktailsAPIFactory struct {
 	CocktailsAPIFactory
@@ -62,9 +52,4 @@ func NewAuthenticatedCocktailsAPIFactory(authManager *auth.Manager) *Authenticat
 // GetAuthenticatedRequestEditor returns a request editor with authentication
 func (factory *AuthenticatedCocktailsAPIFactory) GetAuthenticatedRequestEditor() RequestEditorFn {
 	return AuthenticatedRequestEditor(factory.authManager)
-}
-
-// GetBasicRequestEditor returns a request editor with only subscription key
-func (factory *AuthenticatedCocktailsAPIFactory) GetBasicRequestEditor() RequestEditorFn {
-	return SubscriptionKeyRequestEditor()
 }

@@ -75,34 +75,21 @@ func main() {
 	mcpServer.AddTool(tools.AuthStatusTool, server.ToolHandlerFunc(tools.NewAuthStatusToolHandler(authManager).Handle))
 	mcpServer.AddTool(tools.AuthLogoutTool, server.ToolHandlerFunc(tools.NewAuthLogoutToolHandler(authManager).Handle))
 
-	// Authenticated tools (require user login)
+	// Account Authenticated tools (require user login)
 	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, authCocktailsAPIFactory).Handle))
-	mcpServer.AddTool(tools.GetFavoritesTool, server.ToolHandlerFunc(tools.NewGetFavoritesToolHandler(authManager, authCocktailsAPIFactory).Handle))
 
 	// Finally, start the server in the chosen mode
 	// If --http is provided, start the HTTP server with logging middleware and a health check endpoint.
 	// Otherwise, serve requests over stdio.
 	// Proper error handling ensures that any issues during startup are logged.
 	// The server will run until it is manually stopped or encounters a fatal error.
-	if *httpAddr != "" {
-		// HTTP mode - set environment variable for auth manager detection
-		if err := os.Setenv("MCP_MODE", "http"); err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to set MCP_MODE environment variable")
-		}
+	httpServer := internalServer.NewMCPHTTPServer(*httpAddr, mcpServer, Version)
 
-		httpServer := internalServer.NewMCPHTTPServer(*httpAddr, mcpServer, Version)
-
-		if err := httpServer.Start(); err != nil {
-			l.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
-		}
-
-		l.Logger.Info().Msg("MCP HTTP server stopped")
-	} else {
-		// Stdio mode (default)
-		if err := server.ServeStdio(mcpServer); err != nil {
-			l.Logger.Err(err).Msg("Server error: %v\n")
-		}
+	if err := httpServer.Start(); err != nil {
+		l.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
 	}
+
+	l.Logger.Info().Msg("MCP HTTP server stopped")
 }
 
 func loadEnv() {

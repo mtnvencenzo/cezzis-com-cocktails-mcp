@@ -18,10 +18,6 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-const (
-	Oauth2Scopes = "oauth2.Scopes"
-)
-
 // AccountAccessibilitySettingsModel The accessibility settings for the account
 type AccountAccessibilitySettingsModel struct {
 	// Theme The accessibility theme

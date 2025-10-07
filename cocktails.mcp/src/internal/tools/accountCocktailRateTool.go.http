@@ -1,3 +1,7 @@
+// ------------------------------------------------------------
+// POST Rate Cocktail
+// ------------------------------------------------------------
+
 POST {{host}}/mcp
 Accept: application/json
 Content-Type: application/json
@@ -10,7 +14,7 @@ Mcp-Session-Id: mcp-session-24f4d503-d725-4aa3-bae0-d4ded79b4a6e
   "params": {
     "name": "cocktail_rate",
     "arguments": {
-      "cocktailId": "bijou",
+      "cocktailId": "pegu-club",
       "stars": "5"
     }
   }
