@@ -29,13 +29,13 @@ jobs:
           fetch-depth: 0
       
       - name: Install GetVersion
-        uses: gittools/actions/gitversion/setup@v1.1.1
+        uses: gittools/actions/gitversion/setup@v4.1.0
         with:
           versionSpec: "5.x"
 
       - name: Use GitVersion
         id: gitVersion
-        uses: gittools/actions/gitversion/execute@v1.1.1
+        uses: gittools/actions/gitversion/execute@v4.1.0
         with:
           useConfigFile: true
 
