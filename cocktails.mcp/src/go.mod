@@ -9,7 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/mark3labs/mcp-go v0.32.0
 	github.com/microsoft/ApplicationInsights-Go v0.4.4
-	github.com/oapi-codegen/runtime v1.1.1
+	github.com/oapi-codegen/runtime v1.1.2
 	github.com/rs/xid v1.6.0
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.1
