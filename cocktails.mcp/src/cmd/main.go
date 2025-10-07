@@ -46,7 +46,7 @@ func main() {
 	// Add a flag to choose between stdio and HTTP
 	// If --http is provided, the server will run in HTTP mode on the specified address.
 	// Otherwise, it will default to stdio mode.
-	httpAddr := flag.String("http", "", "If set, serve HTTP on this address (e.g., :8080). Otherwise, use stdio.")
+	httpAddr := flag.String("http", "", "If set, serve HTTP on this address (e.g., :8080)")
 	flag.Parse()
 
 	mcpServer := server.NewMCPServer(

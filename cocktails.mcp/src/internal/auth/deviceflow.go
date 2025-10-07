@@ -4,19 +4,13 @@ package auth
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -53,12 +47,10 @@ type DeviceCodeResponse struct {
 
 // Manager handles OAuth authentication flows
 type Manager struct {
-	appSettings        *config.AppSettings
-	currentTokens      *TokenResponse
-	currentPKCE        *PKCEChallenge
-	currentRedirectURI string
-	httpClient         *http.Client
-	storage            *TokenStorage
+	appSettings   *config.AppSettings
+	currentTokens *TokenResponse
+	httpClient    *http.Client
+	storage       *TokenStorage
 }
 
 // NewManager creates a new authentication manager
@@ -270,26 +262,8 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 
 // Authenticate initiates the appropriate authentication flow based on the environment
 func (auth *Manager) Authenticate(ctx context.Context) (*TokenResponse, error) {
-	// Check if we're running in a container/cloud environment
-	if auth.isContainerEnvironment() {
-		l.Logger.Info().Msg("Container environment detected, using device code flow")
-		return auth.authenticateDeviceCode(ctx)
-	}
-
-	l.Logger.Info().Msg("Local environment detected, using browser flow")
-	return auth.StartBrowserAuth(ctx)
-}
-
-// isContainerEnvironment detects if we're running in a containerized environment
-func (auth *Manager) isContainerEnvironment() bool {
-	// Check if we're running in HTTP mode (should use device code flow)
-	if os.Getenv("MCP_MODE") == "http" {
-		l.Logger.Debug().Msg("HTTP mode detected via MCP_MODE environment variable")
-		return true
-	}
-
-	l.Logger.Debug().Msg("Local stdio environment detected")
-	return false
+	l.Logger.Info().Msg("Container environment detected, using device code flow")
+	return auth.authenticateDeviceCode(ctx)
 }
 
 // authenticateDeviceCode handles device code flow for container environments
@@ -398,266 +372,6 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 	return &tokens, nil
 }
 
-// StartBrowserAuth initiates browser-based OAuth authentication using Authorization Code Flow with PKCE
-//
-//nolint:gocyclo
-func (auth *Manager) StartBrowserAuth(ctx context.Context) (*TokenResponse, error) {
-	// Generate PKCE challenge
-	pkce, err := generatePKCEChallenge()
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate PKCE: %w", err)
-	}
-	auth.currentPKCE = pkce
-
-	// Use fixed port 6097 for Azure Entra External Id Tenant configuration
-	port := 6097
-
-	// Test if port is available
-	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-	if err != nil {
-		return nil, fmt.Errorf("port %d is not available: %w", port, err)
-	}
-	if err := listener.Close(); err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to close port listener")
-	}
-
-	redirectURI := fmt.Sprintf("http://localhost:%d/callback", port)
-	auth.currentRedirectURI = redirectURI
-
-	// Generate state parameter for CSRF protection
-	stateBytes := make([]byte, 32)
-	if _, err := rand.Read(stateBytes); err != nil {
-		return nil, fmt.Errorf("failed to generate state parameter: %w", err)
-	}
-	state := base64.RawURLEncoding.EncodeToString(stateBytes)
-
-	// Build authorization URL for Auth0
-	var fullAuthURL string
-	if domain := strings.TrimSpace(auth.appSettings.Auth0Domain); domain != "" && auth.appSettings.Auth0ClientID != "" {
-		// Auth0
-		u, err := url.Parse("https://" + strings.TrimRight(domain, "/") + "/authorize")
-		if err != nil {
-			return nil, fmt.Errorf("invalid AUTH0_DOMAIN: %w", err)
-		}
-		q := u.Query()
-		q.Set("response_type", "code")
-		q.Set("client_id", auth.appSettings.Auth0ClientID)
-		q.Set("redirect_uri", redirectURI)
-		scopes := auth.appSettings.Auth0Scopes
-		if scopes == "" {
-			scopes = config.DefaultAuth0Scopes
-		}
-		q.Set("scope", scopes)
-		if aud := strings.TrimSpace(auth.appSettings.Auth0Audience); aud != "" {
-			q.Set("audience", aud)
-		}
-		q.Set("code_challenge", pkce.CodeChallenge)
-		q.Set("code_challenge_method", "S256")
-		q.Set("state", state)
-		u.RawQuery = q.Encode()
-		fullAuthURL = u.String()
-	} else {
-		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
-	}
-
-	// Channel to receive callback result
-	resultChan := make(chan CallbackResult, 1)
-
-	// Setup callback server
-	mux := http.NewServeMux()
-	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
-		code := r.URL.Query().Get("code")
-		returnedState := r.URL.Query().Get("state")
-		errorParam := r.URL.Query().Get("error")
-
-		result := CallbackResult{
-			Code:  code,
-			State: returnedState,
-			Error: errorParam,
-		}
-
-		if errorParam != "" {
-			http.Error(w, fmt.Sprintf("Authorization failed: %s", errorParam), http.StatusBadRequest)
-		} else if code == "" {
-			http.Error(w, "No authorization code received", http.StatusBadRequest)
-			result.Error = "no_code"
-		} else if returnedState != state {
-			http.Error(w, "Invalid state parameter", http.StatusBadRequest)
-			result.Error = "invalid_state"
-		} else {
-			// Success page
-			w.Header().Set("Content-Type", "text/html")
-			if _, err := fmt.Fprintf(w, `<!DOCTYPE html>
-<html>
-<head><title>Authorization Complete</title>
-<style>body{font-family:Arial,sans-serif;text-align:center;margin:50px;}
-.success{color:#28a745;}</style></head>
-<body><div class="success">
-<h2>✅ Authorization Successful!</h2>
-<p>You can now close this window and return to your application.</p>
-</div></body></html>`); err != nil {
-				l.Logger.Warn().Err(err).Msg("Failed to write success page")
-			}
-		}
-
-		// Send result to waiting goroutine
-		select {
-		case resultChan <- result:
-		default:
-		}
-	})
-
-	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
-	}
-
-	// Start server in background
-	go func() {
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			l.Logger.Error().Err(err).Msg("Callback server failed")
-		}
-	}()
-
-	// If running in HTTP/container mode, don't open a browser here; log/return URL and wait for callback
-	if auth.isContainerEnvironment() {
-		l.Logger.Info().Str("auth_url", fullAuthURL).Msg("HTTP mode detected; not opening browser. Please navigate to the URL to authenticate.")
-	} else {
-		// Try to open browser
-		l.Logger.Info().
-			Str("auth_url", fullAuthURL).
-			Int("port", port).
-			Msg("Opening browser for authentication")
-
-		if err := openBrowser(fullAuthURL); err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to open browser automatically")
-		}
-	}
-
-	// Wait for callback with timeout
-	authCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
-	defer cancel()
-
-	var result CallbackResult
-	select {
-	case result = <-resultChan:
-	case <-authCtx.Done():
-		if err := server.Shutdown(context.Background()); err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to shutdown server")
-		}
-		return nil, fmt.Errorf("authentication timed out")
-	}
-
-	// Shutdown server
-	if err := server.Shutdown(context.Background()); err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to shutdown server")
-	}
-
-	if result.Error != "" {
-		return nil, fmt.Errorf("authentication failed: %s", result.Error)
-	}
-
-	// Exchange code for tokens
-	return auth.exchangeCodeForTokens(ctx, result.Code)
-}
-
-// CallbackResult represents the OAuth callback result
-type CallbackResult struct {
-	Code  string
-	State string
-	Error string
-}
-
-// generatePKCEChallenge generates PKCE code verifier and challenge
-func generatePKCEChallenge() (*PKCEChallenge, error) {
-	verifierBytes := make([]byte, 96)
-	if _, err := rand.Read(verifierBytes); err != nil {
-		return nil, err
-	}
-	codeVerifier := base64.RawURLEncoding.EncodeToString(verifierBytes)
-
-	hash := sha256.Sum256([]byte(codeVerifier))
-	codeChallenge := base64.RawURLEncoding.EncodeToString(hash[:])
-
-	return &PKCEChallenge{
-		CodeVerifier:  codeVerifier,
-		CodeChallenge: codeChallenge,
-	}, nil
-}
-
-// exchangeCodeForTokens exchanges authorization code for tokens
-func (auth *Manager) exchangeCodeForTokens(ctx context.Context, code string) (*TokenResponse, error) {
-	// Auth0 token endpoint
-	var tokenURL string
-	if domain := strings.TrimSpace(auth.appSettings.Auth0Domain); domain != "" && auth.appSettings.Auth0ClientID != "" {
-		tokenURL = "https://" + strings.TrimRight(domain, "/") + "/oauth/token"
-	} else {
-		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
-	}
-
-	data := url.Values{
-		"grant_type":    {"authorization_code"},
-		"client_id":     {auth.appSettings.Auth0ClientID},
-		"code":          {code},
-		"redirect_uri":  {auth.currentRedirectURI},
-		"code_verifier": {auth.currentPKCE.CodeVerifier},
-	}
-	audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
-	if audience != "" {
-		data.Set("audience", audience)
-	}
-
-	l.Logger.Info().
-		Str("audience", audience).
-		Bool("audience_included", audience != "").
-		Msg("Exchanging authorization code for tokens")
-
-	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create token request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := auth.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to exchange code: %w", err)
-	}
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to close response body")
-		}
-	}()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		l.Logger.Error().
-			Int("status", resp.StatusCode).
-			Str("response", string(body)).
-			Msg("Token exchange failed")
-		return nil, fmt.Errorf("token exchange failed (%d): %s", resp.StatusCode, string(body))
-	}
-
-	var tokens TokenResponse
-	if err := json.Unmarshal(body, &tokens); err != nil {
-		return nil, fmt.Errorf("failed to parse tokens: %w", err)
-	}
-
-	// Save tokens
-	auth.currentTokens = &tokens
-	if auth.storage != nil {
-		if err := auth.storage.SaveTokens(&tokens); err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to save tokens")
-		}
-	}
-
-	l.Logger.Info().Msg("Successfully obtained tokens via browser authentication")
-	return &tokens, nil
-}
-
 // firstNonEmpty returns the first non-empty string
 func firstNonEmpty(vals ...string) string {
 	for _, v := range vals {
@@ -666,22 +380,6 @@ func firstNonEmpty(vals ...string) string {
 		}
 	}
 	return ""
-}
-
-// openBrowser opens URL in default browser
-func openBrowser(targetURL string) error {
-	var cmd *exec.Cmd
-	switch runtime.GOOS {
-	case "linux":
-		cmd = exec.Command("xdg-open", targetURL)
-	case "windows":
-		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", targetURL)
-	case "darwin":
-		cmd = exec.Command("open", targetURL)
-	default:
-		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
-	}
-	return cmd.Start()
 }
 
 // IsAuthenticated returns true if the user is currently authenticated
@@ -701,12 +399,6 @@ func (auth *Manager) Logout() error {
 
 	l.Logger.Info().Msg("Successfully logged out")
 	return nil
-}
-
-// IsHTTPMode returns true if the server is running in HTTP/container mode
-// This is used by tools to select the appropriate user interaction (e.g., device code)
-func (auth *Manager) IsHTTPMode() bool {
-	return auth.isContainerEnvironment()
 }
 
 // BeginDeviceAuth starts the device code flow and begins polling in the background.
