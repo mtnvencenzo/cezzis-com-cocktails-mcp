@@ -24,7 +24,52 @@ This server works alongside several sibling repositories:
 - [**cocktails-common**](https://github.com/mtnvencenzo/cezzis-com-cocktails-common) – Shared libraries and utilities reused across frontends, APIs, and tooling
 - [**cocktails-images**](https://github.com/mtnvencenzo/cezzis-com-cocktails-images) *(private)* – Source of curated cocktail imagery and CDN assets
 - [**cocktails-shared-infra**](https://github.com/mtnvencenzo/cezzis-com-cocktails-shared-infra) – Terraform compositions specific to the cocktails platform
-- [**shared-infrastructure**](https://github.com/mtnvencenzo/shared-infrastructure) – Global Terraform modules that underpin multiple Cezzis.com workloads
+- [**shared-infrastructure**](https://github.com/mtnvencenzo/shared-infrastructure) – Global Terraform 
+modules that underpin multiple Cezzis.com workloads
+
+## 📚 MCP Tools
+
+The server exposes the following MCP tools:
+
+### cocktails_search
+- Purpose: Search cocktails by natural language query
+- Parameters:
+  - `freeText` (string, required): Search terms (name, ingredients, style)
+- Returns: Array of cocktails with IDs, titles, images, and summaries
+
+### cocktails_get
+- Purpose: Retrieve full details for a specific cocktail
+- Parameters:
+  - `cocktailId` (string, required): ID from search results
+- Returns: Full recipe with ingredients, instructions, images, ratings, and notes
+
+### auth_login
+- Purpose: Initiate login using Auth0 Device Authorization flow
+- Parameters: none
+- Returns: Verification URL and user code to complete in your browser
+
+### auth_status
+- Purpose: Check if you’re authenticated
+- Parameters: none
+- Returns: Text status
+
+### auth_logout
+- Purpose: Log out and clear stored tokens
+- Parameters: none
+- Returns: Text confirmation
+
+### cocktail_rate
+- Purpose: Rate a cocktail (requires authentication)
+- Parameters:
+  - `cocktailId` (string, required)
+  - `stars` (string, required, 1–5)
+- Returns: Text confirmation of submitted rating
+
+### HTTP Endpoints
+- `GET /healthz` – Health check
+- `GET /version` – Version info
+- `GET|POST /mcp` – Streamable MCP endpoint over HTTP
+
 
 ## ☁️ Cloud-Native Footprint (Azure)
 
@@ -127,48 +172,6 @@ cocktails.mcp/
    ```
    Generates coverage artifacts (`coverage.out`, `cobertura.xml`).
 
-## 📚 MCP Tools
-
-The server exposes the following MCP tools:
-
-### cocktails_search
-- Purpose: Search cocktails by natural language query
-- Parameters:
-  - `freeText` (string, required): Search terms (name, ingredients, style)
-- Returns: Array of cocktails with IDs, titles, images, and summaries
-
-### cocktails_get
-- Purpose: Retrieve full details for a specific cocktail
-- Parameters:
-  - `cocktailId` (string, required): ID from search results
-- Returns: Full recipe with ingredients, instructions, images, ratings, and notes
-
-### auth_login
-- Purpose: Initiate login using Auth0 Device Authorization flow
-- Parameters: none
-- Returns: Verification URL and user code to complete in your browser
-
-### auth_status
-- Purpose: Check if you’re authenticated
-- Parameters: none
-- Returns: Text status
-
-### auth_logout
-- Purpose: Log out and clear stored tokens
-- Parameters: none
-- Returns: Text confirmation
-
-### cocktail_rate
-- Purpose: Rate a cocktail (requires authentication)
-- Parameters:
-  - `cocktailId` (string, required)
-  - `stars` (string, required, 1–5)
-- Returns: Text confirmation of submitted rating
-
-### HTTP Endpoints
-- `GET /healthz` – Health check
-- `GET /version` – Version info
-- `GET|POST /mcp` – Streamable MCP endpoint over HTTP
 
 ## 🔐 OAuth and Authentication
 
@@ -197,40 +200,43 @@ Auth tools available to MCP clients:
 
 ## �💻 MCP Client Setup
 
+
 ### Claude Desktop
-Configure `~/.config/Claude/claude_desktop_config.json`:
+Configure `~/.config/Claude/claude_desktop_config.json` for HTTP MCP:
 
 ```json
 {
   "mcpServers": {
     "cezzis-cocktails": {
-      "command": "/absolute/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
+      "url": "http://localhost:3001/mcp",
+      "type": "http"
     }
   }
 }
 ```
 
 ### Cursor
-Configure `~/.cursor/mcp.json` or via Settings UI:
+Configure `~/.cursor/mcp.json` or via Settings UI for HTTP MCP:
 
 ```json
 {
   "mcpServers": {
     "cezzis-cocktails": {
-      "command": "/absolute/path/to/your/project/cocktails.mcp/dist/linux/cezzis-cocktails"
+      "url": "http://localhost:3001/mcp",
+      "type": "http"
     }
   }
 }
 ```
 
-### GitHub Copilot Chat (HTTP MCP)
+### GitHub Copilot (HTTP MCP)
 Configure VS Code `User/mcp.json` (Copilot MCP servers):
 
 ```json
 {
   "servers": {
     "cezzis-mcp": {
-      "url": "http://localhost:8080/mcp",
+      "url": "http://localhost:3001/mcp",
       "type": "http"
     }
   },
