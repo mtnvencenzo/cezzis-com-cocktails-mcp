@@ -4,7 +4,7 @@
 //
 // The package supports configuration for:
 //   - Cocktails API connection settings (host and subscription key)
-//   - Azure AD B2C authentication settings (instance, domain, and user flow)
+//   - Auth0 authentication settings (domain, client id, audience, scopes)
 //
 // Configuration is loaded from environment variables and .env files located in the
 // executable directory. The package uses a thread-safe singleton pattern to ensure
@@ -19,6 +19,11 @@ import (
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
+// DefaultAuth0Scopes defines the default OAuth2 scopes to request when no AUTH0_SCOPES
+// environment variable is configured. These scopes provide basic authentication and
+// account access capabilities.
+const DefaultAuth0Scopes = "openid offline_access profile email read:owned-account write:owned-account"
+
 // AppSettings contains all application configuration settings loaded from environment variables.
 // It provides a centralized way to access configuration values throughout the application.
 type AppSettings struct {
@@ -30,21 +35,20 @@ type AppSettings struct {
 	// requests to the Cocktails API service.
 	CocktailsAPISubscriptionKey string `env:"COCKTAILS_API_XKEY"`
 
-	// AzureAdB2CInstance is the Azure AD B2C tenant instance URL.
-	// Example: "https://your-tenant.b2clogin.com"
-	AzureAdB2CInstance string `env:"AZUREAD_B2C_INSTANCE"`
+	// Auth0Domain is your Auth0 domain or custom domain.
+	// Example: "your-tenant.us.auth0.com" or "login.cezzis.com"
+	Auth0Domain string `env:"AUTH0_DOMAIN"`
 
-	// AzureAdB2CDomain is the Azure AD B2C tenant domain name.
-	// Example: "your-tenant.onmicrosoft.com"
-	AzureAdB2CDomain string `env:"AZUREAD_B2C_DOMAIN"`
+	// Auth0ClientID is the public client identifier for your Auth0 Application (Native/Public).
+	Auth0ClientID string `env:"AUTH0_CLIENT_ID"`
 
-	// AzureAdB2CUserFlow is the name of the Azure AD B2C user flow for authentication.
-	// Example: "B2C_1_signupsignin"
-	AzureAdB2CUserFlow string `env:"AZUREAD_B2C_USERFLOW"`
+	// Auth0Audience is the API Identifier to request an access token for.
+	// Example: "https://api.cezzis.com/cocktails"
+	Auth0Audience string `env:"AUTH0_AUDIENCE"`
 
-	// AzureAdB2CClientID is the client ID of the Azure AD B2C app registration.
-	// Example: "84744194-da27-410f-ae0e-74f5589d4c96"
-	AzureAdB2CClientID string `env:"AZUREAD_B2C_CLIENT_ID"`
+	// Auth0Scopes is the list of scopes to request.
+	// Example: "openid profile email offline_access cocktails:read cocktails:write"
+	Auth0Scopes string `env:"AUTH0_SCOPES"`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
@@ -70,26 +74,23 @@ func GetAppSettings() *AppSettings {
 	if instance.CocktailsAPISubscriptionKey == "" {
 		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
 	}
-	if instance.AzureAdB2CInstance == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_INSTANCE is not set")
+	// Warn if Auth0 is not configured
+	if instance.Auth0Domain == "" {
+		l.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
 	}
-	if instance.AzureAdB2CDomain == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_DOMAIN is not set")
-	}
-	if instance.AzureAdB2CUserFlow == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_USERFLOW is not set")
-	}
-	if instance.AzureAdB2CClientID == "" {
-		l.Logger.Warn().Msg("Warning: AZUREAD_B2C_CLIENT_ID is not set")
+
+	if instance.Auth0ClientID == "" {
+		l.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
 	}
 
 	return instance
 }
 
-// GetAzureAdB2CDiscoveryKeysURI constructs the Azure AD B2C discovery keys URI
-// by combining the instance, domain, and user flow settings.
-// This URI is used to fetch the JSON Web Key Set (JWKS) for JWT token validation.
-// Returns a formatted string like: "https://your-tenant.b2clogin.com/your-tenant.onmicrosoft.com/B2C_1_signupsignin/discovery/v2.0/keys"
-func (a *AppSettings) GetAzureAdB2CDiscoveryKeysURI() string {
-	return fmt.Sprintf("%s/%s/%s/discovery/v2.0/keys", a.AzureAdB2CInstance, a.AzureAdB2CDomain, a.AzureAdB2CUserFlow)
+// GetAuth0JWKSURI returns the JWKS URL for Auth0.
+// Example: https://YOUR_DOMAIN/.well-known/jwks.json
+func (a *AppSettings) GetAuth0JWKSURI() string {
+	if a.Auth0Domain == "" {
+		return ""
+	}
+	return fmt.Sprintf("https://%s/.well-known/jwks.json", a.Auth0Domain)
 }

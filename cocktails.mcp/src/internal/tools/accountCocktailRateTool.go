@@ -126,11 +126,6 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		l.Logger.Warn().Msg("MCP Warning: empty response body when rating cocktail: " + cocktailID)
 	}
 
-	// Note: This is a placeholder implementation
-	// In a full implementation, you would make an authenticated API call to:
-	// POST /api/v1/accounts/owned/profile/cocktails/ratings
-	// with the authenticated request editor from the API factory
-
 	result := fmt.Sprintf(`Successfully submitted rating!
 
 Cocktail ID: %s
@@ -145,54 +140,6 @@ Thank you for contributing to the Cezzis.com community!`, cocktailID, stars, coc
 		Str("cocktail_id", cocktailID).
 		Int("stars", stars).
 		Msg("Cocktail rating submitted")
-
-	return mcp.NewToolResultText(result), nil
-}
-
-var getFavoritesDescription = `
-Get your favorite cocktails from Cezzis.com (requires authentication).
-This tool retrieves the list of cocktails you've marked as favorites.
-You must be authenticated using the 'auth_login' tool before using this feature.
-`
-
-// GetFavoritesTool retrieves user's favorite cocktails
-var GetFavoritesTool = mcp.NewTool(
-	"cocktails_favorites_get",
-	mcp.WithDescription(getFavoritesDescription),
-)
-
-// GetFavoritesToolHandler handles favorite cocktails retrieval requests
-type GetFavoritesToolHandler struct {
-	authManager         *auth.Manager
-	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
-}
-
-// NewGetFavoritesToolHandler creates a new favorites retrieval handler
-func NewGetFavoritesToolHandler(authManager *auth.Manager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *GetFavoritesToolHandler {
-	return &GetFavoritesToolHandler{
-		authManager:         authManager,
-		cocktailsAPIFactory: cocktailsAPIFactory,
-	}
-}
-
-// Handle handles favorite cocktails retrieval requests
-func (handler *GetFavoritesToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	// Check authentication
-	if !handler.authManager.IsAuthenticated() {
-		return mcp.NewToolResultError("You must be authenticated to view favorites. Use the 'auth_login' tool first."), nil
-	}
-
-	// Note: This is a placeholder implementation
-	// In a full implementation, you would make an authenticated API call to:
-	// GET /api/v1/accounts/owned/profile
-	// and extract the favoriteCocktails array from the response
-
-	result := `Your Favorite Cocktails:
-
-This feature is ready to be implemented once the account profile endpoint is integrated.
-You can manage your favorites by using the 'cocktails_favorites_manage' tool.
-
-Visit https://www.cezzis.com/account/profile to manage your favorites on the website.`
 
 	return mcp.NewToolResultText(result), nil
 }

@@ -85,13 +85,27 @@ type ctxKey string
 type loggingResponseWriter struct {
 	http.ResponseWriter
 	statusCode int
+	wrote      bool
 }
 
 func newLoggingResponseWriter(w http.ResponseWriter) *loggingResponseWriter {
-	return &loggingResponseWriter{w, http.StatusOK}
+	return &loggingResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
 }
 
 func (lrw *loggingResponseWriter) WriteHeader(code int) {
+	if lrw.wrote {
+		// update observed status but don't write twice
+		lrw.statusCode = code
+		return
+	}
 	lrw.statusCode = code
+	lrw.wrote = true
 	lrw.ResponseWriter.WriteHeader(code)
+}
+
+func (lrw *loggingResponseWriter) Write(b []byte) (int, error) {
+	if !lrw.wrote {
+		lrw.WriteHeader(http.StatusOK)
+	}
+	return lrw.ResponseWriter.Write(b)
 }

@@ -40,14 +40,28 @@ func NewAuthLoginToolHandler(authManager *auth.Manager) *AuthLoginToolHandler {
 
 // Handle handles authentication login requests
 func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	// Start authentication (with automatic environment detection)
+	// If HTTP mode, use device code flow and return instructions
+	if handler.authManager.IsHTTPMode() {
+		dc, err := handler.authManager.BeginDeviceAuth(ctx)
+		if err != nil {
+			l.Logger.Error().Err(err).Msg("Failed to start device code auth")
+			return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil
+		}
+		msg := fmt.Sprintf(`Continue in your browser to sign in:
+
+1) Visit: %s
+2) Enter code: %s
+
+This window can stay open; we'll finish automatically once you complete sign in.`, dc.VerificationURI, dc.UserCode)
+		return mcp.NewToolResultText(msg), nil
+	}
+
+	// stdio/local: run browser-based PKCE and return token details
 	tokens, err := handler.authManager.Authenticate(ctx)
 	if err != nil {
 		l.Logger.Error().Err(err).Msg("Failed to complete authentication")
 		return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil
 	}
-
-	// Format success response
 	result := fmt.Sprintf(`✅ Authentication successful!
 
 Token Details:
@@ -64,39 +78,5 @@ Authentication will be automatically saved for future use.`,
 		tokens.TokenType,
 		tokens.ExpiresIn,
 		tokens.Scope)
-
 	return mcp.NewToolResultText(result), nil
-}
-
-var authStatusDescription = `
-	Check the current authentication status for Cezzis.com account access.
-	This tool returns whether you are currently authenticated and can access 
-	personalized features like favorites, ratings, and profile management.
-`
-
-// AuthStatusTool checks current authentication status
-var AuthStatusTool = mcp.NewTool(
-	"auth_status",
-	mcp.WithDescription(authStatusDescription),
-)
-
-// AuthStatusToolHandler handles authentication status requests
-type AuthStatusToolHandler struct {
-	authManager *auth.Manager
-}
-
-// NewAuthStatusToolHandler creates a new authentication status handler
-func NewAuthStatusToolHandler(authManager *auth.Manager) *AuthStatusToolHandler {
-	return &AuthStatusToolHandler{
-		authManager: authManager,
-	}
-}
-
-// Handle handles authentication status requests
-func (handler *AuthStatusToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	if handler.authManager.IsAuthenticated() {
-		return mcp.NewToolResultText("✅ You are currently authenticated and can access personalized features."), nil
-	}
-
-	return mcp.NewToolResultText("❌ You are not currently authenticated. Use the 'auth_login' tool to sign in."), nil
 }

@@ -66,20 +66,20 @@ module "aca_cocktails_mcp" {
       value = "https://api.cezzis.com/prd/cocktails"
     },
     {
-      name  = "AZUREAD_B2C_INSTANCE"
-      value = "https://login.cezzis.com"
+      name  = "AUTH0_AUDIENCE"
+      value = var.auth0_audience
     },
     {
-      name  = "AZUREAD_B2C_DOMAIN"
-      value = "cezzis.onmicrosoft.com"
+      name  = "AUTH0_CLIENT_ID"
+      value = var.auth0_naive_client_id
     },
     {
-      name  = "AZUREAD_B2C_CLIENT_ID"
-      value = "00000000-0000-0000-0000-000000000000" # module.mcp_b2c_tenant.cocktails_mcp_app_registration_client_id
+      name  = "AUTH0_DOMAIN"
+      value = var.auth0_domain
     },
     {
-      name  = "AZUREAD_B2C_USERFLOW"
-      value = "B2C_1_SignInSignUp_Policy"
+      name  = "AUTH0_SCOPES"
+      value = var.auth0_scopes
     },
     {
       name  = "ENV"

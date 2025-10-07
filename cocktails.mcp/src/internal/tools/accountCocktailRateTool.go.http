@@ -1,5 +1,5 @@
 // ------------------------------------------------------------
-// POST login
+// POST Rate Cocktail
 // ------------------------------------------------------------
 
 POST {{host}}/mcp
@@ -12,8 +12,11 @@ Mcp-Session-Id: mcp-session-24f4d503-d725-4aa3-bae0-d4ded79b4a6e
   "id": "1",
   "method": "tools/call",
   "params": {
-    "name": "auth_login",
-    "arguments": {}
+    "name": "cocktail_rate",
+    "arguments": {
+      "cocktailId": "pegu-club",
+      "stars": "5"
+    }
   }
 }
 

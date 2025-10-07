@@ -12,9 +12,8 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 
 	// arrange
 	expectedCocktailsAPIHost := "https://testapi.cezzis.com/prd/cocktails"
-	expectedAzureAdB2CDomain := "cezzis.onmicrosoft.com"
-	expectedAzureAdB2CInstance := "https://testlogin.cezzis.com"
-	expectedAzureAdB2CUserFlow := "B2C_1_SignInSignUp_Policy"
+	expectedAuth0Domain := "login.test.cezzis.com"
+	expectedAuth0ClientID := "00000000-0000-0000-0000-000000000000"
 	expectedCocktailsAPISubscriptionKey := "00000000-0000-0000-0000-000000000000"
 
 	// act
@@ -25,16 +24,11 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 		t.Errorf("Expected CocktailsAPIHost to be %s, got %s", expectedCocktailsAPIHost, appSettings.CocktailsAPIHost)
 	}
 
-	if appSettings.AzureAdB2CDomain != expectedAzureAdB2CDomain {
-		t.Errorf("Expected AzureAdB2CDomain to be %s, got %s", expectedAzureAdB2CDomain, appSettings.AzureAdB2CDomain)
+	if appSettings.Auth0Domain != expectedAuth0Domain {
+		t.Errorf("Expected Auth0Domain to be %s, got %s", expectedAuth0Domain, appSettings.Auth0Domain)
 	}
-
-	if appSettings.AzureAdB2CInstance != expectedAzureAdB2CInstance {
-		t.Errorf("Expected AzureAdB2CInstance to be %s, got %s", expectedAzureAdB2CInstance, appSettings.AzureAdB2CInstance)
-	}
-
-	if appSettings.AzureAdB2CUserFlow != expectedAzureAdB2CUserFlow {
-		t.Errorf("Expected AzureAdB2CUserFlow to be %s, got %s", expectedAzureAdB2CUserFlow, appSettings.AzureAdB2CUserFlow)
+	if appSettings.Auth0ClientID != expectedAuth0ClientID {
+		t.Errorf("Expected Auth0ClientID to be %s, got %s", expectedAuth0ClientID, appSettings.Auth0ClientID)
 	}
 
 	if appSettings.CocktailsAPISubscriptionKey != expectedCocktailsAPISubscriptionKey {
@@ -42,18 +36,18 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 	}
 }
 
-func Test_appsettings_produces_correct_discovery_keys_url(t *testing.T) {
+func Test_appsettings_produces_correct_jwks_url(t *testing.T) {
 	testutils.LoadEnvironment("..", "..")
 
 	// arrange
-	expectedAzureAdB2CDiscoveryKeysURI := "https://testlogin.cezzis.com/cezzis.onmicrosoft.com/B2C_1_SignInSignUp_Policy/discovery/v2.0/keys"
+	expectedJWKS := "https://login.test.cezzis.com/.well-known/jwks.json"
 
 	// act
 	appSettings := config.GetAppSettings()
-	azureAdB2CDiscoveryKeysURI := appSettings.GetAzureAdB2CDiscoveryKeysURI()
+	jwks := appSettings.GetAuth0JWKSURI()
 
 	// asert
-	if azureAdB2CDiscoveryKeysURI != expectedAzureAdB2CDiscoveryKeysURI {
-		t.Errorf("Expected GetAzureAdB2CDiscoveryKeysURI() to be %s, got %s", expectedAzureAdB2CDiscoveryKeysURI, azureAdB2CDiscoveryKeysURI)
+	if jwks != expectedJWKS {
+		t.Errorf("Expected GetAuth0JWKSURI() to be %s, got %s", expectedJWKS, jwks)
 	}
 }

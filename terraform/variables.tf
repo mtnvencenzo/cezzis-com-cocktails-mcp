@@ -59,51 +59,28 @@ variable "global_domain" {
   default     = "shared"
 }
 
-variable "b2c_terraform_app_registration_client_id" {
-  type = string
-}
-
-variable "b2c_terraform_app_registration_client_secret" {
-  type = string
-}
-
 variable "image_tag" {
   type = string
 }
 
-variable "b2c_tenant_id" {
+# Auth0 Configuration Variables
+variable "auth0_domain" {
   type        = string
-  description = "The b2c tenant id for this environment"
+  description = "Auth0 domain (e.g., your-domain.auth0.com)"
 }
 
-variable "b2c_tenant_name" {
+variable "auth0_audience" {
   type        = string
-  description = "The b2c tenant name (typeically the first part of the hostname)"
+  description = "Auth0 API identifier/audience"
 }
 
-variable "b2c_tenant_domain_name" {
+variable "auth0_naive_client_id" {
   type        = string
-  description = "The b2c tenant domain name for this environment"
+  description = "Auth0 frontend/SPA client ID for Swagger/Scalar UI"
 }
 
-variable "b2c_signin_policy" {
+variable "auth0_scopes" {
   type        = string
-  description = "The main signin policy for the cocktails webapp"
-  default     = "B2C_1_SignInSignUp_Policy"
-}
-
-variable "login_subdomain" {
-  type = string
-}
-
-variable "cocktails_api_scope_account_read" {
-  type = string
-}
-
-variable "cocktails_api_scope_account_write" {
-  type = string
-}
-
-variable "cocktails_api_client_id" {
-  type = string
+  description = "Auth0 scopes for the application"
+  default     = "openid offline_access profile email read:owned-account write:owned-account"
 }

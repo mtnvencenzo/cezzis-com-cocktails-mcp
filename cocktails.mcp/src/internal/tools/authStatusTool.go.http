@@ -1,3 +1,7 @@
+// ------------------------------------------------------------
+// POST Status
+// ------------------------------------------------------------
+
 POST {{host}}/mcp
 Accept: application/json
 Content-Type: application/json
@@ -8,12 +12,7 @@ Mcp-Session-Id: mcp-session-24f4d503-d725-4aa3-bae0-d4ded79b4a6e
   "id": "1",
   "method": "tools/call",
   "params": {
-    "name": "cocktail_rate",
-    "arguments": {
-      "cocktailId": "bijou",
-      "stars": "5"
-    }
+    "name": "auth_status",
+    "arguments": {}
   }
 }
-
-###
