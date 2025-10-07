@@ -63,11 +63,6 @@ variable "image_tag" {
   type = string
 }
 
-variable "ciam_tenant_id" {
-  type        = string
-  description = "The ciam tenant id for this environment"
-}
-
 # Auth0 Configuration Variables
 variable "auth0_domain" {
   type        = string
