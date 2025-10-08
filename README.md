@@ -27,6 +27,19 @@ This server works alongside several sibling repositories:
 - [**shared-infrastructure**](https://github.com/mtnvencenzo/shared-infrastructure) – Global Terraform 
 modules that underpin multiple Cezzis.com workloads
 
+![Complete Diagram](./assets/cezzis-com-mcp-interactions.drawio.svg)
+
+## ☁️ Cloud-Native Footprint (Azure)
+
+Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Azure using shared modules:
+
+- **Azure Container Apps** – Hosts the MCP service (HTTP mode) with HTTPS ingress
+- **Azure API Management** – Optional façade when exposing HTTP endpoints; routes and policies managed via Terraform
+- **Azure Container Registry** – Stores container images published from CI/CD
+- **Azure Key Vault** – Holds secrets (Cezzis API subscription keys, telemetry keys)
+- **Azure Monitor / Application Insights** – Telemetry collection (logs/traces)
+- **Shared Infrastructure Modules** – Sourced from the reusable Terraform modules repo for consistency
+
 ## 📚 MCP Tools
 
 The server exposes the following MCP tools:
@@ -70,17 +83,6 @@ The server exposes the following MCP tools:
 - `GET /version` – Version info
 - `GET|POST /mcp` – Streamable MCP endpoint over HTTP
 
-
-## ☁️ Cloud-Native Footprint (Azure)
-
-Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Azure using shared modules:
-
-- **Azure Container Apps** – Hosts the MCP service (HTTP mode) with HTTPS ingress
-- **Azure API Management** – Optional façade when exposing HTTP endpoints; routes and policies managed via Terraform
-- **Azure Container Registry** – Stores container images published from CI/CD
-- **Azure Key Vault** – Holds secrets (Cezzis API subscription keys, telemetry keys)
-- **Azure Monitor / Application Insights** – Telemetry collection (logs/traces)
-- **Shared Infrastructure Modules** – Sourced from the reusable Terraform modules repo for consistency
 
 ## 🛠️ Technology Stack
 
