@@ -14,7 +14,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -25,8 +24,9 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
-	internalServer "cezzis.com/cezzis-mcp-server/internal/server"
+	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
@@ -38,16 +38,12 @@ func main() {
 	loadEnv()
 
 	// Initialize the logger
-	_, err := l.InitLogger()
+	_, err := logging.InitLogger()
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
-	// Add a flag to choose between stdio and HTTP
-	// If --http is provided, the server will run in HTTP mode on the specified address.
-	// Otherwise, it will default to stdio mode.
-	httpAddr := flag.String("http", "", "If set, serve HTTP on this address (e.g., :8080)")
-	flag.Parse()
+	config := config.GetAppSettings()
 
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
@@ -79,17 +75,20 @@ func main() {
 	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, authCocktailsAPIFactory).Handle))
 
 	// Finally, start the server in the chosen mode
-	// If --http is provided, start the HTTP server with logging middleware and a health check endpoint.
-	// Otherwise, serve requests over stdio.
 	// Proper error handling ensures that any issues during startup are logged.
 	// The server will run until it is manually stopped or encounters a fatal error.
-	httpServer := internalServer.NewMCPHTTPServer(*httpAddr, mcpServer, Version)
+	httpServer := mcpserver.NewMCPHTTPServer(config.Port, mcpServer, Version)
+
+	logging.Logger.Info().
+		Str("version", Version).
+		Str("port", config.Port).
+		Msg("Starting Cezzi Cocktails MCP Server")
 
 	if err := httpServer.Start(); err != nil {
-		l.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
+		logging.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
 	}
 
-	l.Logger.Info().Msg("MCP HTTP server stopped")
+	logging.Logger.Info().Msg("MCP HTTP server stopped")
 }
 
 func loadEnv() {

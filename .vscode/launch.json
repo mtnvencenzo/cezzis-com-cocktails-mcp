@@ -9,7 +9,7 @@
                 "program": "${workspaceFolder}/cocktails.mcp/src/cmd", // or "${workspaceFolder}/your_subdir"
                 "args": [
                     "--http",
-                    ":6098"
+                    ":7999"
                 ],
                 "env": {
                     "ENV": "local",
@@ -24,7 +24,7 @@
                 "program": "${workspaceFolder}/cocktails.mcp/src/cmd", // or "${workspaceFolder}/your_subdir"
                 "args": [
                     "--http",
-                    ":6098"
+                    ":7999"
                 ],
                 "env": {
                     "ENV": "local",

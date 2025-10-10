@@ -1,8 +1,8 @@
-// Package server provides HTTP server implementations for the Cezzi Cocktails MCP server.
+// Package mcpserver provides HTTP server implementations for the Cezzi Cocktails MCP server.
 // It includes the core HTTP server functionality with support for health checks,
 // version information, and MCP protocol streaming.
 //
-// The server package implements standard http.Handler interfaces and provides
+// The mcpserver package implements standard http.Handler interfaces and provides
 // integration with the MCP protocol server. It supports both health monitoring
 // and version reporting endpoints.
 //
@@ -12,7 +12,7 @@
 //   - Version information endpoint
 //   - Structured logging integration
 //   - Request middleware support
-package server
+package mcpserver
 
 import (
 	"net/http"
