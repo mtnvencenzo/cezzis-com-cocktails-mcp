@@ -44,6 +44,15 @@ test:
 	gocover-cobertura < ../../coverage.out > ../../cobertura.xml && \
 	go tool cover -func=../../coverage.out
 
+standards:
+	@echo "Running code standards checks..."
+	@make fmt
+	@make imports
+	@make vet
+	@make lint
+	@make test
+	@echo "Code standards checks completed."
+
 # ------------------------------------------------------------
 # build
 # ------------------------------------------------------------

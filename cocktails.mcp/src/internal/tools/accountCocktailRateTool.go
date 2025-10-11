@@ -16,12 +16,17 @@ import (
 )
 
 var rateCocktailDescription = `
-Rate a cocktail on Cezzis.com (requires authentication).
-This tool allows you to submit a rating (1-5 stars) for a specific cocktail.
-You must be authenticated using the 'auth_login' tool before using this feature.
+This tool allows you to submit a rating (1-5 stars) for a specific cocktail.  The rating will be associated with your Cezzis.com account
+and be reflected in the cocktail's overall rating on the website. Ratings help other users discover great cocktails and contribute to the community. 
 
-Ratings help other users discover great cocktails and contribute to the community.
-You can only rate each cocktail once, but you can update your existing rating.
+To use this tool, provide a valid cocktail ID and your star rating as an integer between 1 and 5. A cocktail ID can be obtained from the
+results of the 'cocktail_search' tool, from the cocktail details from the get_cocktail tool, or from the cocktails page of a cocktail on Cezzis.com.
+
+If you provide an invalid rating or have already rated the cocktail, the tool will return an error.
+
+You must be authenticated using the 'authentication_login_flow' tool prior to using this feature. Furthermore, You must have a valid and active
+mcp session, the session identifier from the original initialization request must be present in the request to this tool via the Mcp-Session-Id header.
+If the response returns an error about authentication, please run the 'authentication_login_flow' tool first.
 `
 
 // RateCocktailTool handles cocktail rating submission
@@ -40,12 +45,12 @@ var RateCocktailTool = mcp.NewTool(
 
 // RateCocktailToolHandler handles cocktail rating requests
 type RateCocktailToolHandler struct {
-	authManager         *auth.Manager
+	authManager         *auth.OAuthFlowManager
 	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
 }
 
 // NewRateCocktailToolHandler creates a new cocktail rating handler
-func NewRateCocktailToolHandler(authManager *auth.Manager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *RateCocktailToolHandler {
+func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *RateCocktailToolHandler {
 	return &RateCocktailToolHandler{
 		authManager:         authManager,
 		cocktailsAPIFactory: cocktailsAPIFactory,
@@ -77,7 +82,7 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 
 	// Check authentication
 	if !handler.authManager.IsAuthenticated() {
-		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'auth_login' tool first."), nil
+		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
 	}
 
 	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()

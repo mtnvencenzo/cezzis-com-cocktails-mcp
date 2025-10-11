@@ -19,10 +19,10 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
-			Method: "cocktails_get",
+			Method: "get_cocktail",
 		},
 		Params: mcp.CallToolParams{
-			Name:      "cocktails_get",
+			Name:      "get_cocktail",
 			Arguments: map[string]interface{}{},
 		},
 	}
@@ -42,10 +42,10 @@ func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
-			Method: "cocktails_get",
+			Method: "get_cocktail",
 		},
 		Params: mcp.CallToolParams{
-			Name: "cocktails_get",
+			Name: "get_cocktail",
 			Arguments: map[string]interface{}{
 				"cocktailId": "",
 			},
@@ -67,10 +67,10 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
-			Method: "cocktails_get",
+			Method: "get_cocktail",
 		},
 		Params: mcp.CallToolParams{
-			Name: "cocktails_get",
+			Name: "get_cocktail",
 			Arguments: map[string]interface{}{
 				"cocktailId": "pegu-club",
 			},

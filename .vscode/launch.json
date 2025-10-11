@@ -7,10 +7,7 @@
                 "request": "launch",
                 "mode": "debug",
                 "program": "${workspaceFolder}/cocktails.mcp/src/cmd", // or "${workspaceFolder}/your_subdir"
-                "args": [
-                    "--http",
-                    ":7999"
-                ],
+                "args": [],
                 "env": {
                     "ENV": "local",
                     "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"
@@ -22,10 +19,7 @@
                 "request": "launch",
                 "mode": "auto",
                 "program": "${workspaceFolder}/cocktails.mcp/src/cmd", // or "${workspaceFolder}/your_subdir"
-                "args": [
-                    "--http",
-                    ":7999"
-                ],
+                "args": [],
                 "env": {
                     "ENV": "local",
                     "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"

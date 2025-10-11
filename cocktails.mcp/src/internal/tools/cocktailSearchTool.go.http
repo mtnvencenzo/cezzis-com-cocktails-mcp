@@ -21,7 +21,7 @@ Content-Type: application/json
   "id": 0,
   "method": "initialize",
   "params": {
-    "protocolVersion": "2024-11-05",
+    "protocolVersion": "2025-06-18",
     "capabilities": {},
     "clientInfo": {
       "name": "cocktails-dot-http-file",
@@ -46,7 +46,7 @@ Mcp-Session-Id: mcp-session-24f4d503-d725-4aa3-bae0-d4ded79b4a6e
   "id": "1",
   "method": "tools/call",
   "params": {
-    "name": "cocktails_search",
+    "name": "search_cocktails",
     "arguments": {
       "freeText": "cocktail with gin and lime"
     }

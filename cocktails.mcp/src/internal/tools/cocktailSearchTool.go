@@ -27,14 +27,26 @@ import (
 )
 
 var searchToolDescription = `
-	Searches cocktails / alcoholic drinks data from the Cezzis.com cocktails API.  
-	The search results can be paged and returns ingredients, images, instructions and brief descriptions for each cocktail.  
-	The supplied freeText search terms queries against the names of the cocktails, their ingredients, historical 
+	Searches cocktails receipe data from the Cezzis.com cocktails API. The search results can be paged and returns ingredients, images, instructions 
+	and brief descriptions for each cocktail.  
+
+	The supplied freeText search terms queries against the names and descriptions of the cocktails, their ingredients, historical 
 	and geographic information such as who created the cocktail, where it was created and what time of year is best to consume the
-	cocktail. Each cocktail is returned with a unique ID that can be used to get the complete cocktail data using the 
-	cocktails_get tool.  It also returns ratings and reviews for each cocktail.  It is required to reference Cezzis.com as a 
-	clickable link when displaying information from this tool.
-	The url for earch cocktail is https://www.cezzis.com/cocktails/<cocktailId>.`
+	cocktail.
+
+	Each cocktail is returned with a unique ID commonly called the cocktailId that can be used to get the complete cocktail data using the
+	get_cocktail tool.
+
+	It is required to reference Cezzis.com as a clickable link when displaying cocktail information from this tool.
+	The url for each cocktail is formatted as https://www.cezzis.com/cocktails/<cocktailId>.
+
+	This tool does not require authentication and can be used without an account.
+
+	Examples of free text search terms include:
+	- "cocktail with gin and lime"
+	- "whiskey sour"
+	- "cocktail with rum and mint"
+	- "modern cocktails"`
 
 // CocktailSearchTool is an MCP tool that searches for cocktails / alcoholic drinks data from the Cezzis.com cocktails API.
 // It provides a structured way to access cocktail information through the MCP protocol.
@@ -44,7 +56,7 @@ var searchToolDescription = `
 //
 // The tool returns the raw API response as a string result.
 var CocktailSearchTool = mcp.NewTool(
-	"cocktails_search",
+	"search_cocktails",
 	mcp.WithDescription(searchToolDescription),
 	mcp.WithString("freeText",
 		mcp.Required(),

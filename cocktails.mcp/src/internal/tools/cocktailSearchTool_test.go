@@ -19,10 +19,10 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
-			Method: "cocktails_search",
+			Method: "search_cocktails",
 		},
 		Params: mcp.CallToolParams{
-			Name:      "cocktails_search",
+			Name:      "search_cocktails",
 			Arguments: map[string]interface{}{},
 		},
 	}
@@ -42,10 +42,10 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
-			Method: "cocktails_search",
+			Method: "search_cocktails",
 		},
 		Params: mcp.CallToolParams{
-			Name: "cocktails_search",
+			Name: "search_cocktails",
 			Arguments: map[string]interface{}{
 				"freeText": "Pegu Club",
 			},

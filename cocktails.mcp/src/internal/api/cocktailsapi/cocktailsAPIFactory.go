@@ -1,21 +1,11 @@
 package cocktailsapi
 
 import (
-	"context"
 	"errors"
-	"net/http"
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/logging"
 )
-
-// ICocktailsAPI defines the interface for interacting with the cocktails API.
-// It provides methods for retrieving individual cocktails and listing cocktails.
-type ICocktailsAPI interface {
-	GetCocktail(ctx context.Context, id string, params *GetCocktailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-	GetCocktailsList(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-	RateCocktailWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *RateCocktailParams, body RateCocktailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-}
 
 // ICocktailsAPIFactory defines the interface for creating cocktails API clients.
 type ICocktailsAPIFactory interface {
@@ -39,13 +29,13 @@ func (factory CocktailsAPIFactory) GetClient() (ICocktailsAPI, error) {
 
 	if appSettings.CocktailsAPIHost == "" {
 		err := errors.New("CocktailsAPIHost has not been configured")
-		l.Logger.Error().Err(err).Msg(err.Error())
+		logging.Logger.Error().Err(err).Msg(err.Error())
 		return nil, err
 	}
 
 	client, err := NewClient(appSettings.CocktailsAPIHost)
 	if err != nil {
-		l.Logger.Error().Err(err).Msg(err.Error())
+		logging.Logger.Error().Err(err).Msg(err.Error())
 		return nil, err
 	}
 

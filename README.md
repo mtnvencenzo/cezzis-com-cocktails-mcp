@@ -44,13 +44,13 @@ Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Az
 
 The server exposes the following MCP tools:
 
-### cocktails_search
+### search_cocktails
 - Purpose: Search cocktails by natural language query
 - Parameters:
   - `freeText` (string, required): Search terms (name, ingredients, style)
 - Returns: Array of cocktails with IDs, titles, images, and summaries
 
-### cocktails_get
+### get_cocktail
 - Purpose: Retrieve full details for a specific cocktail
 - Parameters:
   - `cocktailId` (string, required): ID from search results

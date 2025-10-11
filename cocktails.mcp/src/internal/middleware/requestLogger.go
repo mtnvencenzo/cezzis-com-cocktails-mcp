@@ -19,7 +19,7 @@ import (
 
 	"github.com/rs/xid"
 
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 // RequestLogger is a middleware that logs incoming HTTP requests and their outcomes.
@@ -35,30 +35,31 @@ import (
 //
 //	http.Handle("/api", middleware.RequestLogger(apiHandler))
 func RequestLogger(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		start := time.Now()
-
-		lg := l.Logger
 
 		correlationID := xid.New().String()
 
-		ctx := context.WithValue(r.Context(), ctxKey("correlation_id"), correlationID)
+		ctx := context.WithValue(req.Context(), ctxKey("correlation_id"), correlationID)
 
-		r = r.WithContext(ctx)
+		req = req.WithContext(ctx)
 
 		w.Header().Add("X-Correlation-ID", correlationID)
 
 		lrw := newLoggingResponseWriter(w)
 
-		reqLogger := lg.With().Str("correlation_id", correlationID).Logger()
-		r = r.WithContext(reqLogger.WithContext(r.Context()))
+		reqLogger := logging.Logger.
+			With().
+			Str("correlation_id", correlationID).Logger()
+
+		req = req.WithContext(reqLogger.WithContext(req.Context()))
 
 		defer func() {
 			if rec := recover(); rec != nil {
 				lrw.statusCode = http.StatusInternalServerError
 				reqLogger.Error().
-					Str("method", r.Method).
-					Str("url", r.URL.RequestURI()).
+					Str("method", req.Method).
+					Str("url", req.URL.RequestURI()).
 					Int("status_code", lrw.statusCode).
 					Int64("elapsed_ms", time.Since(start).Milliseconds()).
 					Interface("panic", rec).
@@ -69,14 +70,14 @@ func RequestLogger(next http.Handler) http.Handler {
 
 			reqLogger.
 				Info().
-				Str("method", r.Method).
-				Str("url", r.URL.RequestURI()).
+				Str("method", req.Method).
+				Str("url", req.URL.RequestURI()).
 				Int("status_code", lrw.statusCode).
 				Int64("elapsed_ms", time.Since(start).Milliseconds()).
-				Msgf("MCP: %s %s %d", r.Method, r.URL.RequestURI(), lrw.statusCode)
+				Msgf("MCP: %s %s %d", req.Method, req.URL.RequestURI(), lrw.statusCode)
 		}()
 
-		next.ServeHTTP(lrw, r)
+		next.ServeHTTP(lrw, req)
 	})
 }
 
