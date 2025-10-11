@@ -272,8 +272,12 @@ func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context) (string, error
 	if !auth.currentTokens.ExpiresAt.IsZero() && time.Until(auth.currentTokens.ExpiresAt) < 2*time.Minute {
 		if _, err := auth.refreshAccessToken(ctx); err != nil {
 			logging.Logger.Warn().Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
-			auth.storage.ClearTokens()
+
 			auth.currentTokens = nil
+			if err := auth.storage.ClearTokens(); err != nil {
+				logging.Logger.Warn().Err(err).Msg("Failed to clear tokens from storage")
+			}
+
 			return "", fmt.Errorf("failed to refresh access token: %w", err)
 		}
 	}
