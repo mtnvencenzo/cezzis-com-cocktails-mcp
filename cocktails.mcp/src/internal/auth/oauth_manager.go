@@ -1,3 +1,4 @@
+// Package auth provides authentication related structures and functions for OAuth flows.
 package auth
 
 import (
@@ -15,6 +16,27 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/logging"
 )
+
+// TokenResponse represents the OAuth token response
+type TokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int    `json:"expires_in"`
+	TokenType    string `json:"token_type"`
+	Scope        string `json:"scope"`
+	// Computed locally (not returned by the provider)
+	ExpiresAt time.Time `json:"-"`
+}
+
+// DeviceCodeResponse represents the device code response
+type DeviceCodeResponse struct {
+	DeviceCode      string `json:"device_code"`
+	UserCode        string `json:"user_code"`
+	VerificationURI string `json:"verification_uri"`
+	ExpiresIn       int    `json:"expires_in"`
+	Interval        int    `json:"interval"`
+	Message         string `json:"message"`
+}
 
 // OAuthFlowManager handles OAuth authentication flows
 type OAuthFlowManager struct {
