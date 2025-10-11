@@ -88,7 +88,11 @@ module "aca_cocktails_mcp" {
     {
       name  = "LOG_LEVEL"
       value = "info"
-    }
+    },
+    {
+      name  = "PORT"
+      value = var.port
+    },
   ]
 
   env_secret_vars = [
