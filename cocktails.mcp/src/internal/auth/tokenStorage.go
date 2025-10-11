@@ -20,15 +20,6 @@ type TokenStorage struct {
 	encryptionKey []byte
 }
 
-// StoredTokens represents tokens stored on disk
-type StoredTokens struct {
-	AccessToken  string    `json:"access_token"`
-	RefreshToken string    `json:"refresh_token"`
-	ExpiresAt    time.Time `json:"expires_at"`
-	TokenType    string    `json:"token_type"`
-	Scope        string    `json:"scope"`
-}
-
 // NewTokenStorage creates a new token storage instance
 func NewTokenStorage(storageDir string) (*TokenStorage, error) {
 	if err := os.MkdirAll(storageDir, 0700); err != nil {

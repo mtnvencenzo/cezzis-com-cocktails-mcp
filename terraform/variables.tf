@@ -84,3 +84,13 @@ variable "auth0_scopes" {
   description = "Auth0 scopes for the application"
   default     = "openid offline_access profile email read:owned-account write:owned-account"
 }
+
+variable "port" {
+  type        = string
+  description = "The port the application listens on"
+  default     = "8080"
+  validation {
+    condition     = can(regex("^\\d{1,5}$", var.port)) && tonumber(var.port) > 0 && tonumber(var.port) <= 65535
+    error_message = "The port must be a valid integer between 1 and 65535."
+  }
+}

@@ -1,5 +1,3 @@
-// Package auth provides OAuth authentication functionality for the MCP server.
-// It implements Authorization Code with PKCE and Device Code flows for Auth0.
 package auth
 
 import (
@@ -15,59 +13,32 @@ import (
 	"time"
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
-// TokenResponse represents the OAuth token response
-type TokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	ExpiresIn    int    `json:"expires_in"`
-	TokenType    string `json:"token_type"`
-	Scope        string `json:"scope"`
-	// Computed locally (not returned by the provider)
-	ExpiresAt time.Time `json:"-"`
-}
-
-// PKCEChallenge represents PKCE challenge data for authorization code flow
-type PKCEChallenge struct {
-	CodeVerifier  string
-	CodeChallenge string
-}
-
-// DeviceCodeResponse represents the device code response
-type DeviceCodeResponse struct {
-	DeviceCode      string `json:"device_code"`
-	UserCode        string `json:"user_code"`
-	VerificationURI string `json:"verification_uri"`
-	ExpiresIn       int    `json:"expires_in"`
-	Interval        int    `json:"interval"`
-	Message         string `json:"message"`
-}
-
-// Manager handles OAuth authentication flows
-type Manager struct {
+// OAuthFlowManager handles OAuth authentication flows
+type OAuthFlowManager struct {
 	appSettings   *config.AppSettings
 	currentTokens *TokenResponse
 	httpClient    *http.Client
 	storage       *TokenStorage
 }
 
-// NewManager creates a new authentication manager
-func NewManager() *Manager {
+// NewOAuthFlowManager creates a new OAuth flow manager
+func NewOAuthFlowManager() *OAuthFlowManager {
 	// Create storage in user's home directory
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to get home directory, using temp storage")
+		logging.Logger.Warn().Err(err).Msg("Failed to get home directory, using temp storage")
 		homeDir = "/tmp"
 	}
 
 	storage, err := NewTokenStorage(filepath.Join(homeDir, ".cezzis"))
 	if err != nil {
-		l.Logger.Error().Err(err).Msg("Failed to create token storage")
+		logging.Logger.Error().Err(err).Msg("Failed to create token storage")
 	}
 
-	manager := &Manager{
+	manager := &OAuthFlowManager{
 		appSettings: config.GetAppSettings(),
 		httpClient:  &http.Client{Timeout: 30 * time.Second},
 		storage:     storage,
@@ -77,7 +48,7 @@ func NewManager() *Manager {
 	if storage != nil {
 		if tokens, err := storage.LoadTokens(); err == nil && tokens != nil {
 			manager.currentTokens = tokens
-			l.Logger.Info().Msg("Loaded existing authentication tokens")
+			logging.Logger.Info().Msg("Loaded existing authentication tokens")
 		}
 	}
 
@@ -85,7 +56,7 @@ func NewManager() *Manager {
 }
 
 // StartDeviceFlow initiates the device code authentication flow
-func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
+func (auth *OAuthFlowManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
 	if strings.TrimSpace(auth.appSettings.Auth0Domain) == "" || strings.TrimSpace(auth.appSettings.Auth0ClientID) == "" {
 		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
 	}
@@ -101,7 +72,7 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 		data.Set("audience", audience)
 	}
 
-	l.Logger.Info().
+	logging.Logger.Info().
 		Str("scopes_requested", requestedScopes).
 		Str("audience", audience).
 		Bool("audience_included", audience != "").
@@ -121,7 +92,7 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to close response body")
+			logging.Logger.Warn().Err(err).Msg("Failed to close response body")
 		}
 	}()
 
@@ -131,7 +102,7 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		l.Logger.Error().
+		logging.Logger.Error().
 			Int("status_code", resp.StatusCode).
 			Str("response_body", string(body)).
 			Str("device_endpoint", deviceEndpoint).
@@ -145,7 +116,7 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 		return nil, fmt.Errorf("failed to parse device code response: %w", err)
 	}
 
-	l.Logger.Info().
+	logging.Logger.Info().
 		Str("user_code", deviceResp.UserCode).
 		Str("verification_uri", deviceResp.VerificationURI).
 		Msg("Device code flow started")
@@ -156,7 +127,7 @@ func (auth *Manager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, 
 // PollForTokens polls for tokens after user completes device authentication
 //
 //nolint:gocyclo
-func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeResponse) (*TokenResponse, error) {
+func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeResponse) (*TokenResponse, error) {
 	tokenEndpoint := fmt.Sprintf("https://%s/oauth/token", strings.TrimRight(auth.appSettings.Auth0Domain, "/"))
 
 	pollInterval := time.Duration(deviceCode.Interval) * time.Second
@@ -187,7 +158,7 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 			data.Set("audience", audience)
 		}
 
-		l.Logger.Debug().
+		logging.Logger.Debug().
 			Str("audience", audience).
 			Bool("audience_included", audience != "").
 			Msg("Polling for tokens")
@@ -201,17 +172,17 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 
 		resp, err := auth.httpClient.Do(req)
 		if err != nil {
-			l.Logger.Warn().Err(err).Msg("Token polling request failed")
+			logging.Logger.Warn().Err(err).Msg("Token polling request failed")
 			time.Sleep(pollInterval)
 			continue
 		}
 
 		body, err := io.ReadAll(resp.Body)
 		if closeErr := resp.Body.Close(); closeErr != nil {
-			l.Logger.Warn().Err(closeErr).Msg("Failed to close response body")
+			logging.Logger.Warn().Err(closeErr).Msg("Failed to close response body")
 		}
 		if err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to read token response")
+			logging.Logger.Warn().Err(err).Msg("Failed to read token response")
 			time.Sleep(pollInterval)
 			continue
 		}
@@ -232,11 +203,11 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 			// Save tokens to storage
 			if auth.storage != nil {
 				if err := auth.storage.SaveTokens(&tokenResp); err != nil {
-					l.Logger.Warn().Err(err).Msg("Failed to save tokens to storage")
+					logging.Logger.Warn().Err(err).Msg("Failed to save tokens to storage")
 				}
 			}
 
-			l.Logger.Info().
+			logging.Logger.Info().
 				Str("scopes_granted", tokenResp.Scope).
 				Msg("Successfully obtained access tokens")
 			return &tokenResp, nil
@@ -247,7 +218,7 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 		if json.Unmarshal(body, &errorResp) == nil {
 			if errorCode, ok := errorResp["error"].(string); ok {
 				if errorCode == "authorization_pending" {
-					l.Logger.Debug().Msg("Authorization still pending, continuing to poll...")
+					logging.Logger.Debug().Msg("Authorization still pending, continuing to poll...")
 					time.Sleep(pollInterval)
 					continue
 				}
@@ -255,19 +226,19 @@ func (auth *Manager) PollForTokens(ctx context.Context, deviceCode *DeviceCodeRe
 			}
 		}
 
-		l.Logger.Warn().Str("response", string(body)).Msg("Unexpected token response")
+		logging.Logger.Warn().Str("response", string(body)).Msg("Unexpected token response")
 		time.Sleep(pollInterval)
 	}
 }
 
 // Authenticate initiates the appropriate authentication flow based on the environment
-func (auth *Manager) Authenticate(ctx context.Context) (*TokenResponse, error) {
-	l.Logger.Info().Msg("Container environment detected, using device code flow")
+func (auth *OAuthFlowManager) Authenticate(ctx context.Context) (*TokenResponse, error) {
+	logging.Logger.Info().Msg("Container environment detected, using device code flow")
 	return auth.authenticateDeviceCode(ctx)
 }
 
 // authenticateDeviceCode handles device code flow for container environments
-func (auth *Manager) authenticateDeviceCode(ctx context.Context) (*TokenResponse, error) {
+func (auth *OAuthFlowManager) authenticateDeviceCode(ctx context.Context) (*TokenResponse, error) {
 	// Start device code flow
 	deviceCode, err := auth.StartDeviceFlow(ctx)
 	if err != nil {
@@ -275,7 +246,7 @@ func (auth *Manager) authenticateDeviceCode(ctx context.Context) (*TokenResponse
 	}
 
 	// Return instructions to the user instead of trying to open browser
-	l.Logger.Info().
+	logging.Logger.Info().
 		Str("user_code", deviceCode.UserCode).
 		Str("verification_uri", deviceCode.VerificationURI).
 		Str("message", deviceCode.Message).
@@ -287,14 +258,27 @@ func (auth *Manager) authenticateDeviceCode(ctx context.Context) (*TokenResponse
 }
 
 // GetAccessToken returns the current access token, refreshing if necessary
-func (auth *Manager) GetAccessToken(ctx context.Context) (string, error) {
+func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context) (string, error) {
 	if auth.currentTokens == nil {
 		return "", fmt.Errorf("no tokens available, authentication required")
 	}
 
 	if !auth.currentTokens.ExpiresAt.IsZero() && time.Until(auth.currentTokens.ExpiresAt) < 2*time.Minute {
 		if _, err := auth.refreshAccessToken(ctx); err != nil {
-			l.Logger.Warn().Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
+			logging.Logger.Warn().Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
+		}
+	}
+
+	if !auth.currentTokens.ExpiresAt.IsZero() && time.Until(auth.currentTokens.ExpiresAt) < 2*time.Minute {
+		if _, err := auth.refreshAccessToken(ctx); err != nil {
+			logging.Logger.Warn().Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
+
+			auth.currentTokens = nil
+			if err := auth.storage.ClearTokens(); err != nil {
+				logging.Logger.Warn().Err(err).Msg("Failed to clear tokens from storage")
+			}
+
+			return "", fmt.Errorf("failed to refresh access token: %w", err)
 		}
 	}
 
@@ -302,7 +286,7 @@ func (auth *Manager) GetAccessToken(ctx context.Context) (string, error) {
 }
 
 // refreshAccessToken refreshes tokens using the current refresh_token.
-func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, error) {
+func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context) (*TokenResponse, error) {
 	if auth.currentTokens == nil || auth.currentTokens.RefreshToken == "" {
 		return nil, fmt.Errorf("no refresh token available")
 	}
@@ -322,7 +306,7 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 		data.Set("audience", audience)
 	}
 
-	l.Logger.Info().
+	logging.Logger.Info().
 		Str("audience", audience).
 		Bool("audience_included", audience != "").
 		Str("scope", auth.currentTokens.Scope).
@@ -341,7 +325,7 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			l.Logger.Warn().Err(err).Msg("Failed to close response body")
+			logging.Logger.Warn().Err(err).Msg("Failed to close response body")
 		}
 	}()
 
@@ -365,30 +349,20 @@ func (auth *Manager) refreshAccessToken(ctx context.Context) (*TokenResponse, er
 		_ = auth.storage.SaveTokens(&tokens)
 	}
 
-	l.Logger.Info().
+	logging.Logger.Info().
 		Str("scopes_granted", tokens.Scope).
 		Msg("Successfully refreshed access tokens")
 
 	return &tokens, nil
 }
 
-// firstNonEmpty returns the first non-empty string
-func firstNonEmpty(vals ...string) string {
-	for _, v := range vals {
-		if strings.TrimSpace(v) != "" {
-			return v
-		}
-	}
-	return ""
-}
-
 // IsAuthenticated returns true if the user is currently authenticated
-func (auth *Manager) IsAuthenticated() bool {
+func (auth *OAuthFlowManager) IsAuthenticated() bool {
 	return auth.currentTokens != nil && auth.currentTokens.AccessToken != ""
 }
 
 // Logout clears current authentication
-func (auth *Manager) Logout() error {
+func (auth *OAuthFlowManager) Logout() error {
 	auth.currentTokens = nil
 
 	if auth.storage != nil {
@@ -397,13 +371,13 @@ func (auth *Manager) Logout() error {
 		}
 	}
 
-	l.Logger.Info().Msg("Successfully logged out")
+	logging.Logger.Info().Msg("Successfully logged out")
 	return nil
 }
 
 // BeginDeviceAuth starts the device code flow and begins polling in the background.
 // It returns the verification details for the user to complete in their browser.
-func (auth *Manager) BeginDeviceAuth(ctx context.Context) (*DeviceCodeResponse, error) {
+func (auth *OAuthFlowManager) BeginDeviceAuth(ctx context.Context) (*DeviceCodeResponse, error) {
 	deviceCode, err := auth.StartDeviceFlow(ctx)
 	if err != nil {
 		return nil, err
@@ -414,8 +388,18 @@ func (auth *Manager) BeginDeviceAuth(ctx context.Context) (*DeviceCodeResponse, 
 		bgCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 		defer cancel()
 		if _, err := auth.PollForTokens(bgCtx, deviceCode); err != nil {
-			l.Logger.Warn().Err(err).Msg("Device code polling ended without tokens")
+			logging.Logger.Warn().Err(err).Msg("Device code polling ended without tokens")
 		}
 	}()
 	return deviceCode, nil
+}
+
+// firstNonEmpty returns the first non-empty string
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if strings.TrimSpace(v) != "" {
+			return v
+		}
+	}
+	return ""
 }

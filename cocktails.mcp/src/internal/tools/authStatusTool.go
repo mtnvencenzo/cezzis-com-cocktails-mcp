@@ -9,9 +9,12 @@ import (
 )
 
 var authStatusDescription = `
-	Check the current authentication status for Cezzis.com account access.
-	This tool returns whether you are currently authenticated and can access 
-	personalized features like cocktail favorites, ratings, and profile management.
+	Use this tool to check the current authentication status for Cezzis.com account access.
+	This tool returns whether you are currently authenticated and can access
+	personalized features like cocktail favorites, ratings, and profile management for your Cezzis.com account.
+
+	You must have a valid and active mcp session, the session identifier from the original initialization request must be present in the request
+	to this tool via the Mcp-Session-Id header.
 `
 
 // AuthStatusTool checks current authentication status
@@ -22,11 +25,11 @@ var AuthStatusTool = mcp.NewTool(
 
 // AuthStatusToolHandler handles authentication status requests
 type AuthStatusToolHandler struct {
-	authManager *auth.Manager
+	authManager *auth.OAuthFlowManager
 }
 
 // NewAuthStatusToolHandler creates a new authentication status handler
-func NewAuthStatusToolHandler(authManager *auth.Manager) *AuthStatusToolHandler {
+func NewAuthStatusToolHandler(authManager *auth.OAuthFlowManager) *AuthStatusToolHandler {
 	return &AuthStatusToolHandler{
 		authManager: authManager,
 	}

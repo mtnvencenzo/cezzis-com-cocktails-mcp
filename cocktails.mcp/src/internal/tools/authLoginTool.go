@@ -11,28 +11,31 @@ import (
 )
 
 var authLoginDescription = `
-	Initiates OAuth authentication flow for Cezzis.com account access.
-	This tool starts an authorization code flow that opens your web browser 
-	to authenticate with your Cezzis.com account and access personalized features 
-	like favorites, ratings, and profile management.
-	
-	The tool will provide you with an authorization URL that will open in your browser.
-	After completing the authentication, you can return to this application.
+	This tool initiates the OAuth device login flow for accessing your Cezzis.com account
+	and personalized features.
+
+	Calling this tool will start the device code authentication process, which will return
+	an authorization URL and code to enter in your web browser. After entering the code
+	and signing in, you can return to this application and let us know you have completed
+	the sign-in process.
+
+	Once authenticated, the tool will store your access token securely for future requests
+	that require authentication.
 `
 
 // AuthLoginTool handles OAuth authentication using device code flow
 var AuthLoginTool = mcp.NewTool(
-	"auth_login",
+	"authentication_login_flow",
 	mcp.WithDescription(authLoginDescription),
 )
 
 // AuthLoginToolHandler handles authentication login requests
 type AuthLoginToolHandler struct {
-	authManager *auth.Manager
+	authManager *auth.OAuthFlowManager
 }
 
 // NewAuthLoginToolHandler creates a new authentication login handler
-func NewAuthLoginToolHandler(authManager *auth.Manager) *AuthLoginToolHandler {
+func NewAuthLoginToolHandler(authManager *auth.OAuthFlowManager) *AuthLoginToolHandler {
 	return &AuthLoginToolHandler{
 		authManager: authManager,
 	}

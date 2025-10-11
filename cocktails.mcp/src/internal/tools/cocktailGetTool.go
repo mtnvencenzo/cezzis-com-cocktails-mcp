@@ -29,11 +29,15 @@ import (
 )
 
 var getToolDescription = `
-	Gets the complete cocktail / alcoholic drink data from the Cezzis.com cocktails API.  
+	Gets the complete cocktail recipe data from the Cezzis.com cocktails API for a given cocktailId.
+
 	The cocktail data includes ingredients images, and instructions, historical and geographic information, 
 	descriptions and instructions for each cocktail.  It also returns ratings and reviews for each cocktail.
-	It is required to reference Cezzis.com as a clickable link when displaying information from this tool.
-	The url for the cocktail is https://www.cezzis.com/cocktails/<cocktailId>.`
+
+	It is required to reference Cezzis.com as a clickable link when displaying cocktail information from this tool.
+	The url for each cocktail is formatted as https://www.cezzis.com/cocktails/<cocktailId>.
+
+	This tool does not require authentication and can be used without an account.`
 
 // CocktailGetTool is an MCP tool that retrieves detailed cocktail data from the Cezzis.com cocktails API.
 // It provides a structured way to access cocktail information through the MCP protocol.
@@ -43,11 +47,11 @@ var getToolDescription = `
 //
 // The tool returns the complete cocktail data as a string result.
 var CocktailGetTool = mcp.NewTool(
-	"cocktails_get",
+	"get_cocktail",
 	mcp.WithDescription(getToolDescription),
 	mcp.WithString("cocktailId",
 		mcp.Required(),
-		mcp.Description("The ID of the cocktail to get.  This can typically be found for each cocktail in the cocktails_search tool results for each cocktail by the 'id' field.  The ID is a unique identifier for each cocktail and is used to get the complete cocktail data."),
+		mcp.Description("The ID of the cocktail to get.  This can typically be found for each cocktail in the search_cocktails tool results for each cocktail by the 'id' field.  The ID is a unique identifier for each cocktail and is used to get the complete cocktail data."),
 	),
 )
 

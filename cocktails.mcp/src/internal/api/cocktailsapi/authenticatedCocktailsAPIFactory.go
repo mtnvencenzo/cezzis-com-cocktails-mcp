@@ -8,11 +8,11 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 // AuthenticatedRequestEditor creates a request editor that adds OAuth bearer token
-func AuthenticatedRequestEditor(authManager *auth.Manager) RequestEditorFn {
+func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEditorFn {
 	return func(ctx context.Context, req *http.Request) error {
 		// Add subscription key header
 		appSettings := config.GetAppSettings()
@@ -24,11 +24,11 @@ func AuthenticatedRequestEditor(authManager *auth.Manager) RequestEditorFn {
 		if authManager.IsAuthenticated() {
 			token, err := authManager.GetAccessToken(ctx)
 			if err != nil {
-				l.Logger.Warn().Err(err).Msg("Failed to get access token")
+				logging.Logger.Warn().Err(err).Msg("Failed to get access token")
 				return err
 			}
 			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-			l.Logger.Debug().Msg("Added OAuth bearer token to request")
+			logging.Logger.Debug().Msg("Added OAuth bearer token to request")
 		}
 
 		return nil
@@ -38,18 +38,13 @@ func AuthenticatedRequestEditor(authManager *auth.Manager) RequestEditorFn {
 // AuthenticatedCocktailsAPIFactory extends the base factory with authentication support
 type AuthenticatedCocktailsAPIFactory struct {
 	CocktailsAPIFactory
-	authManager *auth.Manager
+	authManager *auth.OAuthFlowManager
 }
 
 // NewAuthenticatedCocktailsAPIFactory creates a new authenticated API factory
-func NewAuthenticatedCocktailsAPIFactory(authManager *auth.Manager) *AuthenticatedCocktailsAPIFactory {
+func NewAuthenticatedCocktailsAPIFactory(authManager *auth.OAuthFlowManager) *AuthenticatedCocktailsAPIFactory {
 	return &AuthenticatedCocktailsAPIFactory{
 		CocktailsAPIFactory: NewCocktailsAPIFactory(),
 		authManager:         authManager,
 	}
-}
-
-// GetAuthenticatedRequestEditor returns a request editor with authentication
-func (factory *AuthenticatedCocktailsAPIFactory) GetAuthenticatedRequestEditor() RequestEditorFn {
-	return AuthenticatedRequestEditor(factory.authManager)
 }

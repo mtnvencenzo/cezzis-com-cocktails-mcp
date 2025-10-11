@@ -14,40 +14,36 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
+	"strconv"
 
-	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/server"
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
-	internalServer "cezzis.com/cezzis-mcp-server/internal/server"
+	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/environment"
+	"cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
 // Version uses build linkers to set this value at build time
 var Version string = "0.0.0"
 
-// main initializes and runs the Cezzi Cocktails MCP server, registering cocktail search and retrieval tools and serving requests over standard input/output or HTTP.
+// main initializes and runs the Cezzi Cocktails MCP server, registering cocktail search and retrieval
+// tools and serving requests over standard input/output or HTTP.
 func main() {
-	loadEnv()
+	environment.LoadEnv()
 
 	// Initialize the logger
-	_, err := l.InitLogger()
+	_, err := logging.InitLogger()
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
-	// Add a flag to choose between stdio and HTTP
-	// If --http is provided, the server will run in HTTP mode on the specified address.
-	// Otherwise, it will default to stdio mode.
-	httpAddr := flag.String("http", "", "If set, serve HTTP on this address (e.g., :8080)")
-	flag.Parse()
+	settings := config.GetAppSettings()
 
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
@@ -56,7 +52,7 @@ func main() {
 	)
 
 	// Initialize authentication manager
-	authManager := auth.NewManager()
+	authManager := auth.NewOAuthFlowManager()
 
 	// Initialize API factories
 	cocktailsAPIFactory := cocktailsapi.NewCocktailsAPIFactory()
@@ -79,49 +75,18 @@ func main() {
 	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, authCocktailsAPIFactory).Handle))
 
 	// Finally, start the server in the chosen mode
-	// If --http is provided, start the HTTP server with logging middleware and a health check endpoint.
-	// Otherwise, serve requests over stdio.
 	// Proper error handling ensures that any issues during startup are logged.
 	// The server will run until it is manually stopped or encounters a fatal error.
-	httpServer := internalServer.NewMCPHTTPServer(*httpAddr, mcpServer, Version)
+	httpServer := mcpserver.NewMCPHTTPServer(fmt.Sprintf(":%d", settings.Port), mcpServer, Version)
+
+	logging.Logger.Info().
+		Str("version", Version).
+		Str("port", strconv.Itoa(settings.Port)).
+		Msg("Starting Cezzi Cocktails MCP Server")
 
 	if err := httpServer.Start(); err != nil {
-		l.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
+		logging.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
 	}
 
-	l.Logger.Info().Msg("MCP HTTP server stopped")
-}
-
-func loadEnv() {
-	// Set up environment variables from .env files in the executable directory
-	// This allows configuration settings to be loaded at runtime.
-	exePath, _ := os.Executable()
-	exeDir := filepath.Dir(exePath)
-
-	envFileDir := exeDir
-	fmt.Println("Exe dir:", exeDir)
-
-	if os.Getenv("ENV_DIR_OVERRIDE") != "" {
-		envFileDir = os.Getenv("ENV_DIR_OVERRIDE")
-	}
-
-	env := os.Getenv("ENV")
-	baseEnvFile := filepath.Join(envFileDir, ".env")
-	candidates := []string{baseEnvFile}
-
-	if env != "" {
-		candidates = append(candidates, baseEnvFile+"."+env)
-	}
-
-	toLoad := make([]string, 0, len(candidates))
-	for _, f := range candidates {
-		if _, err := os.Stat(f); err == nil {
-			fmt.Println("Loading env file:", f)
-			toLoad = append(toLoad, f)
-		}
-	}
-
-	if len(toLoad) > 0 {
-		_ = godotenv.Overload(toLoad...)
-	}
+	logging.Logger.Info().Msg("MCP HTTP server stopped")
 }

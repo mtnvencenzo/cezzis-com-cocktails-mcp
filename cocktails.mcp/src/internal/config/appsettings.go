@@ -27,6 +27,11 @@ const DefaultAuth0Scopes = "openid offline_access profile email read:owned-accou
 // AppSettings contains all application configuration settings loaded from environment variables.
 // It provides a centralized way to access configuration values throughout the application.
 type AppSettings struct {
+	// Port is the port number on which the server will listen for HTTP requests.
+	// Default is 7999 if not set.
+	// Example: "7999"
+	Port int `env:"PORT" envDefault:"7999"`
+
 	// CocktailsApiHost is the base URL for the Cocktails API service.
 	// Example: "https://api.cocktails.com"
 	CocktailsAPIHost string `env:"COCKTAILS_API_HOST"`
@@ -68,6 +73,9 @@ func GetAppSettings() *AppSettings {
 		l.Logger.Warn().Err(err).Msg("Failed to parse app settings")
 	}
 
+	if instance.Port == 0 {
+		l.Logger.Warn().Msg("Warning: PORT is not set")
+	}
 	if instance.CocktailsAPIHost == "" {
 		l.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set")
 	}
