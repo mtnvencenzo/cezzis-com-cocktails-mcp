@@ -14,7 +14,7 @@ var authLoginDescription = `
 	This tool initiates the OAuth device login flow for accessing your Cezzis.com account
 	and personalized features.
 
-	Calling this tool will start the device code authentication process, which wil return
+	Calling this tool will start the device code authentication process, which will return
 	an authorization URL and code to enter in your web browser. After entering the code
 	and signing in, you can return to this application and let us know you have completed
 	the sign-in process.

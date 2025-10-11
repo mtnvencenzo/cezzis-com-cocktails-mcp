@@ -27,8 +27,8 @@ import (
 )
 
 var searchToolDescription = `
-	Searches cocktails receipe data from the Cezzis.com cocktails API. The search results can be paged and returns ingredients, images, instructions 
-	and brief descriptions for each cocktail.  
+	Searches cocktail recipe data from the Cezzis.com cocktails API. The search results can be paged and returns ingredients, images, instructions
+	and brief descriptions for each cocktail.
 
 	The supplied freeText search terms queries against the names and descriptions of the cocktails, their ingredients, historical 
 	and geographic information such as who created the cocktail, where it was created and what time of year is best to consume the
