@@ -3,6 +3,8 @@ package tools_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -38,6 +40,31 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 
 func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(t *testing.T) {
 	// Arrange
+	client, mux, _ := testutils.Setup(t)
+
+	resultRs := cocktailsapi.CocktailsListRs{
+		Items: []cocktailsapi.CocktailsListModel{
+			{
+				Id:               "pegu-club",
+				DescriptiveTitle: "This is the pegu club",
+			},
+		},
+	}
+
+	jsonData, err := json.Marshal(resultRs)
+	if err != nil {
+		fmt.Printf("Error marshalling struct: %v\n", err)
+		return
+	}
+
+	mux.HandleFunc("/api/v1/cocktails", func(w http.ResponseWriter, r *http.Request) {
+		testutils.TestMethod(t, r, "GET")
+		// Optionally verify the query parameter
+		freeText := r.URL.Query().Get("freeText")
+		require.Equal(t, "Pegu Club", freeText)
+		fmt.Fprint(w, string(jsonData))
+	})
+
 	testutils.LoadEnvironment("..", "..")
 
 	request := mcp.CallToolRequest{
@@ -52,18 +79,9 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 		},
 	}
 
-	resultRs := cocktailsapi.CocktailsListRs{
-		Items: []cocktailsapi.CocktailsListModel{
-			{
-				Id:               "pegu-club",
-				DescriptiveTitle: "This is the pegu club",
-			},
-		},
-	}
-
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPI.SetCocktailListRs(resultRs)
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
+	// cocktailsAPI := testutils.NewMockCocktailsAPI()
+	// cocktailsAPI.SetCocktailListRs(resultRs)
+	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(client)
 	handler := tools.NewCocktailSearchToolHandler(cocktailsAPIFactory)
 
 	// Act
@@ -90,7 +108,6 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 	content, ok := result.Content[0].(mcp.TextContent)
 	require.True(t, ok, "Content should be of type TextContent")
 
-	jsonData, _ := json.Marshal(resultRs)
 	jsonString := string(jsonData)
 
 	require.Equal(t, jsonString, content.Text)

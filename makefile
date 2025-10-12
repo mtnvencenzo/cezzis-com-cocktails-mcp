@@ -39,8 +39,12 @@ test:
 		-cover \
 		-coverprofile=../../coverage.out \
 		-covermode count \
-		-v ./... && \
-	go-ignore-cov --file ../../coverage.out --exclude-globs="**/test/**,cmd/**" && \
+		-v ./...
+
+cover:
+	@make test
+	@echo "Generating coverage reports..."
+	go-ignore-cov --file ../../coverage.out --exclude-globs="**/test/**,cmd/**,**/*_gen.go,**/testutils/**" && \
 	gocover-cobertura < ../../coverage.out > ../../cobertura.xml && \
 	go tool cover -func=../../coverage.out
 
@@ -50,7 +54,7 @@ standards:
 	@make imports
 	@make vet
 	@make lint
-	@make test
+	@make cover
 	@echo "Code standards checks completed."
 
 # ------------------------------------------------------------

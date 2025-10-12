@@ -1,11 +1,14 @@
+// Package cocktailsapi provides a client for interacting with the Cocktails API.
+// It includes methods for retrieving cocktail details, searching for cocktails,
+// and rating cocktails. The package handles authentication, request construction,
+// and response parsing.
 package cocktailsapi
 
 import (
 	"context"
-	"net/http"
-
 	"errors"
 	"fmt"
+	"net/http"
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"

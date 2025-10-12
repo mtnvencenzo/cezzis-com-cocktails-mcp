@@ -3,6 +3,8 @@ package tools_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -14,7 +16,19 @@ import (
 )
 
 func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing.T) {
-	// Arrange
+	// arrange
+	t.Parallel()
+	// client, mux, _ := testutils.Setup(t)
+
+	// mux.HandleFunc("/api/v1/cocktails/%s", func(w http.ResponseWriter, r *http.Request) {
+	// 	testutils.TestMethod(t, r, "GET")
+	// 	fmt.Fprint(w, `{
+	// 		  "sha": "s",
+	// 		  "tree": [ { "type": "blob" } ],
+	// 		  "truncated": true
+	// 		}`)
+	// })
+
 	testutils.LoadEnvironment("..", "..")
 
 	request := mcp.CallToolRequest{
@@ -37,7 +51,7 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 }
 
 func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing.T) {
-	// Arrange
+	// arrange
 	testutils.LoadEnvironment("..", "..")
 
 	request := mcp.CallToolRequest{
@@ -62,7 +76,28 @@ func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing
 }
 
 func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testing.T) {
-	// Arrange
+	// arrange
+	client, mux, _ := testutils.Setup(t)
+
+	resultRs := cocktailsapi.CocktailRs{
+		Item: cocktailsapi.CocktailModel{
+			Id:               "pegu-club",
+			Content:          "This is the pegu club",
+			DescriptiveTitle: "This is the pegu club",
+		},
+	}
+
+	jsonData, err := json.Marshal(resultRs)
+	if err != nil {
+		fmt.Printf("Error marshalling struct: %v\n", err)
+		return
+	}
+
+	mux.HandleFunc("/api/v1/cocktails/pegu-club", func(w http.ResponseWriter, r *http.Request) {
+		testutils.TestMethod(t, r, "GET")
+		fmt.Fprint(w, string(jsonData))
+	})
+
 	testutils.LoadEnvironment("..", "..")
 
 	request := mcp.CallToolRequest{
@@ -77,17 +112,9 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 		},
 	}
 
-	resultRs := cocktailsapi.CocktailRs{
-		Item: cocktailsapi.CocktailModel{
-			Id:               "pegu-club",
-			Content:          "This is the pegu club",
-			DescriptiveTitle: "This is the pegu club",
-		},
-	}
-
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPI.SetCocktailRs(resultRs)
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
+	//cocktailsAPI := testutils.NewMockCocktailsAPI()
+	//cocktailsAPI.SetCocktailRs(resultRs)
+	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(client)
 	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
 
 	// Act
@@ -114,8 +141,5 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 	content, ok := result.Content[0].(mcp.TextContent)
 	require.True(t, ok, "Content should be of type TextContent")
 
-	jsonData, _ := json.Marshal(resultRs)
-	jsonString := string(jsonData)
-
-	require.Equal(t, jsonString, content.Text)
+	require.Equal(t, string(jsonData), content.Text)
 }
