@@ -67,14 +67,14 @@ var CocktailSearchTool = mcp.NewTool(
 // CocktailSearchToolHandler implements the MCP tool handler for searching cocktails.
 // It maintains a reference to the cocktails API factory for making API calls.
 type CocktailSearchToolHandler struct {
-	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
+	client *cocktailsapi.Client
 }
 
 // NewCocktailSearchToolHandler creates a new instance of CocktailSearchToolHandler with the provided API factory.
 // The handler uses the factory to create API clients for searching cocktails.
-func NewCocktailSearchToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *CocktailSearchToolHandler {
+func NewCocktailSearchToolHandler(client *cocktailsapi.Client) *CocktailSearchToolHandler {
 	return &CocktailSearchToolHandler{
-		cocktailsAPIFactory,
+		client: client,
 	}
 }
 
@@ -90,11 +90,6 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 
 	l.Logger.Info().Msg("MCP Searching cocktails: " + freeText)
 
-	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
-	if cliErr != nil {
-		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
-	}
-
 	// default to a safe deadline if none present
 	callCtx := ctx
 	if _, ok := ctx.Deadline(); !ok {
@@ -103,7 +98,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		defer cancel()
 	}
 
-	rs, callErr := cocktailsAPI.GetCocktailsList(callCtx, &cocktailsapi.GetCocktailsListParams{
+	rs, callErr := handler.client.GetCocktailsList(callCtx, &cocktailsapi.GetCocktailsListParams{
 		FreeText: &freeText,
 		Inc:      &[]cocktailsapi.CocktailDataIncludeModel{"mainImages", "searchTiles", "descriptiveTitle"},
 		XKey:     &appSettings.CocktailsAPISubscriptionKey,

@@ -18,18 +18,8 @@ import (
 func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing.T) {
 	// arrange
 	t.Parallel()
-	// client, mux, _ := testutils.Setup(t)
-
-	// mux.HandleFunc("/api/v1/cocktails/%s", func(w http.ResponseWriter, r *http.Request) {
-	// 	testutils.TestMethod(t, r, "GET")
-	// 	fmt.Fprint(w, `{
-	// 		  "sha": "s",
-	// 		  "tree": [ { "type": "blob" } ],
-	// 		  "truncated": true
-	// 		}`)
-	// })
-
 	testutils.LoadEnvironment("..", "..")
+	client, _, _ := testutils.Setup(t)
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -41,9 +31,7 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 		},
 	}
 
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
-	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
 	result, err := handler.Handle(context.Background(), request)
@@ -51,8 +39,11 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 }
 
 func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing.T) {
-	// arrange
+	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
+	client, _, _ := testutils.Setup(t)
+
+	// arrange
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -66,9 +57,7 @@ func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing
 		},
 	}
 
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
-	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
 	result, err := handler.Handle(context.Background(), request)
@@ -77,6 +66,8 @@ func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing
 
 func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testing.T) {
 	// arrange
+	t.Parallel()
+	testutils.LoadEnvironment("..", "..")
 	client, mux, _ := testutils.Setup(t)
 
 	resultRs := cocktailsapi.CocktailRs{
@@ -98,8 +89,6 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 		fmt.Fprint(w, string(jsonData))
 	})
 
-	testutils.LoadEnvironment("..", "..")
-
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
 			Method: "get_cocktail",
@@ -112,10 +101,7 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 		},
 	}
 
-	//cocktailsAPI := testutils.NewMockCocktailsAPI()
-	//cocktailsAPI.SetCocktailRs(resultRs)
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(client)
-	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
 	result, err := handler.Handle(context.Background(), request)

@@ -45,15 +45,15 @@ var RateCocktailTool = mcp.NewTool(
 
 // RateCocktailToolHandler handles cocktail rating requests
 type RateCocktailToolHandler struct {
-	authManager         *auth.OAuthFlowManager
-	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
+	authManager *auth.OAuthFlowManager
+	client      *cocktailsapi.Client
 }
 
 // NewRateCocktailToolHandler creates a new cocktail rating handler
-func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *RateCocktailToolHandler {
+func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, client *cocktailsapi.Client) *RateCocktailToolHandler {
 	return &RateCocktailToolHandler{
-		authManager:         authManager,
-		cocktailsAPIFactory: cocktailsAPIFactory,
+		authManager: authManager,
+		client:      client,
 	}
 }
 
@@ -85,11 +85,6 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
 	}
 
-	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
-	if cliErr != nil {
-		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
-	}
-
 	// default to a safe deadline if none present
 	callCtx := ctx
 	if _, ok := ctx.Deadline(); !ok {
@@ -100,7 +95,7 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 
 	appSettings := config.GetAppSettings()
 
-	rs, callErr := cocktailsAPI.RateCocktailWithApplicationJSONXAPIVersion10Body(callCtx, &cocktailsapi.RateCocktailParams{
+	rs, callErr := handler.client.RateCocktailWithApplicationJSONXAPIVersion10Body(callCtx, &cocktailsapi.RateCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	}, cocktailsapi.RateCocktailApplicationJSONXAPIVersion10RequestBody{
 		CocktailId: cocktailID,

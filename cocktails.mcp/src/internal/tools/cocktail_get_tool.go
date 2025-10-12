@@ -58,13 +58,13 @@ var CocktailGetTool = mcp.NewTool(
 // CocktailGetToolHandler handles cocktail retrieval requests through the MCP protocol.
 // It maintains a reference to the cocktails API factory for making API calls.
 type CocktailGetToolHandler struct {
-	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
+	client *cocktailsapi.Client
 }
 
 // NewCocktailGetToolHandler creates a new instance of CocktailGetToolHandler with the provided API factory.
-func NewCocktailGetToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *CocktailGetToolHandler {
+func NewCocktailGetToolHandler(client *cocktailsapi.Client) *CocktailGetToolHandler {
 	return &CocktailGetToolHandler{
-		cocktailsAPIFactory,
+		client: client,
 	}
 }
 
@@ -85,11 +85,6 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 
 	l.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
 
-	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
-	if cliErr != nil {
-		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
-	}
-
 	// default to a safe deadline if none present
 	callCtx := ctx
 	if _, ok := ctx.Deadline(); !ok {
@@ -98,7 +93,7 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		defer cancel()
 	}
 
-	rs, callErr := cocktailsAPI.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
+	rs, callErr := handler.client.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
 

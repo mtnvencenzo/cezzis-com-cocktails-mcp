@@ -44,6 +44,7 @@ test:
 cover:
 	@make test
 	@echo "Generating coverage reports..."
+	cd ./cocktails.mcp/src && \
 	go-ignore-cov --file ../../coverage.out --exclude-globs="**/test/**,cmd/**,**/*_gen.go,**/testutils/**" && \
 	gocover-cobertura < ../../coverage.out > ../../cobertura.xml && \
 	go tool cover -func=../../coverage.out

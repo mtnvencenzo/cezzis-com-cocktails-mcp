@@ -17,7 +17,9 @@ import (
 
 func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 	// Arrange
+	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
+	client, _, _ := testutils.Setup(t)
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -29,9 +31,7 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 		},
 	}
 
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
-	handler := tools.NewCocktailSearchToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailSearchToolHandler(client)
 
 	// Act
 	result, err := handler.Handle(context.Background(), request)
@@ -59,7 +59,6 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 
 	mux.HandleFunc("/api/v1/cocktails", func(w http.ResponseWriter, r *http.Request) {
 		testutils.TestMethod(t, r, "GET")
-		// Optionally verify the query parameter
 		freeText := r.URL.Query().Get("freeText")
 		require.Equal(t, "Pegu Club", freeText)
 		fmt.Fprint(w, string(jsonData))
@@ -79,10 +78,7 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 		},
 	}
 
-	// cocktailsAPI := testutils.NewMockCocktailsAPI()
-	// cocktailsAPI.SetCocktailListRs(resultRs)
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(client)
-	handler := tools.NewCocktailSearchToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailSearchToolHandler(client)
 
 	// Act
 	result, err := handler.Handle(context.Background(), request)
