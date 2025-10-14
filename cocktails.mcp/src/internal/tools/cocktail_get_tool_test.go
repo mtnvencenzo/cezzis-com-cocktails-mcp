@@ -1,7 +1,6 @@
 package tools_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -19,7 +18,7 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 	// arrange
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, _, _ := testutils.Setup(t)
+	client, _, ctx, _ := testutils.Setup(t)
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -34,14 +33,14 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	testutils.AssertError(t, result, err, "required argument \"cocktailId\" not found")
 }
 
 func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing.T) {
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, _, _ := testutils.Setup(t)
+	client, _, ctx, _ := testutils.Setup(t)
 
 	// arrange
 
@@ -60,7 +59,7 @@ func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing
 	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	testutils.AssertError(t, result, err, "required argument \"cocktailId\" is empty")
 }
 
@@ -68,7 +67,7 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 	// arrange
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, mux, _ := testutils.Setup(t)
+	client, mux, ctx, _ := testutils.Setup(t)
 
 	resultRs := cocktailsapi.CocktailRs{
 		Item: cocktailsapi.CocktailModel{
@@ -104,7 +103,7 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	if err != nil {
 		t.Error(err)
 	}

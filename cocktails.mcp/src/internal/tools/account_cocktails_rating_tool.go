@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 )
 
 var rateCocktailDescription = `
@@ -59,6 +61,12 @@ func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, client *cock
 
 // Handle handles cocktail rating requests
 func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	if sessionID == nil || sessionID == "" {
+		err := errors.New("missing required Mcp-Session-Id header")
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
 	// Extract cocktailId parameter
 	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
@@ -81,7 +89,7 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	}
 
 	// Check authentication
-	if !handler.authManager.IsAuthenticated() {
+	if !handler.authManager.IsAuthenticated(sessionID.(string)) {
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
 	}
 

@@ -1,7 +1,6 @@
 package tools_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -19,7 +18,7 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 	// Arrange
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, _, _ := testutils.Setup(t)
+	client, _, ctx, _ := testutils.Setup(t)
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -34,13 +33,13 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 	handler := tools.NewCocktailSearchToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	testutils.AssertError(t, result, err, "required argument \"freeText\" not found")
 }
 
 func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(t *testing.T) {
 	// Arrange
-	client, mux, _ := testutils.Setup(t)
+	client, mux, ctx, _ := testutils.Setup(t)
 
 	resultRs := cocktailsapi.CocktailsListRs{
 		Items: []cocktailsapi.CocktailsListModel{
@@ -81,7 +80,7 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 	handler := tools.NewCocktailSearchToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	if err != nil {
 		t.Error(err)
 	}

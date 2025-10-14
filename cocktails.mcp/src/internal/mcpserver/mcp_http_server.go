@@ -15,12 +15,20 @@
 package mcpserver
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/mark3labs/mcp-go/server"
 
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
+)
+
+type mcpSessionKey int
+
+const (
+	// McpSessionIDKey is the context key for the MCP session ID
+	McpSessionIDKey mcpSessionKey = iota
 )
 
 // MCPHTTPServer wraps the MCP server HTTP functionality.
@@ -71,6 +79,9 @@ func (s *MCPHTTPServer) Start() error {
 			_, _ = w.Write([]byte(`{"status":"ok", "sse":false}`))
 			return
 		case http.MethodPost:
+			sessionID := r.Header.Get("Mcp-Session-Id")
+			ctx := context.WithValue(r.Context(), McpSessionIDKey, sessionID)
+			r = r.WithContext(ctx)
 			streamableHTTP.ServeHTTP(w, r)
 			return
 		default:

@@ -2,6 +2,7 @@
 package testutils
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -10,8 +11,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 )
 
 const (
@@ -23,10 +27,12 @@ const (
 // Setup setup sets up a test HTTP server along with a github.Client that is
 // configured to talk to that test server. Tests should register handlers on
 // mux which provide mock responses for the API method being tested.
-func Setup(t *testing.T) (client *cocktailsapi.Client, mux *http.ServeMux, serverURL string) {
+func Setup(t *testing.T) (client *cocktailsapi.Client, mux *http.ServeMux, ctx context.Context, serverURL string) {
 	t.Helper()
 	// mux is the HTTP request multiplexer used with the test server.
 	mux = http.NewServeMux()
+
+	ctx = context.WithValue(context.Background(), mcpserver.McpSessionIDKey, uuid.New().String())
 
 	// We want to ensure that tests catch mistakes where the endpoint URL is
 	// specified as absolute rather than relative. It only makes a difference
@@ -86,7 +92,7 @@ func Setup(t *testing.T) (client *cocktailsapi.Client, mux *http.ServeMux, serve
 
 	t.Cleanup(server.Close)
 
-	return client, mux, server.URL
+	return client, mux, ctx, server.URL
 }
 
 // TestMethod asserts that the request method is as expected.

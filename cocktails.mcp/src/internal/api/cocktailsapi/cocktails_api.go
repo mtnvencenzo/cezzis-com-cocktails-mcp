@@ -13,11 +13,17 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 )
 
 // AuthenticatedRequestEditor creates a request editor that adds OAuth bearer token
 func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEditorFn {
 	return func(ctx context.Context, req *http.Request) error {
+		sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+		if sessionID == nil || sessionID == "" {
+			return errors.New("missing required Mcp-Session-Id header")
+		}
+
 		// Add subscription key header
 		appSettings := config.GetAppSettings()
 		if appSettings.CocktailsAPISubscriptionKey != "" {
@@ -25,8 +31,8 @@ func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEdito
 		}
 
 		// Add OAuth bearer token if authenticated
-		if authManager.IsAuthenticated() {
-			token, err := authManager.GetAccessToken(ctx)
+		if authManager.IsAuthenticated(sessionID.(string)) {
+			token, err := authManager.GetAccessToken(ctx, sessionID.(string))
 			if err != nil {
 				logging.Logger.Warn().Err(err).Msg("Failed to get access token")
 				return err
