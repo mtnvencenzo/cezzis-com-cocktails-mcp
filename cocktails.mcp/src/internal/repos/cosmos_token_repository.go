@@ -20,6 +20,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/environment"
 	"cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
@@ -164,7 +165,7 @@ func GetCosmosClient() (*azcosmos.Client, error) {
 		// cosmos emulator.  (Note: disabling cert checks!)
 		// -------------------------------------------------------------------------------------
 		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: environment.IsLocalEnv()}, // Skip TLS verification for local emulator (development only)
 		}
 		httpClient := &http.Client{Transport: tr, Timeout: 30 * time.Second}
 
