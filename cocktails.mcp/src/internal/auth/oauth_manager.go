@@ -288,12 +288,6 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 		data.Set("audience", audience)
 	}
 
-	logging.Logger.Info().
-		Str("audience", audience).
-		Bool("audience_included", audience != "").
-		Str("scope", token.Scope).
-		Msg("Refreshing access token")
-
 	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create refresh request: %w", err)
@@ -347,8 +341,6 @@ func (auth *OAuthFlowManager) IsAuthenticated(sessionID string) bool {
 
 	// Check if token is expired
 	if time.Now().After(token.ExpiresAt) {
-		logging.Logger.Log().Msg(fmt.Sprintf("Current time %s", time.Now()))
-		logging.Logger.Log().Msg(fmt.Sprintf("Token expiration time %s", token.ExpiresAt))
 		logging.Logger.Warn().Msg("Stored tokens are expired")
 		return false
 	}

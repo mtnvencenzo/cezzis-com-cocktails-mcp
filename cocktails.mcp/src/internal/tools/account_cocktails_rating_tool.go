@@ -121,11 +121,6 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		}
 	}()
 
-	if rs.StatusCode < 200 || rs.StatusCode >= 300 {
-		l.Logger.Warn().Int("status_code", rs.StatusCode).Msg("MCP Warning: non-success status code when rating cocktail: " + cocktailID)
-		return mcp.NewToolResultError(fmt.Sprintf("Received non-success status code: %d", rs.StatusCode)), nil
-	}
-
 	bodyBytes, readErr := io.ReadAll(rs.Body)
 	if readErr != nil {
 		l.Logger.Err(readErr).Msg("MCP Error getting cocktail rs body: " + cocktailID)
