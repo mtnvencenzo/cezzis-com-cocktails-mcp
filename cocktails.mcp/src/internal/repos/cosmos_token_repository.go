@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 
@@ -43,43 +44,18 @@ type CosmosAccountRepository struct {
 func NewCosmosAccountRepository() (*CosmosAccountRepository, error) {
 	appSettings := config.GetAppSettings()
 
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	client, err := GetCosmosClient()
 	if err != nil {
 		return nil, err
 	}
 
-	if appSettings.CosmosConnectionString != "" {
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		httpClient := &http.Client{Transport: tr, Timeout: 30 * time.Second}
-
-		// Create azcore.ClientOptions with the custom HTTP client
-		clientOptions := azcore.ClientOptions{
-			Transport: httpClient,
-		}
-
-		client, err := azcosmos.NewClientFromConnectionString(appSettings.CosmosConnectionString, &azcosmos.ClientOptions{ClientOptions: clientOptions})
-		if err != nil {
-			return nil, err
-		}
-		return &CosmosAccountRepository{
-			client:        client,
-			dbName:        appSettings.CosmosDatabaseName,
-			containerName: appSettings.CosmosContainerName,
-		}, nil
-	}
-
-	client, err := azcosmos.NewClient(appSettings.CosmosAccountEndpoint, cred, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return &CosmosAccountRepository{
+	repo := &CosmosAccountRepository{
 		client:        client,
 		dbName:        appSettings.CosmosDatabaseName,
 		containerName: appSettings.CosmosContainerName,
-	}, nil
+	}
+
+	return repo, nil
 }
 
 // ClearTokens removes tokens from storage
@@ -175,4 +151,54 @@ func (r *CosmosAccountRepository) getContainer() (*azcosmos.ContainerClient, err
 	}
 
 	return containerClient, nil
+}
+
+// GetCosmosClient creates and returns a Cosmos DB client
+func GetCosmosClient() (*azcosmos.Client, error) {
+	appSettings := config.GetAppSettings()
+
+	if appSettings.CosmosConnectionString != "" {
+		// -------------------------------------------------------------------------------------
+		// These options are for development purposes only. Since not planning
+		// on using connection strings in real environments, changing the options to work with local
+		// cosmos emulator.  (Note: disabling cert checks!)
+		// -------------------------------------------------------------------------------------
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		httpClient := &http.Client{Transport: tr, Timeout: 30 * time.Second}
+
+		clientOptions := azcore.ClientOptions{
+			Transport: httpClient,
+		}
+
+		client, err := azcosmos.NewClientFromConnectionString(appSettings.CosmosConnectionString, &azcosmos.ClientOptions{ClientOptions: clientOptions})
+		if err != nil {
+			return nil, err
+		}
+
+		return client, nil
+	}
+
+	// Use DefaultAzureCredential for authentication
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	clientOptions := azcore.ClientOptions{
+		Retry: policy.RetryOptions{
+			MaxRetries:    3,
+			RetryDelay:    1 * time.Second,
+			MaxRetryDelay: 3 * time.Second,
+		},
+	}
+
+	client, err := azcosmos.NewClient(appSettings.CosmosAccountEndpoint, cred, &azcosmos.ClientOptions{ClientOptions: clientOptions})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

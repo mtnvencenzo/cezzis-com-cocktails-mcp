@@ -238,7 +238,7 @@ func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context, sessionID stri
 		return "", fmt.Errorf("failed to load tokens from storage: %w", err)
 	}
 
-	if token == nil {
+	if token == nil || token.AccessToken == "" {
 		return "", fmt.Errorf("no tokens available, authentication required")
 	}
 
@@ -257,7 +257,7 @@ func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context, sessionID stri
 		return newToken.AccessToken, nil
 	}
 
-	return "", nil
+	return token.AccessToken, nil
 }
 
 // refreshAccessToken refreshes tokens using the current refresh_token.
@@ -347,6 +347,8 @@ func (auth *OAuthFlowManager) IsAuthenticated(sessionID string) bool {
 
 	// Check if token is expired
 	if time.Now().After(token.ExpiresAt) {
+		logging.Logger.Log().Msg(fmt.Sprintf("Current time %s", time.Now()))
+		logging.Logger.Log().Msg(fmt.Sprintf("Token expiration time %s", token.ExpiresAt))
 		logging.Logger.Warn().Msg("Stored tokens are expired")
 		return false
 	}

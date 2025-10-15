@@ -64,16 +64,17 @@ func (ts *TokenStorage) GetToken(sessionID string) (*TokenResponse, error) {
 		return nil, nil
 	}
 
-	tokens := &TokenResponse{
+	token := &TokenResponse{
 		AccessToken:  sessionToken.AccessToken,
 		RefreshToken: sessionToken.RefreshToken,
 		ExpiresIn:    int(time.Until(sessionToken.ExpiresAt).Seconds()),
 		TokenType:    sessionToken.TokenType,
 		Scope:        sessionToken.Scope,
+		ExpiresAt:    sessionToken.ExpiresAt,
 	}
 
 	logging.Logger.Info().Msg("Tokens loaded from storage")
-	return tokens, nil
+	return token, nil
 }
 
 // ClearTokens removes stored tokens
