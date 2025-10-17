@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"os"
 
-	"cezzis.com/cezzis-mcp-server/internal/environment"
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/rs/zerolog"
+
+	"cezzis.com/cezzis-mcp-server/internal/environment"
 )
 
 // Logger is the global logger instance.

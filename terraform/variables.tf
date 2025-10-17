@@ -94,3 +94,18 @@ variable "port" {
     error_message = "The port must be a valid integer between 1 and 65535."
   }
 }
+
+variable "cocktails_cosmosdb_database_name" {
+  type    = string
+  default = "shared-db"
+}
+
+variable "cosmosdb_reader_role_id" {
+  type    = string
+  default = "3eb65bfe-1406-b164-d00d-92c1eb506153"
+}
+
+variable "cosmosdb_contributor_role_id" {
+  type    = string
+  default = "87b63e98-de0d-b47b-9736-691d9009a19a"
+}

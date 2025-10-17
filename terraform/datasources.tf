@@ -61,3 +61,27 @@ data "azurerm_key_vault_secret" "cocktails_api_mcp_subscription_key" {
   name         = "cocktails-api-mcp-subscription-primary-key"
   key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
 }
+
+# CosmosDB Shared Account
+data "azurerm_cosmosdb_account" "cosmosdb_account" {
+  name                = "cosmos-${var.sub}-${var.region}-${var.global_environment}-shared-${var.sequence}"
+  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+}
+
+data "azurerm_cosmosdb_sql_database" "cosmosdb_shared_db" {
+  name                = var.cocktails_cosmosdb_database_name
+  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+  account_name        = data.azurerm_cosmosdb_account.cosmosdb_account.name
+}
+
+data "azurerm_cosmosdb_sql_role_definition" "cosmosdb_contributor_role" {
+  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+  account_name        = data.azurerm_cosmosdb_account.cosmosdb_account.name
+  role_definition_id  = var.cosmosdb_contributor_role_id
+}
+
+data "azurerm_cosmosdb_sql_role_definition" "cosmosdb_reader_role" {
+  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+  account_name        = data.azurerm_cosmosdb_account.cosmosdb_account.name
+  role_definition_id  = var.cosmosdb_reader_role_id
+}
