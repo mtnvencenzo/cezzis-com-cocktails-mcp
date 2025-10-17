@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 )
 
 var rateCocktailDescription = `
@@ -45,20 +47,26 @@ var RateCocktailTool = mcp.NewTool(
 
 // RateCocktailToolHandler handles cocktail rating requests
 type RateCocktailToolHandler struct {
-	authManager         *auth.OAuthFlowManager
-	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
+	authManager *auth.OAuthFlowManager
+	client      *cocktailsapi.Client
 }
 
 // NewRateCocktailToolHandler creates a new cocktail rating handler
-func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *RateCocktailToolHandler {
+func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, client *cocktailsapi.Client) *RateCocktailToolHandler {
 	return &RateCocktailToolHandler{
-		authManager:         authManager,
-		cocktailsAPIFactory: cocktailsAPIFactory,
+		authManager: authManager,
+		client:      client,
 	}
 }
 
 // Handle handles cocktail rating requests
 func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	if sessionID == nil || sessionID == "" {
+		err := errors.New("missing required Mcp-Session-Id header")
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
 	// Extract cocktailId parameter
 	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
@@ -81,13 +89,8 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	}
 
 	// Check authentication
-	if !handler.authManager.IsAuthenticated() {
+	if !handler.authManager.IsAuthenticated(sessionID.(string)) {
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
-	}
-
-	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
-	if cliErr != nil {
-		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
 	}
 
 	// default to a safe deadline if none present
@@ -100,7 +103,7 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 
 	appSettings := config.GetAppSettings()
 
-	rs, callErr := cocktailsAPI.RateCocktailWithApplicationJSONXAPIVersion10Body(callCtx, &cocktailsapi.RateCocktailParams{
+	rs, callErr := handler.client.RateCocktailWithApplicationJSONXAPIVersion10Body(callCtx, &cocktailsapi.RateCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	}, cocktailsapi.RateCocktailApplicationJSONXAPIVersion10RequestBody{
 		CocktailId: cocktailID,

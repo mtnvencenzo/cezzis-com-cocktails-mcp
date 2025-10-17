@@ -2,10 +2,12 @@ package tools
 
 import (
 	"context"
+	"errors"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 )
 
 var authStatusDescription = `
@@ -37,9 +39,15 @@ func NewAuthStatusToolHandler(authManager *auth.OAuthFlowManager) *AuthStatusToo
 
 // Handle handles authentication status requests
 func (handler *AuthStatusToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	if handler.authManager.IsAuthenticated() {
-		return mcp.NewToolResultText("✅ You are currently authenticated and can access personalized features."), nil
+	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	if sessionID == nil || sessionID == "" {
+		err := errors.New("missing required Mcp-Session-Id header")
+		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	return mcp.NewToolResultText("❌ You are not currently authenticated. Use the 'auth_login' tool to sign in."), nil
+	if handler.authManager.IsAuthenticated(sessionID.(string)) {
+		return mcp.NewToolResultText("You are currently authenticated and can access personalized features."), nil
+	}
+
+	return mcp.NewToolResultText("You are not currently authenticated. Use the 'authentication_login_flow' tool to sign in."), nil
 }

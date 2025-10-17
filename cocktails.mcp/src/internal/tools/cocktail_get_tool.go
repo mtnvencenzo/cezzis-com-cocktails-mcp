@@ -26,6 +26,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 )
 
 var getToolDescription = `
@@ -58,19 +59,26 @@ var CocktailGetTool = mcp.NewTool(
 // CocktailGetToolHandler handles cocktail retrieval requests through the MCP protocol.
 // It maintains a reference to the cocktails API factory for making API calls.
 type CocktailGetToolHandler struct {
-	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
+	client *cocktailsapi.Client
 }
 
 // NewCocktailGetToolHandler creates a new instance of CocktailGetToolHandler with the provided API factory.
-func NewCocktailGetToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *CocktailGetToolHandler {
+func NewCocktailGetToolHandler(client *cocktailsapi.Client) *CocktailGetToolHandler {
 	return &CocktailGetToolHandler{
-		cocktailsAPIFactory,
+		client: client,
 	}
 }
 
 // Handle handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
 // It returns the full cocktail information as a string result, or an error result if any step fails.
 func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	if sessionID == nil || sessionID == "" {
+		err := errors.New("missing required Mcp-Session-Id header")
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
+	// Validate and extract the cocktailId parameter
 	cocktailID, err := request.RequireString("cocktailId")
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), err
@@ -85,11 +93,6 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 
 	l.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
 
-	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
-	if cliErr != nil {
-		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
-	}
-
 	// default to a safe deadline if none present
 	callCtx := ctx
 	if _, ok := ctx.Deadline(); !ok {
@@ -98,7 +101,7 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		defer cancel()
 	}
 
-	rs, callErr := cocktailsAPI.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
+	rs, callErr := handler.client.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
 		XKey: &appSettings.CocktailsAPISubscriptionKey,
 	})
 

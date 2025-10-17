@@ -82,6 +82,22 @@ module "aca_cocktails_mcp" {
       value = var.auth0_scopes
     },
     {
+      name  = "COSMOS_ACCOUNT_ENDPOINT"
+      value = data.azurerm_cosmosdb_account.cosmosdb_account.endpoint
+    },
+    {
+      name  = "COSMOS_CONNECTION_STRING"
+      value = ""
+    },
+    {
+      name  = "COSMOS_CONTAINER_NAME"
+      value = "cezzis-${var.environment}-device-auth"
+    },
+    {
+      name  = "COSMOS_DATABASE_NAME"
+      value = var.cocktails_cosmosdb_database_name
+    },
+    {
       name  = "ENV"
       value = var.environment
     },

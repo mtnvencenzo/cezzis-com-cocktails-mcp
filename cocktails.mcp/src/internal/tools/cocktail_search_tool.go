@@ -15,6 +15,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"time"
@@ -24,6 +25,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 )
 
 var searchToolDescription = `
@@ -67,20 +69,26 @@ var CocktailSearchTool = mcp.NewTool(
 // CocktailSearchToolHandler implements the MCP tool handler for searching cocktails.
 // It maintains a reference to the cocktails API factory for making API calls.
 type CocktailSearchToolHandler struct {
-	cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory
+	client *cocktailsapi.Client
 }
 
 // NewCocktailSearchToolHandler creates a new instance of CocktailSearchToolHandler with the provided API factory.
 // The handler uses the factory to create API clients for searching cocktails.
-func NewCocktailSearchToolHandler(cocktailsAPIFactory cocktailsapi.ICocktailsAPIFactory) *CocktailSearchToolHandler {
+func NewCocktailSearchToolHandler(client *cocktailsapi.Client) *CocktailSearchToolHandler {
 	return &CocktailSearchToolHandler{
-		cocktailsAPIFactory,
+		client: client,
 	}
 }
 
 // Handle handles cocktail search requests by querying the Cezzis.com cocktails API with a free-text search term and returning the raw API response as a string result.
 // It returns the raw API response as a string result, or an error result if any step fails.
 func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	if sessionID == nil || sessionID == "" {
+		err := errors.New("missing required Mcp-Session-Id header")
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
 	freeText, err := request.RequireString("freeText")
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), err
@@ -90,11 +98,6 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 
 	l.Logger.Info().Msg("MCP Searching cocktails: " + freeText)
 
-	cocktailsAPI, cliErr := handler.cocktailsAPIFactory.GetClient()
-	if cliErr != nil {
-		return mcp.NewToolResultError(cliErr.Error()), cliErr // already logged upstream
-	}
-
 	// default to a safe deadline if none present
 	callCtx := ctx
 	if _, ok := ctx.Deadline(); !ok {
@@ -103,7 +106,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		defer cancel()
 	}
 
-	rs, callErr := cocktailsAPI.GetCocktailsList(callCtx, &cocktailsapi.GetCocktailsListParams{
+	rs, callErr := handler.client.GetCocktailsList(callCtx, &cocktailsapi.GetCocktailsListParams{
 		FreeText: &freeText,
 		Inc:      &[]cocktailsapi.CocktailDataIncludeModel{"mainImages", "searchTiles", "descriptiveTitle"},
 		XKey:     &appSettings.CocktailsAPISubscriptionKey,

@@ -1,22 +1,19 @@
 // ------------------------------------------------------------
-// POST Rate Cocktail
+// POST login
 // ------------------------------------------------------------
 
 POST {{host}}/mcp
 Accept: application/json
 Content-Type: application/json
-Mcp-Session-Id: mcp-session-24f4d503-d725-4aa3-bae0-d4ded79b4a6e
+Mcp-Session-Id: mcp-session-14f4d503-d725-4aa3-bae0-d4ded79b4a6e
 
 {
   "jsonrpc": "2.0",
   "id": "1",
   "method": "tools/call",
   "params": {
-    "name": "cocktail_rate",
-    "arguments": {
-      "cocktailId": "pegu-club",
-      "stars": "5"
-    }
+    "name": "authentication_login_flow",
+    "arguments": {}
   }
 }
 

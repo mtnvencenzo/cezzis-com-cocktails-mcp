@@ -54,6 +54,22 @@ type AppSettings struct {
 	// Auth0Scopes is the list of scopes to request.
 	// Example: "openid profile email offline_access cocktails:read cocktails:write"
 	Auth0Scopes string `env:"AUTH0_SCOPES"`
+
+	// CosmosConnectionString is the connection string for the Azure Cosmos DB account.
+	// Example: "AccountEndpoint=https://<your-account>.documents.azure.com:443/;AccountKey=<your-account-key>;"
+	CosmosConnectionString string `env:"COSMOS_CONNECTION_STRING"`
+
+	// CosmosAccountEndpoint is the account endpoint URL for the Azure Cosmos DB account.
+	// Example: "https://<your-account>.documents.azure.com:443/"
+	CosmosAccountEndpoint string `env:"COSMOS_ACCOUNT_ENDPOINT"`
+
+	// CosmosDatabaseName is the name of the database to use within the Azure Cosmos DB account.
+	// Example: "cocktails-db"
+	CosmosDatabaseName string `env:"COSMOS_DATABASE_NAME"`
+
+	// CosmosContainerName is the name of the container to use within the Azure Cosmos DB database.
+	// Example: "tokens"
+	CosmosContainerName string `env:"COSMOS_CONTAINER_NAME"`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
@@ -89,6 +105,28 @@ func GetAppSettings() *AppSettings {
 
 	if instance.Auth0ClientID == "" {
 		l.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
+	}
+
+	if instance.Auth0Audience == "" {
+		l.Logger.Warn().Msg("Warning: AUTH0_AUDIENCE is not set; authentication will fail")
+	}
+
+	if instance.Auth0Scopes == "" {
+		instance.Auth0Scopes = DefaultAuth0Scopes
+		l.Logger.Info().Msgf("AUTH0_SCOPES not set; defaulting to: %s", DefaultAuth0Scopes)
+	}
+
+	if instance.CosmosConnectionString == "" {
+		l.Logger.Warn().Msg("Warning: COSMOS_CONNECTION_STRING is not set; database access will fail")
+	}
+	if instance.CosmosAccountEndpoint == "" {
+		l.Logger.Warn().Msg("Warning: COSMOS_ACCOUNT_ENDPOINT is not set; database access will fail")
+	}
+	if instance.CosmosDatabaseName == "" {
+		l.Logger.Warn().Msg("Warning: COSMOS_DATABASE_NAME is not set; database access will fail")
+	}
+	if instance.CosmosContainerName == "" {
+		l.Logger.Warn().Msg("Warning: COSMOS_CONTAINER_NAME is not set; database access will fail")
 	}
 
 	return instance

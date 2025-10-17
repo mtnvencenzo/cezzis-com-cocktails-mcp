@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -45,4 +46,9 @@ func LoadEnv() {
 	if len(toLoad) > 0 {
 		_ = godotenv.Overload(toLoad...)
 	}
+}
+
+// IsLocalEnv returns true if the ENV environment variable is set to "local"
+func IsLocalEnv() bool {
+	return strings.ToLower(os.Getenv("ENV")) == "local"
 }

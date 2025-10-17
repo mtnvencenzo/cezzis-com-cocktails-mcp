@@ -26,6 +26,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/environment"
 	"cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/repos"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
@@ -53,18 +54,18 @@ func main() {
 
 	// Initialize authentication manager
 	authManager := auth.NewOAuthFlowManager()
-
-	// Initialize API factories
-	cocktailsAPIFactory := cocktailsapi.NewCocktailsAPIFactory()
-	authCocktailsAPIFactory := cocktailsapi.NewAuthenticatedCocktailsAPIFactory(authManager)
+	cocktailsClient, err := cocktailsapi.GetClient()
+	if err != nil {
+		log.Fatalf("Failed to create cocktails client: %v", err)
+	}
 
 	// Add the various tools to the MCP server
 	// Each tool is registered with its corresponding handler function.
 	// This allows clients to invoke the tools via the MCP protocol.
 
 	// Basic cocktail tools (no authentication required)
-	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.NewCocktailGetToolHandler(cocktailsAPIFactory).Handle))
-	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(cocktailsAPIFactory).Handle))
+	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.NewCocktailGetToolHandler(cocktailsClient).Handle))
+	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(cocktailsClient).Handle))
 
 	// Authentication tools
 	mcpServer.AddTool(tools.AuthLoginTool, server.ToolHandlerFunc(tools.NewAuthLoginToolHandler(authManager).Handle))
@@ -72,7 +73,15 @@ func main() {
 	mcpServer.AddTool(tools.AuthLogoutTool, server.ToolHandlerFunc(tools.NewAuthLogoutToolHandler(authManager).Handle))
 
 	// Account Authenticated tools (require user login)
-	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, authCocktailsAPIFactory).Handle))
+	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, cocktailsClient).Handle))
+
+	// Initialize the Cosmos DB (if not already initialized)
+	err = repos.InitializeDatabase()
+	if err != nil {
+		logging.Logger.Err(err).Msg("Failed to initialize database")
+	} else {
+		logging.Logger.Info().Msg("Database initialized")
+	}
 
 	// Finally, start the server in the chosen mode
 	// Proper error handling ensures that any issues during startup are logged.

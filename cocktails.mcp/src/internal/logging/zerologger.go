@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/rs/zerolog"
+
+	"cezzis.com/cezzis-mcp-server/internal/environment"
 )
 
 // Logger is the global logger instance.
@@ -37,7 +38,7 @@ func InitLogger() (zerolog.Logger, error) {
 
 	var multiWriter zerolog.LevelWriter
 
-	if strings.ToLower(os.Getenv("ENV")) == "local" {
+	if environment.IsLocalEnv() {
 		multiWriter = zerolog.MultiLevelWriter(consoleWriter, aiLogger)
 	} else {
 		multiWriter = zerolog.MultiLevelWriter(aiLogger)

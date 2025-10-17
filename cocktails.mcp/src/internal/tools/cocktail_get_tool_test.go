@@ -1,8 +1,9 @@
 package tools_test
 
 import (
-	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -14,8 +15,10 @@ import (
 )
 
 func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing.T) {
-	// Arrange
+	// arrange
+	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
+	client, _, ctx, _ := testutils.Setup(t)
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -27,18 +30,19 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 		},
 	}
 
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
-	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	testutils.AssertError(t, result, err, "required argument \"cocktailId\" not found")
 }
 
 func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing.T) {
-	// Arrange
+	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
+	client, _, ctx, _ := testutils.Setup(t)
+
+	// arrange
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -52,18 +56,37 @@ func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing
 		},
 	}
 
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
-	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	testutils.AssertError(t, result, err, "required argument \"cocktailId\" is empty")
 }
 
 func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testing.T) {
-	// Arrange
+	// arrange
+	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
+	client, mux, ctx, _ := testutils.Setup(t)
+
+	resultRs := cocktailsapi.CocktailRs{
+		Item: cocktailsapi.CocktailModel{
+			Id:               "pegu-club",
+			Content:          "This is the pegu club",
+			DescriptiveTitle: "This is the pegu club",
+		},
+	}
+
+	jsonData, err := json.Marshal(resultRs)
+	if err != nil {
+		fmt.Printf("Error marshalling struct: %v\n", err)
+		return
+	}
+
+	mux.HandleFunc("/api/v1/cocktails/pegu-club", func(w http.ResponseWriter, r *http.Request) {
+		testutils.TestMethod(t, r, "GET")
+		fmt.Fprint(w, string(jsonData))
+	})
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -77,21 +100,10 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 		},
 	}
 
-	resultRs := cocktailsapi.CocktailRs{
-		Item: cocktailsapi.CocktailModel{
-			Id:               "pegu-club",
-			Content:          "This is the pegu club",
-			DescriptiveTitle: "This is the pegu club",
-		},
-	}
-
-	cocktailsAPI := testutils.NewMockCocktailsAPI()
-	cocktailsAPI.SetCocktailRs(resultRs)
-	cocktailsAPIFactory := testutils.NewMockCocktailsAPIFactory(cocktailsAPI)
-	handler := tools.NewCocktailGetToolHandler(cocktailsAPIFactory)
+	handler := tools.NewCocktailGetToolHandler(client)
 
 	// Act
-	result, err := handler.Handle(context.Background(), request)
+	result, err := handler.Handle(ctx, request)
 	if err != nil {
 		t.Error(err)
 	}
@@ -114,8 +126,5 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 	content, ok := result.Content[0].(mcp.TextContent)
 	require.True(t, ok, "Content should be of type TextContent")
 
-	jsonData, _ := json.Marshal(resultRs)
-	jsonString := string(jsonData)
-
-	require.Equal(t, jsonString, content.Text)
+	require.Equal(t, string(jsonData), content.Text)
 }
