@@ -31,7 +31,7 @@ import (
 func LoadEnvironment(wdOffsets ...string) {
 	wd, wderr := os.Getwd()
 	if wderr != nil {
-		telemetry.Logger.Warn().Err(wderr).Msg("Server error - wd path: %v\n")
+		telemetry.Logger.Warn().Err(wderr).Msg("Failed to get working directory")
 	}
 
 	envPath := filepath.Join(append([]string{wd}, wdOffsets...)...)

@@ -101,7 +101,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 
 	appSettings := config.GetAppSettings()
 
-	telemetry.Logger.Info().Msg("MCP Searching cocktails: " + ft)
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP Searching cocktails: " + ft)
 
 	// default to a safe deadline if none present
 	callCtx := ctx
@@ -118,19 +118,19 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 	})
 
 	if callErr != nil {
-		telemetry.Logger.Err(callErr).Msg("MCP Error searching cocktails")
+		telemetry.Logger.Err(callErr).Ctx(ctx).Msg("MCP Error searching cocktails")
 		return mcp.NewToolResultError(callErr.Error()), callErr
 	}
 
 	defer func() {
 		if closeErr := rs.Body.Close(); closeErr != nil {
-			telemetry.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
+			telemetry.Logger.Warn().Ctx(ctx).Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
 		}
 	}()
 
 	bodyBytes, readErr := io.ReadAll(rs.Body)
 	if readErr != nil {
-		telemetry.Logger.Err(readErr).Msg("MCP Error searching cocktail rs body")
+		telemetry.Logger.Err(readErr).Ctx(ctx).Msg("MCP Error searching cocktail rs body")
 		return mcp.NewToolResultError(readErr.Error()), readErr
 	}
 

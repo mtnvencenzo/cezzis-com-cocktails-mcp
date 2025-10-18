@@ -75,7 +75,7 @@ func (auth *OAuthFlowManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeR
 		data.Set("audience", audience)
 	}
 
-	telemetry.Logger.Info().
+	telemetry.Logger.Info().Ctx(ctx).
 		Str("scopes_requested", auth.appSettings.Auth0Scopes).
 		Str("audience", audience).
 		Bool("audience_included", audience != "").
@@ -95,7 +95,7 @@ func (auth *OAuthFlowManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeR
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			telemetry.Logger.Warn().Err(err).Msg("Failed to close response body")
+			telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Failed to close response body")
 		}
 	}()
 
@@ -105,7 +105,7 @@ func (auth *OAuthFlowManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeR
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		telemetry.Logger.Error().
+		telemetry.Logger.Error().Ctx(ctx).
 			Int("status_code", resp.StatusCode).
 			Str("response_body", string(body)).
 			Str("device_endpoint", deviceEndpoint).
@@ -119,7 +119,7 @@ func (auth *OAuthFlowManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeR
 		return nil, fmt.Errorf("failed to parse device code response: %w", err)
 	}
 
-	telemetry.Logger.Info().
+	telemetry.Logger.Info().Ctx(ctx).
 		Str("user_code", deviceResp.UserCode).
 		Str("verification_uri", deviceResp.VerificationURI).
 		Msg("Device code flow started")
@@ -161,7 +161,7 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 			data.Set("audience", audience)
 		}
 
-		telemetry.Logger.Debug().
+		telemetry.Logger.Debug().Ctx(ctx).
 			Str("audience", audience).
 			Bool("audience_included", audience != "").
 			Msg("Polling for tokens")
@@ -175,17 +175,17 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 
 		resp, err := auth.httpClient.Do(req)
 		if err != nil {
-			telemetry.Logger.Warn().Err(err).Msg("Token polling request failed")
+			telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Token polling request failed")
 			time.Sleep(pollInterval)
 			continue
 		}
 
 		body, err := io.ReadAll(resp.Body)
 		if closeErr := resp.Body.Close(); closeErr != nil {
-			telemetry.Logger.Warn().Err(closeErr).Msg("Failed to close response body")
+			telemetry.Logger.Warn().Ctx(ctx).Err(closeErr).Msg("Failed to close response body")
 		}
 		if err != nil {
-			telemetry.Logger.Warn().Err(err).Msg("Failed to read token response")
+			telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Failed to read token response")
 			time.Sleep(pollInterval)
 			continue
 		}
@@ -203,10 +203,10 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 
 			// Save tokens to storage
 			if err := auth.storage.SaveToken(ctx, sessionID, &tokenResp); err != nil {
-				telemetry.Logger.Warn().Err(err).Msg("Failed to save tokens to storage")
+				telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Failed to save tokens to storage")
 			}
 
-			telemetry.Logger.Info().
+			telemetry.Logger.Info().Ctx(ctx).
 				Str("scopes_granted", tokenResp.Scope).
 				Msg("Successfully obtained access tokens")
 
@@ -218,7 +218,7 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 		if json.Unmarshal(body, &errorResp) == nil {
 			if errorCode, ok := errorResp["error"].(string); ok {
 				if errorCode == "authorization_pending" {
-					telemetry.Logger.Debug().Msg("Authorization still pending, continuing to poll...")
+					telemetry.Logger.Debug().Ctx(ctx).Msg("Authorization still pending, continuing to poll...")
 					time.Sleep(pollInterval)
 					continue
 				}
@@ -226,7 +226,7 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 			}
 		}
 
-		telemetry.Logger.Warn().Str("response", string(body)).Msg("Unexpected token response")
+		telemetry.Logger.Warn().Ctx(ctx).Str("response", string(body)).Msg("Unexpected token response")
 		time.Sleep(pollInterval)
 	}
 }
@@ -245,10 +245,10 @@ func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context, sessionID stri
 	if !token.ExpiresAt.IsZero() && time.Until(token.ExpiresAt) < 2*time.Minute {
 		newToken, err := auth.refreshAccessToken(ctx, sessionID)
 		if err != nil {
-			telemetry.Logger.Warn().Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
+			telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
 
 			if err := auth.storage.ClearTokens(ctx, sessionID); err != nil {
-				telemetry.Logger.Warn().Err(err).Msg("Failed to clear tokens from storage")
+				telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Failed to clear tokens from storage")
 			}
 
 			return "", fmt.Errorf("failed to refresh access token: %w", err)
@@ -303,7 +303,7 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			telemetry.Logger.Warn().Err(err).Msg("Failed to close response body")
+			telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Failed to close response body")
 		}
 	}()
 
@@ -325,7 +325,7 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 
 	if auth.storage != nil {
 		if err := auth.storage.SaveToken(ctx, sessionID, &newToken); err != nil {
-			telemetry.Logger.Error().Err(err).Msg("Failed to save refreshed tokens to storage")
+			telemetry.Logger.Error().Ctx(ctx).Err(err).Msg("Failed to save refreshed tokens to storage")
 		}
 	}
 
@@ -344,8 +344,8 @@ func (auth *OAuthFlowManager) IsAuthenticated(ctx context.Context, sessionID str
 	}
 
 	// Check if token is expired
-	if time.Now().After(token.ExpiresAt) {
-		telemetry.Logger.Warn().Msg("Stored tokens are expired")
+	if !token.ExpiresAt.IsZero() && time.Now().After(token.ExpiresAt) {
+		telemetry.Logger.Warn().Ctx(ctx).Msg("Stored tokens are expired")
 		return false
 	}
 
@@ -359,7 +359,7 @@ func (auth *OAuthFlowManager) Logout(ctx context.Context, sessionID string) erro
 		return fmt.Errorf("failed to clear stored tokens: %w", err)
 	}
 
-	telemetry.Logger.Info().Msg("Successfully logged out")
+	telemetry.Logger.Info().Ctx(ctx).Msg("Successfully logged out")
 	return nil
 }
 
@@ -373,11 +373,11 @@ func (auth *OAuthFlowManager) BeginDeviceAuth(ctx context.Context, sessionID str
 	// Start polling in the background; tokens will be saved to storage on success
 	go func() {
 		// Use a generous timeout independent of the tool request context
-		bgCtx, cancel := context.WithTimeout(ctx, 15*time.Minute)
+		bgCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 		defer cancel()
 
 		if _, err := auth.PollForTokens(bgCtx, deviceCode, sessionID); err != nil {
-			telemetry.Logger.Warn().Err(err).Msg("Device code polling ended without tokens")
+			telemetry.Logger.Warn().Ctx(bgCtx).Err(err).Msg("Device code polling ended without tokens")
 		}
 	}()
 

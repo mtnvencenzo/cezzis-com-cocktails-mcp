@@ -46,7 +46,7 @@ func (handler *AuthStatusToolHandler) Handle(ctx context.Context, request mcp.Ca
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	telemetry.Logger.Info().Msg("MCP starting authentication status check")
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication status check")
 
 	if handler.authManager.IsAuthenticated(ctx, sessionID.(string)) {
 		return mcp.NewToolResultText("You are currently authenticated and can access personalized features."), nil

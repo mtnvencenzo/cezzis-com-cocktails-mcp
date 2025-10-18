@@ -42,7 +42,7 @@ func (ts *TokenStorage) SaveToken(ctx context.Context, sessionID string, tokens 
 		return fmt.Errorf("failed to save tokens to repository: %w", err)
 	}
 
-	telemetry.Logger.Info().Msg("Tokens saved to repository")
+	telemetry.Logger.Info().Ctx(ctx).Msg("Tokens saved to repository")
 	return nil
 }
 
@@ -55,13 +55,13 @@ func (ts *TokenStorage) GetToken(ctx context.Context, sessionID string) (*TokenR
 	}
 
 	if sessionToken == nil {
-		telemetry.Logger.Info().Msg("No tokens found in repository")
+		telemetry.Logger.Info().Ctx(ctx).Msg("No tokens found in repository")
 		return nil, nil
 	}
 
 	// Check if tokens are expired
-	if time.Now().After(sessionToken.ExpiresAt) {
-		telemetry.Logger.Warn().Msg("Stored tokens are expired")
+	if !sessionToken.ExpiresAt.IsZero() && time.Now().After(sessionToken.ExpiresAt) {
+		telemetry.Logger.Warn().Ctx(ctx).Msg("Stored tokens are expired")
 		return nil, nil
 	}
 
@@ -74,7 +74,7 @@ func (ts *TokenStorage) GetToken(ctx context.Context, sessionID string) (*TokenR
 		ExpiresAt:    sessionToken.ExpiresAt,
 	}
 
-	telemetry.Logger.Info().Msg("Tokens loaded from storage")
+	telemetry.Logger.Info().Ctx(ctx).Msg("Tokens loaded from storage")
 	return token, nil
 }
 
@@ -84,6 +84,6 @@ func (ts *TokenStorage) ClearTokens(ctx context.Context, sessionID string) error
 		return fmt.Errorf("failed to clear tokens from repository: %w", err)
 	}
 
-	telemetry.Logger.Info().Msg("Tokens cleared from storage")
+	telemetry.Logger.Info().Ctx(ctx).Msg("Tokens cleared from storage")
 	return nil
 }

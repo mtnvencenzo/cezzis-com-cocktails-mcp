@@ -51,12 +51,12 @@ func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.Cal
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	telemetry.Logger.Info().Msg("MCP starting authentication login flow")
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication login flow")
 
 	// If HTTP mode, use device code flow and return instructions
 	dc, err := handler.authManager.BeginDeviceAuth(ctx, sessionID.(string))
 	if err != nil {
-		telemetry.Logger.Error().Err(err).Msg("Failed to start device code auth")
+		telemetry.Logger.Error().Ctx(ctx).Err(err).Msg("Failed to start device code auth")
 		return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil
 	}
 	msg := fmt.Sprintf(`Continue in your browser to sign in:

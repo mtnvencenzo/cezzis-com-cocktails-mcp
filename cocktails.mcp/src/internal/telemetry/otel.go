@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -51,9 +52,13 @@ func SetupOTelSDK(ctx context.Context, version string) (func(context.Context) er
 
 	resource := res.NewWithAttributes(
 		semconv.SchemaURL,
-		semconv.ServiceName("cocktails.mcp"),
-		semconv.ServiceNamespace("cocktails.mcp-namespace"),
+		semconv.ServiceName("cocktails-mcp"),
+		semconv.ServiceNamespace("cezzis"),
 		semconv.ServiceVersion(version),
+		semconv.ServiceInstanceID(environment.GetHostName()),
+		attribute.Key("deployment.environment").String(environment.GetEnvironmentName()),
+		attribute.Key("host.host").String(environment.GetHostName()),
+		attribute.Key("host.name").String(environment.GetHostName()),
 	)
 
 	// Set up propagator.
@@ -64,7 +69,7 @@ func SetupOTelSDK(ctx context.Context, version string) (func(context.Context) er
 
 	// Set up trace provider.
 	if appSettings.OTLPTraceEnabled {
-		tracerProvider, err := newTracerProvider(resource)
+		tracerProvider, err := newTracerProvider(ctx, resource)
 		if err != nil {
 			handleErr(err)
 			return shutdown, err
@@ -75,7 +80,7 @@ func SetupOTelSDK(ctx context.Context, version string) (func(context.Context) er
 
 	// Set up meter provider.
 	if appSettings.OTLPMetricsEnabled {
-		meterProvider, err := newMeterProvider(resource)
+		meterProvider, err := newMeterProvider(ctx, resource)
 		if err != nil {
 			handleErr(err)
 			return shutdown, err
@@ -86,7 +91,7 @@ func SetupOTelSDK(ctx context.Context, version string) (func(context.Context) er
 
 	// Set up logger provider.
 	if appSettings.OTLPLogEnabled {
-		loggerProvider, err := newLoggerProvider(resource)
+		loggerProvider, err := newLoggerProvider(ctx, resource)
 		if err != nil {
 			handleErr(err)
 			return shutdown, err
@@ -105,7 +110,7 @@ func newPropagator() propagation.TextMapPropagator {
 	)
 }
 
-func newTracerProvider(resource *res.Resource) (*trace.TracerProvider, error) {
+func newTracerProvider(ctx context.Context, resource *res.Resource) (*trace.TracerProvider, error) {
 	appSettings := config.GetAppSettings()
 
 	opts := []otlptracegrpc.Option{
@@ -119,7 +124,7 @@ func newTracerProvider(resource *res.Resource) (*trace.TracerProvider, error) {
 
 	client := otlptracegrpc.NewClient(opts...)
 
-	exporter, err := otlptrace.New(context.Background(), client)
+	exporter, err := otlptrace.New(ctx, client)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +132,6 @@ func newTracerProvider(resource *res.Resource) (*trace.TracerProvider, error) {
 	bsp := trace.NewBatchSpanProcessor(exporter)
 
 	traceOpts := []trace.TracerProviderOption{
-		trace.WithBatcher(exporter),
 		trace.WithSpanProcessor(bsp),
 		trace.WithResource(resource),
 	}
@@ -143,7 +147,7 @@ func newTracerProvider(resource *res.Resource) (*trace.TracerProvider, error) {
 	return tracerProvider, nil
 }
 
-func newMeterProvider(resource *res.Resource) (*metric.MeterProvider, error) {
+func newMeterProvider(ctx context.Context, resource *res.Resource) (*metric.MeterProvider, error) {
 	appSettings := config.GetAppSettings()
 
 	opts := []otlpmetricgrpc.Option{
@@ -155,7 +159,7 @@ func newMeterProvider(resource *res.Resource) (*metric.MeterProvider, error) {
 		opts = append(opts, otlpmetricgrpc.WithInsecure())
 	}
 
-	exporter, err := otlpmetricgrpc.New(context.Background(), opts...)
+	exporter, err := otlpmetricgrpc.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +173,7 @@ func newMeterProvider(resource *res.Resource) (*metric.MeterProvider, error) {
 	return meterProvider, nil
 }
 
-func newLoggerProvider(resource *res.Resource) (*log.LoggerProvider, error) {
+func newLoggerProvider(ctx context.Context, resource *res.Resource) (*log.LoggerProvider, error) {
 	appSettings := config.GetAppSettings()
 
 	opts := []otlploggrpc.Option{
@@ -181,7 +185,7 @@ func newLoggerProvider(resource *res.Resource) (*log.LoggerProvider, error) {
 		opts = append(opts, otlploggrpc.WithInsecure())
 	}
 
-	exporter, err := otlploggrpc.New(context.Background(), opts...)
+	exporter, err := otlploggrpc.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -205,7 +209,7 @@ func getHeaderMap(headerStr string) map[string]string {
 	pairs := strings.Split(headerStr, ",")
 
 	for _, pair := range pairs {
-		parts := strings.Split(pair, "=")
+		parts := strings.SplitN(pair, "=", 2)
 
 		if len(parts) == 2 {
 			headers[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])

@@ -59,6 +59,10 @@ standards:
 	@make cover
 	@echo "Code standards checks completed."
 
+update:
+	cd ./cocktails.mcp/src && \
+	go get -u ./...
+
 # ------------------------------------------------------------
 # build
 # ------------------------------------------------------------

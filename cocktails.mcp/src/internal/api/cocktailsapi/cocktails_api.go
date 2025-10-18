@@ -38,11 +38,11 @@ func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEdito
 		if authManager.IsAuthenticated(ctx, sid) {
 			token, err := authManager.GetAccessToken(ctx, sid)
 			if err != nil {
-				telemetry.Logger.Warn().Err(err).Msg("Failed to get access token")
+				telemetry.Logger.Warn().Ctx(ctx).Err(err).Msg("Failed to get access token")
 				return err
 			}
 			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-			telemetry.Logger.Debug().Msg("Added OAuth bearer token to request")
+			telemetry.Logger.Debug().Ctx(ctx).Msg("Added OAuth bearer token to request")
 		}
 
 		return nil

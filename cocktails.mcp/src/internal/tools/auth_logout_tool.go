@@ -47,10 +47,10 @@ func (handler *AuthLogoutToolHandler) Handle(ctx context.Context, request mcp.Ca
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	telemetry.Logger.Info().Msg("MCP starting authentication logout flow")
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication logout flow")
 
 	if err := handler.authManager.Logout(ctx, sessionID.(string)); err != nil {
-		telemetry.Logger.Error().Err(err).Msg("Failed to logout and clear tokens")
+		telemetry.Logger.Error().Ctx(ctx).Err(err).Msg("Failed to logout and clear tokens")
 		return mcp.NewToolResultError(fmt.Sprintf("Logout failed: %v", err)), nil
 	}
 	return mcp.NewToolResultText("Logged out. Tokens cleared. Use 'authentication_login_flow' to sign in again."), nil

@@ -52,3 +52,25 @@ func LoadEnv() {
 func IsLocalEnv() bool {
 	return strings.ToLower(os.Getenv("ENV")) == "local"
 }
+
+// GetEnvironmentName returns the value of the ENV environment variable in lowercase.
+// If ENV is not set, it returns "unknown".
+func GetEnvironmentName() string {
+	env := strings.ToLower(os.Getenv("ENV"))
+
+	if env == "" {
+		return "unknown"
+	}
+
+	return env
+}
+
+// GetHostName returns the hostname of the machine.
+// If it cannot be determined, it returns "unknown".
+func GetHostName() string {
+	hostName, err := os.Hostname()
+	if err != nil {
+		return "unknown"
+	}
+	return hostName
+}

@@ -86,17 +86,23 @@ func (r *CosmosAccountRepository) ClearTokens(ctx context.Context, sessionID str
 
 	if err != nil {
 		span.RecordError(err)
-		span.SetStatus(500, "Cosmos DB delete failed")
+		span.SetAttributes(attribute.Int("http.status_code", 500))
+		span.SetStatus(codes.Error, "Cosmos DB delete failed")
 		return err
 	}
 
 	if rs.RawResponse.StatusCode == 404 {
-		span.SetStatus(400, "Cosmos DB delete item not found")
-		telemetry.Logger.Warn().Str("sessionID", sessionID).Msg("No tokens found to clear")
+		span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+		span.SetStatus(codes.Error, "Cosmos DB delete item not found")
+		telemetry.Logger.Warn().Ctx(ctx).
+			Str("sessionID", sessionID).
+			Msg("No tokens found to clear")
+
 		return nil
 	}
 
-	span.SetStatus(codes.Code(rs.RawResponse.StatusCode), "Cosmos DB delete succeeded")
+	span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+	span.SetStatus(codes.Ok, "Cosmos DB delete succeeded")
 
 	return nil
 }
@@ -130,16 +136,19 @@ func (r *CosmosAccountRepository) SaveToken(ctx context.Context, sessionID strin
 
 	if err != nil {
 		span.RecordError(err)
-		span.SetStatus(500, "Cosmos DB upsert failed")
+		span.SetAttributes(attribute.Int("http.status_code", 500))
+		span.SetStatus(codes.Error, "Cosmos DB upsert failed")
 		return err
 	}
 
 	if rs.RawResponse.StatusCode != 200 && rs.RawResponse.StatusCode != 201 {
-		span.SetStatus(codes.Code(rs.RawResponse.StatusCode), "Cosmos DB upsert failed")
+		span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+		span.SetStatus(codes.Error, "Cosmos DB upsert failed")
 		return fmt.Errorf("failed to save token, status code: %d", rs.RawResponse.StatusCode)
 	}
 
-	span.SetStatus(codes.Code(rs.RawResponse.StatusCode), "Cosmos DB upsert succeeded")
+	span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+	span.SetStatus(codes.Ok, "Cosmos DB upsert succeeded")
 
 	return nil
 }
@@ -168,17 +177,19 @@ func (r *CosmosAccountRepository) GetToken(ctx context.Context, sessionID string
 
 	if err != nil {
 		span.RecordError(err)
-		span.SetStatus(500, "Cosmos DB read failed")
+		span.SetAttributes(attribute.Int("http.status_code", 500))
+		span.SetStatus(codes.Error, "Cosmos DB read failed")
 		return nil, err
 	}
 
 	if rs.RawResponse.StatusCode == 404 {
-		span.SetStatus(404, "Cosmos DB item not found")
-		telemetry.Logger.Warn().Str("sessionId", sessionID).Msg("No token found")
+		span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+		span.SetStatus(codes.Error, "Cosmos DB item not found")
+		telemetry.Logger.Warn().Ctx(ctx).Str("sessionId", sessionID).Msg("No token found")
 		return nil, nil
 	}
 
-	span.SetStatus(codes.Code(rs.RawResponse.StatusCode), "Cosmos DB read succeeded")
+	span.SetStatus(codes.Ok, "Cosmos DB read succeeded")
 
 	var sessionToken SessionToken
 	if err := json.Unmarshal(rs.Value, &sessionToken); err != nil {
