@@ -90,13 +90,18 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 	}
 
 	freeText, err := request.RequireString("freeText")
+	ft := freeText
+	if len(ft) > 120 {
+		ft = ft[:120] + "…"
+	}
+
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
 	appSettings := config.GetAppSettings()
 
-	telemetry.Logger.Info().Msg("MCP Searching cocktails: " + freeText)
+	telemetry.Logger.Info().Msg("MCP Searching cocktails: " + ft)
 
 	// default to a safe deadline if none present
 	callCtx := ctx

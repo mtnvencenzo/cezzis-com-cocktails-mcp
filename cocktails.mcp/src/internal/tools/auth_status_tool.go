@@ -8,6 +8,7 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var authStatusDescription = `
@@ -44,6 +45,8 @@ func (handler *AuthStatusToolHandler) Handle(ctx context.Context, request mcp.Ca
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
+
+	telemetry.Logger.Info().Msg("MCP starting authentication status check")
 
 	if handler.authManager.IsAuthenticated(ctx, sessionID.(string)) {
 		return mcp.NewToolResultText("You are currently authenticated and can access personalized features."), nil

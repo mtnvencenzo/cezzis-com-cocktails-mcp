@@ -126,7 +126,7 @@ module "aca_cocktails_mcp" {
       value = "false"
     },
     {
-      name  = "OTLP_TRACES_ENABLED"
+      name  = "OTLP_TRACE_ENABLED"
       value = "true"
     },
     {

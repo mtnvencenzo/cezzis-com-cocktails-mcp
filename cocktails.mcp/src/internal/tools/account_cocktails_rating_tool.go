@@ -93,6 +93,11 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
 	}
 
+	telemetry.Logger.Info().
+		Str("cocktail_id", cocktailID).
+		Int("stars", stars).
+		Msg("MCP rating cocktail: " + cocktailID)
+
 	// default to a safe deadline if none present
 	callCtx := ctx
 	if _, ok := ctx.Deadline(); !ok {

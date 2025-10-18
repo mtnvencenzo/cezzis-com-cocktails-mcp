@@ -43,7 +43,7 @@ func main() {
 	// Initialize OpenTelemetry SDK
 	otelShutdown, err := telemetry.SetupOTelSDK(context.Background(), Version)
 	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
+		telemetry.Logger.Error().Err(err).Msg("Failed to initialize logger")
 	}
 
 	// Handle shutdown properly so nothing leaks.
@@ -71,7 +71,7 @@ func main() {
 	authManager := auth.NewOAuthFlowManager()
 	cocktailsClient, err := cocktailsapi.GetClient()
 	if err != nil {
-		log.Fatalf("Failed to create cocktails client: %v", err)
+		panic(err)
 	}
 
 	// Add the various tools to the MCP server

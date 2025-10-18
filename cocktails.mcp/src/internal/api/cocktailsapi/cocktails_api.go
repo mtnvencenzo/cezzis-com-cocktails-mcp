@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
@@ -21,8 +22,9 @@ import (
 // AuthenticatedRequestEditor creates a request editor that adds OAuth bearer token
 func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEditorFn {
 	return func(ctx context.Context, req *http.Request) error {
-		sessionID := ctx.Value(middleware.McpSessionIDKey)
-		if sessionID == nil || sessionID == "" {
+		v := ctx.Value(middleware.McpSessionIDKey)
+		sid, ok := v.(string)
+		if !ok || sid == "" {
 			return errors.New("missing required Mcp-Session-Id header")
 		}
 
@@ -33,8 +35,8 @@ func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEdito
 		}
 
 		// Add OAuth bearer token if authenticated
-		if authManager.IsAuthenticated(ctx, sessionID.(string)) {
-			token, err := authManager.GetAccessToken(ctx, sessionID.(string))
+		if authManager.IsAuthenticated(ctx, sid) {
+			token, err := authManager.GetAccessToken(ctx, sid)
 			if err != nil {
 				telemetry.Logger.Warn().Err(err).Msg("Failed to get access token")
 				return err
@@ -66,6 +68,7 @@ func GetClient() (*Client, error) {
 
 	httpClient := http.Client{
 		Transport: otelhttp.NewTransport(http.DefaultTransport, httpOpts...),
+		Timeout:   30 * time.Second,
 	}
 
 	opts := []ClientOption{

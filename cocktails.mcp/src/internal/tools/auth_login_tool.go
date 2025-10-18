@@ -51,6 +51,8 @@ func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.Cal
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
+	telemetry.Logger.Info().Msg("MCP starting authentication login flow")
+
 	// If HTTP mode, use device code flow and return instructions
 	dc, err := handler.authManager.BeginDeviceAuth(ctx, sessionID.(string))
 	if err != nil {

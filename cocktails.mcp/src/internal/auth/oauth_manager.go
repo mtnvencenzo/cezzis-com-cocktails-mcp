@@ -283,6 +283,7 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 		"refresh_token": {token.RefreshToken},
 		"scope":         {token.Scope},
 	}
+
 	audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
 	if audience != "" {
 		data.Set("audience", audience)
@@ -292,6 +293,7 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create refresh request: %w", err)
 	}
+
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := auth.httpClient.Do(req)
@@ -322,7 +324,9 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 	}
 
 	if auth.storage != nil {
-		_ = auth.storage.SaveToken(ctx, sessionID, &newToken)
+		if err := auth.storage.SaveToken(ctx, sessionID, &newToken); err != nil {
+			telemetry.Logger.Error().Err(err).Msg("Failed to save refreshed tokens to storage")
+		}
 	}
 
 	telemetry.Logger.Info().
