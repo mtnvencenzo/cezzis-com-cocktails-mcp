@@ -152,6 +152,7 @@ Visit https://www.cezzis.com/cocktails/%s to see the updated rating.
 Thank you for contributing to the Cezzis.com community!`, cocktailID, stars, cocktailID)
 
 	telemetry.Logger.Info().
+		Ctx(ctx).
 		Str("cocktail_id", cocktailID).
 		Int("stars", stars).
 		Msg("Cocktail rating submitted")
