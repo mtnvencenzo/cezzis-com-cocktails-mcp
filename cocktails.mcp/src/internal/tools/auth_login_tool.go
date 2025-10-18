@@ -45,8 +45,9 @@ func NewAuthLoginToolHandler(authManager *auth.OAuthFlowManager) *AuthLoginToolH
 
 // Handle handles authentication login requests
 func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(middleware.McpSessionIDKey)
-	if sessionID == nil || sessionID == "" {
+	v := ctx.Value(middleware.McpSessionIDKey)
+	sessionID, ok := v.(string)
+	if !ok || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
@@ -54,7 +55,7 @@ func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.Cal
 	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication login flow")
 
 	// If HTTP mode, use device code flow and return instructions
-	dc, err := handler.authManager.BeginDeviceAuth(ctx, sessionID.(string))
+	dc, err := handler.authManager.BeginDeviceAuth(ctx, sessionID)
 	if err != nil {
 		telemetry.Logger.Error().Ctx(ctx).Err(err).Msg("Failed to start device code auth")
 		return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil

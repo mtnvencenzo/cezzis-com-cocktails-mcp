@@ -40,15 +40,16 @@ func NewAuthStatusToolHandler(authManager *auth.OAuthFlowManager) *AuthStatusToo
 
 // Handle handles authentication status requests
 func (handler *AuthStatusToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(middleware.McpSessionIDKey)
-	if sessionID == nil || sessionID == "" {
+	v := ctx.Value(middleware.McpSessionIDKey)
+	sessionID, ok := v.(string)
+	if !ok || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
 	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication status check")
 
-	if handler.authManager.IsAuthenticated(ctx, sessionID.(string)) {
+	if handler.authManager.IsAuthenticated(ctx, sessionID) {
 		return mcp.NewToolResultText("You are currently authenticated and can access personalized features."), nil
 	}
 
