@@ -106,6 +106,30 @@ module "aca_cocktails_mcp" {
       value = "info"
     },
     {
+      name  = "OTLP_ENDPOINT"
+      value = "https://${data.azurerm_container_app.otel_collector.ingress[0].fqdn}"
+    },
+    {
+      name  = "OTLP_HEADERS"
+      value = "Authorization=Bearer ${data.azurerm_key_vault_secret.otel_collector_api_key.value}"
+    },
+    {
+      name  = "OTLP_INSECURE"
+      value = "false"
+    },
+    {
+      name  = "OTLP_LOG_ENABLED"
+      value = "true"
+    },
+    {
+      name  = "OTLP_METRICS_ENABLED"
+      value = "false"
+    },
+    {
+      name  = "OTLP_TRACES_ENABLED"
+      value = "true"
+    },
+    {
       name  = "PORT"
       value = var.port
     },

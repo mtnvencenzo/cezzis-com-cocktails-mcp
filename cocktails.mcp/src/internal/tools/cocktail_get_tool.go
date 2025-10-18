@@ -25,7 +25,7 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
@@ -72,7 +72,7 @@ func NewCocktailGetToolHandler(client *cocktailsapi.Client) *CocktailGetToolHand
 // Handle handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
 // It returns the full cocktail information as a string result, or an error result if any step fails.
 func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	sessionID := ctx.Value(middleware.McpSessionIDKey)
 	if sessionID == nil || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err

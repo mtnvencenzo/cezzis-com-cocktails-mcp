@@ -14,14 +14,14 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // AuthenticatedRequestEditor creates a request editor that adds OAuth bearer token
 func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEditorFn {
 	return func(ctx context.Context, req *http.Request) error {
-		sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+		sessionID := ctx.Value(middleware.McpSessionIDKey)
 		if sessionID == nil || sessionID == "" {
 			return errors.New("missing required Mcp-Session-Id header")
 		}
@@ -60,7 +60,7 @@ func GetClient() (*Client, error) {
 
 	httpOpts := []otelhttp.Option{
 		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
-			return "[dep] cocktails-api " + r.Method + " " + r.RequestURI
+			return "[dep] cocktails-api " + r.Method + " " + r.URL.Path
 		}),
 	}
 

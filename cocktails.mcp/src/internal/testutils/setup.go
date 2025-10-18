@@ -15,7 +15,7 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
 )
 
 const (
@@ -32,7 +32,7 @@ func Setup(t *testing.T) (client *cocktailsapi.Client, mux *http.ServeMux, ctx c
 	// mux is the HTTP request multiplexer used with the test server.
 	mux = http.NewServeMux()
 
-	ctx = context.WithValue(context.Background(), mcpserver.McpSessionIDKey, uuid.New().String())
+	ctx = context.WithValue(context.Background(), middleware.McpSessionIDKey, uuid.New().String())
 
 	// We want to ensure that tests catch mistakes where the endpoint URL is
 	// specified as absolute rather than relative. It only makes a difference
