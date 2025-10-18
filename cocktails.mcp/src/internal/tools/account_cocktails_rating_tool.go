@@ -89,7 +89,7 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	}
 
 	// Check authentication
-	if !handler.authManager.IsAuthenticated(sessionID.(string)) {
+	if !handler.authManager.IsAuthenticated(ctx, sessionID.(string)) {
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
 	}
 

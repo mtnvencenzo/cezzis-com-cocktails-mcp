@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
@@ -31,7 +33,7 @@ func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEdito
 		}
 
 		// Add OAuth bearer token if authenticated
-		if authManager.IsAuthenticated(sessionID.(string)) {
+		if authManager.IsAuthenticated(ctx, sessionID.(string)) {
 			token, err := authManager.GetAccessToken(ctx, sessionID.(string))
 			if err != nil {
 				telemetry.Logger.Warn().Err(err).Msg("Failed to get access token")
@@ -56,7 +58,22 @@ func GetClient() (*Client, error) {
 		return nil, err
 	}
 
-	client, err := NewClient(appSettings.CocktailsAPIHost)
+	httpOpts := []otelhttp.Option{
+		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
+			return "[dep] cocktails-api " + r.Method + " " + r.RequestURI
+		}),
+	}
+
+	httpClient := http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport, httpOpts...),
+	}
+
+	opts := []ClientOption{
+		WithHTTPClient(&httpClient),
+	}
+
+	client, err := NewClient(appSettings.CocktailsAPIHost, opts...)
+
 	if err != nil {
 		telemetry.Logger.Error().Err(err).Msg(err.Error())
 		return nil, err

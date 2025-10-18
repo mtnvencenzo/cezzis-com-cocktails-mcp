@@ -45,7 +45,7 @@ func (handler *AuthStatusToolHandler) Handle(ctx context.Context, request mcp.Ca
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	if handler.authManager.IsAuthenticated(sessionID.(string)) {
+	if handler.authManager.IsAuthenticated(ctx, sessionID.(string)) {
 		return mcp.NewToolResultText("You are currently authenticated and can access personalized features."), nil
 	}
 

@@ -202,7 +202,7 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 			}
 
 			// Save tokens to storage
-			if err := auth.storage.SaveToken(sessionID, &tokenResp); err != nil {
+			if err := auth.storage.SaveToken(ctx, sessionID, &tokenResp); err != nil {
 				telemetry.Logger.Warn().Err(err).Msg("Failed to save tokens to storage")
 			}
 
@@ -233,7 +233,7 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 
 // GetAccessToken returns the current access token, refreshing if necessary
 func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context, sessionID string) (string, error) {
-	token, err := auth.storage.GetToken(sessionID)
+	token, err := auth.storage.GetToken(ctx, sessionID)
 	if err != nil {
 		return "", fmt.Errorf("failed to load tokens from storage: %w", err)
 	}
@@ -247,7 +247,7 @@ func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context, sessionID stri
 		if err != nil {
 			telemetry.Logger.Warn().Err(err).Msg("Access token refresh failed; user may need to re-authenticate")
 
-			if err := auth.storage.ClearTokens(sessionID); err != nil {
+			if err := auth.storage.ClearTokens(ctx, sessionID); err != nil {
 				telemetry.Logger.Warn().Err(err).Msg("Failed to clear tokens from storage")
 			}
 
@@ -262,7 +262,7 @@ func (auth *OAuthFlowManager) GetAccessToken(ctx context.Context, sessionID stri
 
 // refreshAccessToken refreshes tokens using the current refresh_token.
 func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID string) (*TokenResponse, error) {
-	token, err := auth.storage.GetToken(sessionID)
+	token, err := auth.storage.GetToken(ctx, sessionID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load tokens from storage: %w", err)
 	}
@@ -322,7 +322,7 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 	}
 
 	if auth.storage != nil {
-		_ = auth.storage.SaveToken(sessionID, &newToken)
+		_ = auth.storage.SaveToken(ctx, sessionID, &newToken)
 	}
 
 	telemetry.Logger.Info().
@@ -333,8 +333,8 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 }
 
 // IsAuthenticated returns true if the user is currently authenticated
-func (auth *OAuthFlowManager) IsAuthenticated(sessionID string) bool {
-	token, err := auth.storage.GetToken(sessionID)
+func (auth *OAuthFlowManager) IsAuthenticated(ctx context.Context, sessionID string) bool {
+	token, err := auth.storage.GetToken(ctx, sessionID)
 	if err != nil || token == nil {
 		return false
 	}
@@ -349,9 +349,9 @@ func (auth *OAuthFlowManager) IsAuthenticated(sessionID string) bool {
 }
 
 // Logout clears current authentication
-func (auth *OAuthFlowManager) Logout(sessionID string) error {
+func (auth *OAuthFlowManager) Logout(ctx context.Context, sessionID string) error {
 
-	if err := auth.storage.ClearTokens(sessionID); err != nil {
+	if err := auth.storage.ClearTokens(ctx, sessionID); err != nil {
 		return fmt.Errorf("failed to clear stored tokens: %w", err)
 	}
 
@@ -369,7 +369,7 @@ func (auth *OAuthFlowManager) BeginDeviceAuth(ctx context.Context, sessionID str
 	// Start polling in the background; tokens will be saved to storage on success
 	go func() {
 		// Use a generous timeout independent of the tool request context
-		bgCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+		bgCtx, cancel := context.WithTimeout(ctx, 15*time.Minute)
 		defer cancel()
 
 		if _, err := auth.PollForTokens(bgCtx, deviceCode, sessionID); err != nil {

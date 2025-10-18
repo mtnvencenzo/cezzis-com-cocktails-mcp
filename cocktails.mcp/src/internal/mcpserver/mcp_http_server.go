@@ -79,6 +79,9 @@ func (s *MCPHTTPServer) Start() error {
 			_, _ = w.Write([]byte(`{"status":"ok", "sse":false}`))
 			return
 		case http.MethodPost:
+			// _, span := tracer.Start(r.Context(), "my-internal-operation", trace.WithAttributes(attribute.String("key", "value")))
+			// defer span.End()
+
 			sessionID := r.Header.Get("Mcp-Session-Id")
 			ctx := context.WithValue(r.Context(), McpSessionIDKey, sessionID)
 			r = r.WithContext(ctx)

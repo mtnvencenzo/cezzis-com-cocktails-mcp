@@ -12,7 +12,7 @@ import (
 )
 
 // InitializeDatabase ensures that the Cosmos DB and container exist, creating them if necessary.
-func InitializeDatabase() error {
+func InitializeDatabase(ctx context.Context) error {
 	appSettings := config.GetAppSettings()
 
 	client, err := GetCosmosClient()
@@ -21,7 +21,7 @@ func InitializeDatabase() error {
 		return err
 	}
 
-	if err := createDtabaseIfNotExists(client, appSettings.CosmosDatabaseName); err != nil {
+	if err := createDtabaseIfNotExists(ctx, client, appSettings.CosmosDatabaseName); err != nil {
 		telemetry.Logger.Err(err).Msg("Failed to create database")
 		return err
 	}
@@ -32,7 +32,7 @@ func InitializeDatabase() error {
 		return err
 	}
 
-	if err := createContainerIfNotExists(dbClient, appSettings.CosmosDatabaseName, appSettings.CosmosContainerName); err != nil {
+	if err := createContainerIfNotExists(ctx, dbClient, appSettings.CosmosDatabaseName, appSettings.CosmosContainerName); err != nil {
 		telemetry.Logger.Err(err).Msg("Failed to create container")
 		return err
 	}
@@ -46,8 +46,8 @@ func InitializeDatabase() error {
 	return nil
 }
 
-func createDtabaseIfNotExists(client *azcosmos.Client, dbName string) error {
-	dbrs, err := client.CreateDatabase(context.Background(), azcosmos.DatabaseProperties{
+func createDtabaseIfNotExists(ctx context.Context, client *azcosmos.Client, dbName string) error {
+	dbrs, err := client.CreateDatabase(ctx, azcosmos.DatabaseProperties{
 		ID: dbName,
 	}, nil)
 	if err != nil {
@@ -71,8 +71,8 @@ func createDtabaseIfNotExists(client *azcosmos.Client, dbName string) error {
 	return nil
 }
 
-func createContainerIfNotExists(client *azcosmos.DatabaseClient, dbName, containerName string) error {
-	ccrs, err := client.CreateContainer(context.Background(), azcosmos.ContainerProperties{
+func createContainerIfNotExists(ctx context.Context, client *azcosmos.DatabaseClient, dbName, containerName string) error {
+	ccrs, err := client.CreateContainer(ctx, azcosmos.ContainerProperties{
 		ID: containerName,
 		PartitionKeyDefinition: azcosmos.PartitionKeyDefinition{
 			Paths: []string{"/id"},
