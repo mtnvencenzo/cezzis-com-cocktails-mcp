@@ -14,6 +14,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -24,9 +26,9 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/environment"
-	"cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 	"cezzis.com/cezzis-mcp-server/internal/repos"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
@@ -38,8 +40,19 @@ var Version string = "0.0.0"
 func main() {
 	environment.LoadEnv()
 
-	// Initialize the logger
-	_, err := logging.InitLogger()
+	// Initialize OpenTelemetry SDK
+	otelShutdown, err := telemetry.SetupOTelSDK(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+
+	// Handle shutdown properly so nothing leaks.
+	defer func() {
+		err = errors.Join(err, otelShutdown(context.Background()))
+	}()
+
+	// Initialize the logger (forwared to otel)
+	err = telemetry.InitTelemetry()
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
@@ -78,9 +91,9 @@ func main() {
 	// Initialize the Cosmos DB (if not already initialized)
 	err = repos.InitializeDatabase()
 	if err != nil {
-		logging.Logger.Err(err).Msg("Failed to initialize database")
+		telemetry.Logger.Err(err).Msg("Failed to initialize database")
 	} else {
-		logging.Logger.Info().Msg("Database initialized")
+		telemetry.Logger.Info().Msg("Database initialized")
 	}
 
 	// Finally, start the server in the chosen mode
@@ -88,14 +101,14 @@ func main() {
 	// The server will run until it is manually stopped or encounters a fatal error.
 	httpServer := mcpserver.NewMCPHTTPServer(fmt.Sprintf(":%d", settings.Port), mcpServer, Version)
 
-	logging.Logger.Info().
+	telemetry.Logger.Info().
 		Str("version", Version).
 		Str("port", strconv.Itoa(settings.Port)).
 		Msg("Starting Cezzi Cocktails MCP Server")
 
 	if err := httpServer.Start(); err != nil {
-		logging.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
+		telemetry.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
 	}
 
-	logging.Logger.Info().Msg("MCP HTTP server stopped")
+	telemetry.Logger.Info().Msg("MCP HTTP server stopped")
 }

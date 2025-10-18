@@ -8,8 +8,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var authLogoutDescription = `
@@ -48,7 +48,7 @@ func (handler *AuthLogoutToolHandler) Handle(ctx context.Context, request mcp.Ca
 	}
 
 	if err := handler.authManager.Logout(sessionID.(string)); err != nil {
-		l.Logger.Error().Err(err).Msg("Failed to logout and clear tokens")
+		telemetry.Logger.Error().Err(err).Msg("Failed to logout and clear tokens")
 		return mcp.NewToolResultError(fmt.Sprintf("Logout failed: %v", err)), nil
 	}
 	return mcp.NewToolResultText("Logged out. Tokens cleared. Use 'authentication_login_flow' to sign in again."), nil

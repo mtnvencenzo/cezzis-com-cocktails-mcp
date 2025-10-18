@@ -25,8 +25,8 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var getToolDescription = `
@@ -91,7 +91,7 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 
 	appSettings := config.GetAppSettings()
 
-	l.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
+	telemetry.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
 
 	// default to a safe deadline if none present
 	callCtx := ctx
@@ -106,19 +106,19 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 	})
 
 	if callErr != nil {
-		l.Logger.Err(callErr).Msg("MCP Error getting cocktail: " + cocktailID)
+		telemetry.Logger.Err(callErr).Msg("MCP Error getting cocktail: " + cocktailID)
 		return mcp.NewToolResultError(callErr.Error()), callErr
 	}
 
 	defer func() {
 		if closeErr := rs.Body.Close(); closeErr != nil {
-			l.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
+			telemetry.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
 		}
 	}()
 
 	bodyBytes, readErr := io.ReadAll(rs.Body)
 	if readErr != nil {
-		l.Logger.Err(readErr).Msg("MCP Error getting cocktail rs body: " + cocktailID)
+		telemetry.Logger.Err(readErr).Msg("MCP Error getting cocktail rs body: " + cocktailID)
 		return mcp.NewToolResultError(readErr.Error()), readErr
 	}
 

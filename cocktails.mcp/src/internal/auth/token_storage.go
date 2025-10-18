@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/repos"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // TokenStorage handles secure storage and retrieval of OAuth tokens
@@ -41,7 +41,7 @@ func (ts *TokenStorage) SaveToken(sessionID string, tokens *TokenResponse) error
 		return fmt.Errorf("failed to save tokens to repository: %w", err)
 	}
 
-	logging.Logger.Info().Msg("Tokens saved to repository")
+	telemetry.Logger.Info().Msg("Tokens saved to repository")
 	return nil
 }
 
@@ -54,13 +54,13 @@ func (ts *TokenStorage) GetToken(sessionID string) (*TokenResponse, error) {
 	}
 
 	if sessionToken == nil {
-		logging.Logger.Info().Msg("No tokens found in repository")
+		telemetry.Logger.Info().Msg("No tokens found in repository")
 		return nil, nil
 	}
 
 	// Check if tokens are expired
 	if time.Now().After(sessionToken.ExpiresAt) {
-		logging.Logger.Warn().Msg("Stored tokens are expired")
+		telemetry.Logger.Warn().Msg("Stored tokens are expired")
 		return nil, nil
 	}
 
@@ -73,7 +73,7 @@ func (ts *TokenStorage) GetToken(sessionID string) (*TokenResponse, error) {
 		ExpiresAt:    sessionToken.ExpiresAt,
 	}
 
-	logging.Logger.Info().Msg("Tokens loaded from storage")
+	telemetry.Logger.Info().Msg("Tokens loaded from storage")
 	return token, nil
 }
 
@@ -83,6 +83,6 @@ func (ts *TokenStorage) ClearTokens(sessionID string) error {
 		return fmt.Errorf("failed to clear tokens from repository: %w", err)
 	}
 
-	logging.Logger.Info().Msg("Tokens cleared from storage")
+	telemetry.Logger.Info().Msg("Tokens cleared from storage")
 	return nil
 }

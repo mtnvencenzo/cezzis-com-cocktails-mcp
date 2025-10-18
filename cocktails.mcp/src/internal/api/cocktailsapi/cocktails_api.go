@@ -12,8 +12,8 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	"cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // AuthenticatedRequestEditor creates a request editor that adds OAuth bearer token
@@ -34,11 +34,11 @@ func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEdito
 		if authManager.IsAuthenticated(sessionID.(string)) {
 			token, err := authManager.GetAccessToken(ctx, sessionID.(string))
 			if err != nil {
-				logging.Logger.Warn().Err(err).Msg("Failed to get access token")
+				telemetry.Logger.Warn().Err(err).Msg("Failed to get access token")
 				return err
 			}
 			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-			logging.Logger.Debug().Msg("Added OAuth bearer token to request")
+			telemetry.Logger.Debug().Msg("Added OAuth bearer token to request")
 		}
 
 		return nil
@@ -52,13 +52,13 @@ func GetClient() (*Client, error) {
 
 	if appSettings.CocktailsAPIHost == "" {
 		err := errors.New("CocktailsAPIHost has not been configured")
-		logging.Logger.Error().Err(err).Msg(err.Error())
+		telemetry.Logger.Error().Err(err).Msg(err.Error())
 		return nil, err
 	}
 
 	client, err := NewClient(appSettings.CocktailsAPIHost)
 	if err != nil {
-		logging.Logger.Error().Err(err).Msg(err.Error())
+		telemetry.Logger.Error().Err(err).Msg(err.Error())
 		return nil, err
 	}
 

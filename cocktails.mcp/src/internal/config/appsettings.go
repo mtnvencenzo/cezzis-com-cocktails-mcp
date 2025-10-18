@@ -16,7 +16,7 @@ import (
 
 	"github.com/caarlos0/env/v11"
 
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // DefaultAuth0Scopes defines the default OAuth2 scopes to request when no AUTH0_SCOPES
@@ -86,47 +86,47 @@ type AppSettings struct {
 func GetAppSettings() *AppSettings {
 	instance := &AppSettings{}
 	if err := env.Parse(instance); err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to parse app settings")
+		telemetry.Logger.Warn().Err(err).Msg("Failed to parse app settings")
 	}
 
 	if instance.Port == 0 {
-		l.Logger.Warn().Msg("Warning: PORT is not set")
+		telemetry.Logger.Warn().Msg("Warning: PORT is not set")
 	}
 	if instance.CocktailsAPIHost == "" {
-		l.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set")
+		telemetry.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set")
 	}
 	if instance.CocktailsAPISubscriptionKey == "" {
-		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
+		telemetry.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
 	}
 	// Warn if Auth0 is not configured
 	if instance.Auth0Domain == "" {
-		l.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
 	}
 
 	if instance.Auth0ClientID == "" {
-		l.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
 	}
 
 	if instance.Auth0Audience == "" {
-		l.Logger.Warn().Msg("Warning: AUTH0_AUDIENCE is not set; authentication will fail")
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_AUDIENCE is not set; authentication will fail")
 	}
 
 	if instance.Auth0Scopes == "" {
 		instance.Auth0Scopes = DefaultAuth0Scopes
-		l.Logger.Info().Msgf("AUTH0_SCOPES not set; defaulting to: %s", DefaultAuth0Scopes)
+		telemetry.Logger.Info().Msgf("AUTH0_SCOPES not set; defaulting to: %s", DefaultAuth0Scopes)
 	}
 
 	if instance.CosmosConnectionString == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_CONNECTION_STRING is not set; database access will fail")
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_CONNECTION_STRING is not set; database access will fail")
 	}
 	if instance.CosmosAccountEndpoint == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_ACCOUNT_ENDPOINT is not set; database access will fail")
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_ACCOUNT_ENDPOINT is not set; database access will fail")
 	}
 	if instance.CosmosDatabaseName == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_DATABASE_NAME is not set; database access will fail")
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_DATABASE_NAME is not set; database access will fail")
 	}
 	if instance.CosmosContainerName == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_CONTAINER_NAME is not set; database access will fail")
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_CONTAINER_NAME is not set; database access will fail")
 	}
 
 	return instance

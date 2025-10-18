@@ -8,8 +8,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var authLoginDescription = `
@@ -54,7 +54,7 @@ func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.Cal
 	// If HTTP mode, use device code flow and return instructions
 	dc, err := handler.authManager.BeginDeviceAuth(ctx, sessionID.(string))
 	if err != nil {
-		l.Logger.Error().Err(err).Msg("Failed to start device code auth")
+		telemetry.Logger.Error().Err(err).Msg("Failed to start device code auth")
 		return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil
 	}
 	msg := fmt.Sprintf(`Continue in your browser to sign in:

@@ -19,7 +19,7 @@ import (
 
 	"github.com/rs/xid"
 
-	"cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // RequestLogger is a middleware that logs incoming HTTP requests and their outcomes.
@@ -48,7 +48,7 @@ func RequestLogger(next http.Handler) http.Handler {
 
 		lrw := newLoggingResponseWriter(w)
 
-		reqLogger := logging.Logger.
+		reqLogger := telemetry.Logger.
 			With().
 			Str("correlation_id", correlationID).Logger()
 

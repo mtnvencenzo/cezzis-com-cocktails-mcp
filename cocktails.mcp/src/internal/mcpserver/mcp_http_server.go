@@ -20,8 +20,8 @@ import (
 
 	"github.com/mark3labs/mcp-go/server"
 
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 type mcpSessionKey int
@@ -93,7 +93,7 @@ func (s *MCPHTTPServer) Start() error {
 
 	http.Handle("/mcp", middleware.RequestLogger(mcpHandler))
 
-	l.Logger.Info().
+	telemetry.Logger.Info().
 		Str("port", s.addr).
 		Msgf("Starting MCP Server on port '%s'", s.addr)
 

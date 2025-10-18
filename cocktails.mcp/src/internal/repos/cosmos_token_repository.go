@@ -21,7 +21,7 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/environment"
-	"cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // SessionToken represents a user's session token
@@ -76,7 +76,7 @@ func (r *CosmosAccountRepository) ClearTokens(sessionID string) error {
 	}
 
 	if rs.RawResponse.StatusCode == 404 {
-		logging.Logger.Warn().Str("sessionID", sessionID).Msg("No tokens found to clear")
+		telemetry.Logger.Warn().Str("sessionID", sessionID).Msg("No tokens found to clear")
 		return nil
 	}
 
@@ -128,7 +128,7 @@ func (r *CosmosAccountRepository) GetToken(sessionID string) (*SessionToken, err
 	}
 
 	if rs.RawResponse.StatusCode == 404 {
-		logging.Logger.Warn().Str("sessionId", sessionID).Msg("No token found")
+		telemetry.Logger.Warn().Str("sessionId", sessionID).Msg("No token found")
 		return nil, nil
 	}
 

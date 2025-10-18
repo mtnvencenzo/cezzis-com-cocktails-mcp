@@ -51,6 +51,7 @@ cover:
 
 standards:
 	@echo "Running code standards checks..."
+	@make tidy
 	@make fmt
 	@make imports
 	@make vet
