@@ -18,10 +18,13 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/environment"
-	"cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // SessionToken represents a user's session token
@@ -60,37 +63,58 @@ func NewCosmosAccountRepository() (*CosmosAccountRepository, error) {
 }
 
 // ClearTokens removes tokens from storage
-func (r *CosmosAccountRepository) ClearTokens(sessionID string) error {
+func (r *CosmosAccountRepository) ClearTokens(ctx context.Context, sessionID string) error {
 	containerClient, err := r.getContainer()
 	if err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
+
+	ctx, span := telemetry.Tracer.Start(ctx, "CosmosDB.DeleteItem")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("db.system", "cosmosdb"),
+		attribute.String("db.operation", "delete_item"),
+		attribute.String("db.container", r.containerName),
+		attribute.String("cosmosdb.item_id", sessionID),
+	)
 
 	rs, err := containerClient.DeleteItem(ctx, azcosmos.NewPartitionKeyString(sessionID), sessionID, nil)
 
 	if err != nil {
+		span.RecordError(err)
+		span.SetAttributes(attribute.Int("http.status_code", 500))
+		span.SetStatus(codes.Error, "Cosmos DB delete failed")
 		return err
 	}
 
 	if rs.RawResponse.StatusCode == 404 {
-		logging.Logger.Warn().Str("sessionID", sessionID).Msg("No tokens found to clear")
+		span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+		span.SetStatus(codes.Error, "Cosmos DB delete item not found")
+		telemetry.Logger.Warn().Ctx(ctx).
+			Str("sessionID", sessionID).
+			Msg("No tokens found to clear")
+
 		return nil
 	}
+
+	span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+	span.SetStatus(codes.Ok, "Cosmos DB delete succeeded")
 
 	return nil
 }
 
 // SaveToken saves tokens to storage
-func (r *CosmosAccountRepository) SaveToken(sessionID string, sessionToken *SessionToken) error {
+func (r *CosmosAccountRepository) SaveToken(ctx context.Context, sessionID string, sessionToken *SessionToken) error {
 	containerClient, err := r.getContainer()
 	if err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
 	bytes, err := json.Marshal(sessionToken)
@@ -98,39 +122,74 @@ func (r *CosmosAccountRepository) SaveToken(sessionID string, sessionToken *Sess
 		return err
 	}
 
+	ctx, span := telemetry.Tracer.Start(ctx, "CosmosDB.UpsertItem")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("db.system", "cosmosdb"),
+		attribute.String("db.operation", "upsert_item"),
+		attribute.String("db.container", r.containerName),
+		attribute.String("cosmosdb.item_id", sessionID),
+	)
+
 	rs, err := containerClient.UpsertItem(ctx, azcosmos.NewPartitionKeyString(sessionID), bytes, nil)
 
 	if err != nil {
+		span.RecordError(err)
+		span.SetAttributes(attribute.Int("http.status_code", 500))
+		span.SetStatus(codes.Error, "Cosmos DB upsert failed")
 		return err
 	}
 
 	if rs.RawResponse.StatusCode != 200 && rs.RawResponse.StatusCode != 201 {
+		span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+		span.SetStatus(codes.Error, "Cosmos DB upsert failed")
 		return fmt.Errorf("failed to save token, status code: %d", rs.RawResponse.StatusCode)
 	}
+
+	span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+	span.SetStatus(codes.Ok, "Cosmos DB upsert succeeded")
 
 	return nil
 }
 
 // GetToken retrieves tokens from storage
-func (r *CosmosAccountRepository) GetToken(sessionID string) (*SessionToken, error) {
+func (r *CosmosAccountRepository) GetToken(ctx context.Context, sessionID string) (*SessionToken, error) {
 	containerClient, err := r.getContainer()
 	if err != nil {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
+
+	ctx, span := telemetry.Tracer.Start(ctx, "CosmosDB.ReadItem")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("db.system", "cosmosdb"),
+		attribute.String("db.operation", "read_item"),
+		attribute.String("db.container", r.containerName),
+		attribute.String("cosmosdb.item_id", sessionID),
+	)
 
 	rs, err := containerClient.ReadItem(ctx, azcosmos.NewPartitionKeyString(sessionID), sessionID, nil)
 
 	if err != nil {
+		span.RecordError(err)
+		span.SetAttributes(attribute.Int("http.status_code", 500))
+		span.SetStatus(codes.Error, "Cosmos DB read failed")
 		return nil, err
 	}
 
 	if rs.RawResponse.StatusCode == 404 {
-		logging.Logger.Warn().Str("sessionId", sessionID).Msg("No token found")
+		span.SetAttributes(attribute.Int("http.status_code", rs.RawResponse.StatusCode))
+		span.SetStatus(codes.Error, "Cosmos DB item not found")
+		telemetry.Logger.Warn().Ctx(ctx).Str("sessionId", sessionID).Msg("No token found")
 		return nil, nil
 	}
+
+	span.SetStatus(codes.Ok, "Cosmos DB read succeeded")
 
 	var sessionToken SessionToken
 	if err := json.Unmarshal(rs.Value, &sessionToken); err != nil {
@@ -187,7 +246,19 @@ func GetCosmosClient() (*azcosmos.Client, error) {
 		return nil, err
 	}
 
+	httpOpts := []otelhttp.Option{
+		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
+			return "CocktailsAPI " + operation
+		}),
+	}
+
+	httpClient := &http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport, httpOpts...),
+		Timeout:   30 * time.Second,
+	}
+
 	clientOptions := azcore.ClientOptions{
+		Transport: httpClient,
 		Retry: policy.RetryOptions{
 			MaxRetries:    3,
 			RetryDelay:    1 * time.Second,

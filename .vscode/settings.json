@@ -4,7 +4,7 @@
     "rest-client.enableTelemetry": false,
     "rest-client.environmentVariables": {
         "local": {
-          "host": "http://localhost:6098"
+          "host": "http://localhost:7999"
         },
         "local-docker": {
           "host": "http://localhost:7999"

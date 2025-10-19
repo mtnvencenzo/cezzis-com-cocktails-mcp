@@ -13,23 +13,18 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 	"time"
 
-	"github.com/rs/xid"
-
-	"cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-// RequestLogger is a middleware that logs incoming HTTP requests and their outcomes.
+// RequestLogger is a middleware that logs incoming HTTP requests.
 // It implements the following features:
-//   - Generates a unique correlation ID for each request
-//   - Adds the correlation ID to the request context
-//   - Sets X-Correlation-ID header in the response
-//   - Logs request method, URL, status code, and timing
-//   - Recovers from panics and sets 500 status code
+//   - Logs request method, URL, status code, and elapsed time
+//   - Adds correlation ID from context to log entries
 //   - Uses structured logging via zerolog
+//   - Recovers from panics and logs them as errors
 //
 // Usage:
 //
@@ -38,19 +33,13 @@ func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		start := time.Now()
 
-		correlationID := xid.New().String()
-
-		ctx := context.WithValue(req.Context(), ctxKey("correlation_id"), correlationID)
-
-		req = req.WithContext(ctx)
-
-		w.Header().Add("X-Correlation-ID", correlationID)
+		correlationID := req.Context().Value(CorrelationIDCtxKey("correlation_id"))
 
 		lrw := newLoggingResponseWriter(w)
 
-		reqLogger := logging.Logger.
+		reqLogger := telemetry.Logger.
 			With().
-			Str("correlation_id", correlationID).Logger()
+			Str("correlation_id", correlationID.(string)).Logger()
 
 		req = req.WithContext(reqLogger.WithContext(req.Context()))
 
@@ -80,8 +69,6 @@ func RequestLogger(next http.Handler) http.Handler {
 		next.ServeHTTP(lrw, req)
 	})
 }
-
-type ctxKey string
 
 type loggingResponseWriter struct {
 	http.ResponseWriter

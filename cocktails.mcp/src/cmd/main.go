@@ -14,6 +14,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -24,9 +26,9 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/environment"
-	"cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 	"cezzis.com/cezzis-mcp-server/internal/repos"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
 
@@ -38,25 +40,38 @@ var Version string = "0.0.0"
 func main() {
 	environment.LoadEnv()
 
-	// Initialize the logger
-	_, err := logging.InitLogger()
+	// Initialize OpenTelemetry SDK
+	otelShutdown, err := telemetry.SetupOTelSDK(context.Background(), Version)
 	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
+		telemetry.Logger.Error().Err(err).Msg("Failed to initialize logger")
+	}
+
+	// Handle shutdown properly so nothing leaks.
+	defer func() {
+		err = errors.Join(err, otelShutdown(context.Background()))
+	}()
+
+	// Initialize open telelmetry
+	err = telemetry.InitTelemetry()
+	if err != nil {
+		log.Fatalf("Failed to initialize telemetry: %v", err)
 	}
 
 	settings := config.GetAppSettings()
+	assertAppSettings(settings)
 
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
 		"1.0.0",
 		server.WithToolCapabilities(true),
+		server.WithLogging(),
 	)
 
 	// Initialize authentication manager
 	authManager := auth.NewOAuthFlowManager()
 	cocktailsClient, err := cocktailsapi.GetClient()
 	if err != nil {
-		log.Fatalf("Failed to create cocktails client: %v", err)
+		panic(err)
 	}
 
 	// Add the various tools to the MCP server
@@ -76,11 +91,11 @@ func main() {
 	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, cocktailsClient).Handle))
 
 	// Initialize the Cosmos DB (if not already initialized)
-	err = repos.InitializeDatabase()
+	err = repos.InitializeDatabase(context.Background())
 	if err != nil {
-		logging.Logger.Err(err).Msg("Failed to initialize database")
+		telemetry.Logger.Err(err).Msg("Failed to initialize database")
 	} else {
-		logging.Logger.Info().Msg("Database initialized")
+		telemetry.Logger.Info().Msg("Database initialized")
 	}
 
 	// Finally, start the server in the chosen mode
@@ -88,14 +103,96 @@ func main() {
 	// The server will run until it is manually stopped or encounters a fatal error.
 	httpServer := mcpserver.NewMCPHTTPServer(fmt.Sprintf(":%d", settings.Port), mcpServer, Version)
 
-	logging.Logger.Info().
+	telemetry.Logger.Info().
 		Str("version", Version).
 		Str("port", strconv.Itoa(settings.Port)).
 		Msg("Starting Cezzi Cocktails MCP Server")
 
 	if err := httpServer.Start(); err != nil {
-		logging.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
+		telemetry.Logger.Fatal().Err(err).Msg("MCP HTTP server failed")
 	}
 
-	logging.Logger.Info().Msg("MCP HTTP server stopped")
+	telemetry.Logger.Info().Msg("MCP HTTP server stopped")
+}
+
+func assertAppSettings(settings *config.AppSettings) {
+	if settings.Port == 0 {
+		telemetry.Logger.Warn().Msg("Warning: PORT is not set")
+	}
+
+	if settings.CocktailsAPIHost == "" {
+		telemetry.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set")
+	}
+
+	if settings.CocktailsAPISubscriptionKey == "" {
+		telemetry.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
+	}
+
+	assertAuth0Settings(settings)
+	assertCosmosSettings(settings)
+	assertOtlpSettings(settings)
+}
+
+func assertAuth0Settings(settings *config.AppSettings) {
+	if settings.Auth0Domain == "" {
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
+	}
+
+	if settings.Auth0ClientID == "" {
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
+	}
+
+	if settings.Auth0Audience == "" {
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_AUDIENCE is not set; authentication will fail")
+	}
+
+	if settings.Auth0Scopes == "" {
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_SCOPES is not set; authentication will fail")
+	}
+}
+
+func assertCosmosSettings(settings *config.AppSettings) {
+	if settings.CosmosConnectionString == "" {
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_CONNECTION_STRING is not set; database access will fail")
+	}
+
+	if settings.CosmosAccountEndpoint == "" {
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_ACCOUNT_ENDPOINT is not set; database access will fail")
+	}
+
+	if settings.CosmosDatabaseName == "" {
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_DATABASE_NAME is not set; database access will fail")
+	}
+
+	if settings.CosmosContainerName == "" {
+		telemetry.Logger.Warn().Msg("Warning: COSMOS_CONTAINER_NAME is not set; database access will fail")
+	}
+}
+
+func assertOtlpSettings(settings *config.AppSettings) {
+	if settings.OTLPEndpoint == "" {
+		telemetry.Logger.Warn().Msg("Warning: OTLP_ENDPOINT is not set; telemetry will not be exported")
+	}
+
+	if settings.OTLPInsecure {
+		telemetry.Logger.Info().Msg("OTLP Insecure mode is enabled")
+	}
+
+	if settings.OTLPTraceEnabled {
+		telemetry.Logger.Info().Msg("OTLP Trace Exporter is enabled")
+	} else {
+		telemetry.Logger.Info().Msg("OTLP Trace Exporter is disabled")
+	}
+
+	if settings.OTLPMetricsEnabled {
+		telemetry.Logger.Info().Msg("OTLP Metrics Exporter is enabled")
+	} else {
+		telemetry.Logger.Info().Msg("OTLP Metrics Exporter is disabled")
+	}
+
+	if settings.OTLPLogEnabled {
+		telemetry.Logger.Info().Msg("OTLP Log Exporter is enabled")
+	} else {
+		telemetry.Logger.Info().Msg("OTLP Log Exporter is disabled")
+	}
 }

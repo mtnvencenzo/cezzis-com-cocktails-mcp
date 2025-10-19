@@ -24,8 +24,8 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var searchToolDescription = `
@@ -83,20 +83,25 @@ func NewCocktailSearchToolHandler(client *cocktailsapi.Client) *CocktailSearchTo
 // Handle handles cocktail search requests by querying the Cezzis.com cocktails API with a free-text search term and returning the raw API response as a string result.
 // It returns the raw API response as a string result, or an error result if any step fails.
 func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	sessionID := ctx.Value(middleware.McpSessionIDKey)
 	if sessionID == nil || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
 	freeText, err := request.RequireString("freeText")
+	ft := freeText
+	if len(ft) > 120 {
+		ft = ft[:120] + "…"
+	}
+
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
 	appSettings := config.GetAppSettings()
 
-	l.Logger.Info().Msg("MCP Searching cocktails: " + freeText)
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP Searching cocktails: " + ft)
 
 	// default to a safe deadline if none present
 	callCtx := ctx
@@ -113,19 +118,19 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 	})
 
 	if callErr != nil {
-		l.Logger.Err(callErr).Msg("MCP Error searching cocktails")
+		telemetry.Logger.Err(callErr).Ctx(ctx).Msg("MCP Error searching cocktails")
 		return mcp.NewToolResultError(callErr.Error()), callErr
 	}
 
 	defer func() {
 		if closeErr := rs.Body.Close(); closeErr != nil {
-			l.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
+			telemetry.Logger.Warn().Ctx(ctx).Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
 		}
 	}()
 
 	bodyBytes, readErr := io.ReadAll(rs.Body)
 	if readErr != nil {
-		l.Logger.Err(readErr).Msg("MCP Error searching cocktail rs body")
+		telemetry.Logger.Err(readErr).Ctx(ctx).Msg("MCP Error searching cocktail rs body")
 		return mcp.NewToolResultError(readErr.Error()), readErr
 	}
 

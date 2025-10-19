@@ -25,8 +25,8 @@ import (
 
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var getToolDescription = `
@@ -72,7 +72,7 @@ func NewCocktailGetToolHandler(client *cocktailsapi.Client) *CocktailGetToolHand
 // Handle handles requests to retrieve detailed cocktail data from the Cezzis.com cocktails API using a provided cocktail ID.
 // It returns the full cocktail information as a string result, or an error result if any step fails.
 func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
+	sessionID := ctx.Value(middleware.McpSessionIDKey)
 	if sessionID == nil || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
@@ -91,7 +91,7 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 
 	appSettings := config.GetAppSettings()
 
-	l.Logger.Info().Msg("MCP Getting cocktail: " + cocktailID)
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP Getting cocktail: " + cocktailID)
 
 	// default to a safe deadline if none present
 	callCtx := ctx
@@ -106,19 +106,19 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 	})
 
 	if callErr != nil {
-		l.Logger.Err(callErr).Msg("MCP Error getting cocktail: " + cocktailID)
+		telemetry.Logger.Error().Ctx(ctx).Err(callErr).Msg("MCP Error getting cocktail: " + cocktailID)
 		return mcp.NewToolResultError(callErr.Error()), callErr
 	}
 
 	defer func() {
 		if closeErr := rs.Body.Close(); closeErr != nil {
-			l.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
+			telemetry.Logger.Error().Ctx(ctx).Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
 		}
 	}()
 
 	bodyBytes, readErr := io.ReadAll(rs.Body)
 	if readErr != nil {
-		l.Logger.Err(readErr).Msg("MCP Error getting cocktail rs body: " + cocktailID)
+		telemetry.Logger.Error().Err(readErr).Ctx(ctx).Msg("MCP Error getting cocktail rs body: " + cocktailID)
 		return mcp.NewToolResultError(readErr.Error()), readErr
 	}
 

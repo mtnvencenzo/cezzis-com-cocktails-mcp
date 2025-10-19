@@ -11,7 +11,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // LoadEnvironment loads environment variables from .env files for tests.
@@ -31,7 +31,7 @@ import (
 func LoadEnvironment(wdOffsets ...string) {
 	wd, wderr := os.Getwd()
 	if wderr != nil {
-		l.Logger.Warn().Err(wderr).Msg("Server error - wd path: %v\n")
+		telemetry.Logger.Warn().Err(wderr).Msg("Failed to get working directory")
 	}
 
 	envPath := filepath.Join(append([]string{wd}, wdOffsets...)...)

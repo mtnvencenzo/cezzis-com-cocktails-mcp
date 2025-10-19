@@ -13,8 +13,8 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var rateCocktailDescription = `
@@ -61,8 +61,9 @@ func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, client *cock
 
 // Handle handles cocktail rating requests
 func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
-	if sessionID == nil || sessionID == "" {
+	v := ctx.Value(middleware.McpSessionIDKey)
+	sessionID, ok := v.(string)
+	if !ok || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
@@ -89,9 +90,15 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	}
 
 	// Check authentication
-	if !handler.authManager.IsAuthenticated(sessionID.(string)) {
+	if !handler.authManager.IsAuthenticated(ctx, sessionID) {
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
 	}
+
+	telemetry.Logger.Info().
+		Ctx(ctx).
+		Str("cocktail_id", cocktailID).
+		Int("stars", stars).
+		Msg("MCP rating cocktail: " + cocktailID)
 
 	// default to a safe deadline if none present
 	callCtx := ctx
@@ -111,19 +118,19 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	}, cocktailsapi.AuthenticatedRequestEditor(handler.authManager))
 
 	if callErr != nil {
-		l.Logger.Err(callErr).Msg("MCP Error rating cocktail: " + cocktailID)
+		telemetry.Logger.Err(callErr).Ctx(ctx).Msg("MCP Error rating cocktail: " + cocktailID)
 		return mcp.NewToolResultError(callErr.Error()), callErr
 	}
 
 	defer func() {
 		if closeErr := rs.Body.Close(); closeErr != nil {
-			l.Logger.Warn().Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
+			telemetry.Logger.Warn().Ctx(ctx).Msg(fmt.Sprintf("MCP Warning: failed to close response body: %v", closeErr))
 		}
 	}()
 
 	bodyBytes, readErr := io.ReadAll(rs.Body)
 	if readErr != nil {
-		l.Logger.Err(readErr).Msg("MCP Error getting cocktail rs body: " + cocktailID)
+		telemetry.Logger.Err(readErr).Ctx(ctx).Msg("MCP Error getting cocktail rs body: " + cocktailID)
 		return mcp.NewToolResultError(readErr.Error()), readErr
 	}
 
@@ -131,7 +138,7 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	bodyString := string(bodyBytes)
 
 	if bodyString == "" {
-		l.Logger.Warn().Msg("MCP Warning: empty response body when rating cocktail: " + cocktailID)
+		telemetry.Logger.Warn().Ctx(ctx).Msg("MCP Warning: empty response body when rating cocktail: " + cocktailID)
 	}
 
 	result := fmt.Sprintf(`Successfully submitted rating!
@@ -144,7 +151,8 @@ Visit https://www.cezzis.com/cocktails/%s to see the updated rating.
 
 Thank you for contributing to the Cezzis.com community!`, cocktailID, stars, cocktailID)
 
-	l.Logger.Info().
+	telemetry.Logger.Info().
+		Ctx(ctx).
 		Str("cocktail_id", cocktailID).
 		Int("stars", stars).
 		Msg("Cocktail rating submitted")

@@ -62,7 +62,10 @@ data "azurerm_key_vault_secret" "cocktails_api_mcp_subscription_key" {
   key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
 }
 
-# CosmosDB Shared Account
+# ------------------------------------------------
+# Cosmos Shared Db Connection
+# ------------------------------------------------
+
 data "azurerm_cosmosdb_account" "cosmosdb_account" {
   name                = "cosmos-${var.sub}-${var.region}-${var.global_environment}-shared-${var.sequence}"
   resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
@@ -84,4 +87,23 @@ data "azurerm_cosmosdb_sql_role_definition" "cosmosdb_reader_role" {
   resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
   account_name        = data.azurerm_cosmosdb_account.cosmosdb_account.name
   role_definition_id  = var.cosmosdb_reader_role_id
+}
+
+# ------------------------------------------------
+# Otel Collector Connection
+# ------------------------------------------------
+
+data "azurerm_container_app" "otel_collector" {
+  name                = "aca-${var.sub}-${var.region}-${var.global_environment}-otelcol-${var.sequence}"
+  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+}
+
+data "azurerm_key_vault" "global_keyvault" {
+  name                = "kv-${var.sub}-${var.region}-${var.global_environment}-shared-${var.short_sequence}"
+  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+}
+
+data "azurerm_key_vault_secret" "otel_collector_api_key" {
+  name         = "otel-collector-api-key-cocktails-api"
+  key_vault_id = data.azurerm_key_vault.global_keyvault.id
 }

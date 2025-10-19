@@ -29,6 +29,7 @@ modules that underpin multiple Cezzis.com workloads
 
 ![Complete Diagram](./assets/cezzis-com-mcp-interactions.drawio.svg)
 
+
 ## ☁️ Cloud-Native Footprint (Azure)
 
 Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Azure using shared modules:
@@ -36,8 +37,8 @@ Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Az
 - **Azure Container Apps** – Hosts the MCP service (HTTP mode) with HTTPS ingress
 - **Azure API Management** – Optional façade when exposing HTTP endpoints; routes and policies managed via Terraform
 - **Azure Container Registry** – Stores container images published from CI/CD
-- **Azure Key Vault** – Holds secrets (Cezzis API subscription keys, telemetry keys)
-- **Azure Monitor / Application Insights** – Telemetry collection (logs/traces)
+- **Azure Key Vault** – Holds secrets (Cezzis API subscription keys)
+- **Azure Monitor** – Telemetry collection (logs/traces) via OpenTelemetry and OTLP exporter
 - **Shared Infrastructure Modules** – Sourced from the reusable Terraform modules repo for consistency
 
 ## 📚 MCP Tools
@@ -92,14 +93,19 @@ The server exposes the following MCP tools:
 - Server: Lightweight MCP server with tool registry and health/version endpoints
 - Logging: zerolog (structured JSON logs)
 
+
 ### Integrations
 - **Cezzis.com Cocktails API**: Upstream data source (requires subscription key)
 - **Azure AI Search**: Powers semantic/lucene queries in the upstream API
-- **Application Insights**: Optional telemetry via instrumentation key
+- **Azure CosmosDB**: Used for secure token storage and account-related data (see `internal/repos/cosmos_token_repository.go`).
+- **Auth0**: Used for OAuth 2.1 / OIDC authentication and secure token management (see `internal/auth/`).
+- **Telemetry**: All telemetry (logs, traces, metrics) is sent via OpenTelemetry using the OTLP exporter.
+
 
 ### Authentication & Security
 - API Access: `COCKTAILS_API_XKEY` subscription key injected via env/Key Vault
-- Auth0 OAuth 2.1 / OIDC: End‑user authentication for personalized features (e.g., ratings)
+- Auth0 OAuth 2.1 / OIDC: End‑user authentication for personalized features (e.g., ratings). Auth0 is used for device code login, token issuance, and secure refresh flows. See `internal/auth/oauth_manager.go` and `internal/auth/token_storage.go` for implementation details.
+- CosmosDB: Used for secure storage of user tokens and account data. See `internal/repos/cosmos_token_repository.go`.
 - Secrets: Managed via environment files locally and Azure Key Vault in cloud
 - Transport: HTTP/HTTPS for MCP endpoint
 
@@ -149,8 +155,10 @@ cocktails.mcp/
   AUTH0_AUDIENCE=https://cezzis-cocktails-api
   AUTH0_SCOPES="openid offline_access profile email read:owned-account write:owned-account"
 
-  # Optional: Application Insights (telemetry)
-  APPLICATIONINSIGHTS_INSTRUMENTATIONKEY=your_app_insights_key
+
+  # Optional: OpenTelemetry/OTLP (telemetry)
+  OTEL_EXPORTER_OTLP_ENDPOINT=https://your-otlp-endpoint
+  OTEL_EXPORTER_OTLP_HEADERS=key1=value1,key2=value2
 
   # Optional: Logging
   LOG_LEVEL=info
@@ -267,9 +275,10 @@ Start the server locally with `--http :8080` and Copilot Chat can call its tools
 - HTTP/HTTPS transport for MCP endpoint
 - Validated tool inputs and structured error handling
 
+
 ## 📈 Monitoring
 
-- Optional Application Insights for logs/traces
+- Telemetry (logs, traces, metrics) is collected using OpenTelemetry and exported via the OTLP protocol. This enables integration with Azure Monitor and other observability platforms that support OTLP.
 - Health checks exposed in HTTP mode for probes
 
 ## 🤖 What is MCP?

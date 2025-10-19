@@ -8,8 +8,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var authLoginDescription = `
@@ -45,16 +45,19 @@ func NewAuthLoginToolHandler(authManager *auth.OAuthFlowManager) *AuthLoginToolH
 
 // Handle handles authentication login requests
 func (handler *AuthLoginToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
-	if sessionID == nil || sessionID == "" {
+	v := ctx.Value(middleware.McpSessionIDKey)
+	sessionID, ok := v.(string)
+	if !ok || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication login flow")
+
 	// If HTTP mode, use device code flow and return instructions
-	dc, err := handler.authManager.BeginDeviceAuth(ctx, sessionID.(string))
+	dc, err := handler.authManager.BeginDeviceAuth(ctx, sessionID)
 	if err != nil {
-		l.Logger.Error().Err(err).Msg("Failed to start device code auth")
+		telemetry.Logger.Error().Ctx(ctx).Err(err).Msg("Failed to start device code auth")
 		return mcp.NewToolResultError(fmt.Sprintf("Authentication failed: %v", err)), nil
 	}
 	msg := fmt.Sprintf(`Continue in your browser to sign in:

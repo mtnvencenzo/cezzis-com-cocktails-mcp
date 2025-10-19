@@ -15,20 +15,12 @@
 package mcpserver
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/mark3labs/mcp-go/server"
 
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
-)
-
-type mcpSessionKey int
-
-const (
-	// McpSessionIDKey is the context key for the MCP session ID
-	McpSessionIDKey mcpSessionKey = iota
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // MCPHTTPServer wraps the MCP server HTTP functionality.
@@ -71,29 +63,15 @@ func (s *MCPHTTPServer) Start() error {
 	streamableHTTP := server.NewStreamableHTTPServer(s.mcpServer)
 
 	// Wrap the MCP route to support GET probes and POST for MCP
-	mcpHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte(`{"status":"ok", "sse":false}`))
-			return
-		case http.MethodPost:
-			sessionID := r.Header.Get("Mcp-Session-Id")
-			ctx := context.WithValue(r.Context(), McpSessionIDKey, sessionID)
-			r = r.WithContext(ctx)
-			streamableHTTP.ServeHTTP(w, r)
-			return
-		default:
-			w.Header().Set("Allow", "GET, POST")
-			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-			return
-		}
-	})
+	mcpMiddleware := middleware.McpRequestHandler(nil, streamableHTTP)
 
-	http.Handle("/mcp", middleware.RequestLogger(mcpHandler))
+	loggingMiddleware := middleware.RequestLogger(mcpMiddleware)
 
-	l.Logger.Info().
+	tracingMiddleware := middleware.RequestTracer(loggingMiddleware)
+
+	http.Handle("/mcp", tracingMiddleware)
+
+	telemetry.Logger.Info().
 		Str("port", s.addr).
 		Msgf("Starting MCP Server on port '%s'", s.addr)
 

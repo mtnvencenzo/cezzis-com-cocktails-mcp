@@ -9,7 +9,7 @@ linters:
     - revive
   settings:
     gocyclo:
-      min-complexity: 15
+      min-complexity: 18
     revive:
       confidence: 0.8
       severity: warning

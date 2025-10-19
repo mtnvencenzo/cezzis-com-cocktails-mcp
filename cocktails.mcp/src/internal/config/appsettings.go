@@ -15,8 +15,6 @@ import (
 	"fmt"
 
 	"github.com/caarlos0/env/v11"
-
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
 )
 
 // DefaultAuth0Scopes defines the default OAuth2 scopes to request when no AUTH0_SCOPES
@@ -70,6 +68,30 @@ type AppSettings struct {
 	// CosmosContainerName is the name of the container to use within the Azure Cosmos DB database.
 	// Example: "tokens"
 	CosmosContainerName string `env:"COSMOS_CONTAINER_NAME"`
+
+	// OTLPEndpoint is the OTLP collector endpoint to send telemetry data to.
+	// Example: "localhost:4317"
+	OTLPEndpoint string `env:"OTLP_ENDPOINT" envDefault:"localhost:4317"`
+
+	// OTLPHeaders are the headers to include in OTLP requests, formatted as key=value pairs separated by commas.
+	// Example: "api-key=your_api_key,env=production"
+	OTLPHeaders string `env:"OTLP_HEADERS" envDefault:""`
+
+	// OTLPInsecure indicates whether to use an insecure connection (no TLS) for OTLP communication.
+	// Default is false (use secure connection).
+	OTLPInsecure bool `env:"OTLP_INSECURE" envDefault:"false"`
+
+	// OTLPLogEnabled indicates whether to send logs to the OTLP collector.
+	// Default is true.
+	OTLPLogEnabled bool `env:"OTLP_LOG_ENABLED" envDefault:"true"`
+
+	// OTLPTraceEnabled indicates whether to send traces to the OTLP collector.
+	// Default is true.
+	OTLPTraceEnabled bool `env:"OTLP_TRACE_ENABLED" envDefault:"true"`
+
+	// OTLPMetricsEnabled indicates whether to send metrics to the OTLP collector.
+	// Default is true.
+	OTLPMetricsEnabled bool `env:"OTLP_METRICS_ENABLED" envDefault:"true"`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
@@ -86,47 +108,7 @@ type AppSettings struct {
 func GetAppSettings() *AppSettings {
 	instance := &AppSettings{}
 	if err := env.Parse(instance); err != nil {
-		l.Logger.Warn().Err(err).Msg("Failed to parse app settings")
-	}
-
-	if instance.Port == 0 {
-		l.Logger.Warn().Msg("Warning: PORT is not set")
-	}
-	if instance.CocktailsAPIHost == "" {
-		l.Logger.Warn().Msg("Warning: COCKTAILS_API_HOST is not set")
-	}
-	if instance.CocktailsAPISubscriptionKey == "" {
-		l.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
-	}
-	// Warn if Auth0 is not configured
-	if instance.Auth0Domain == "" {
-		l.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
-	}
-
-	if instance.Auth0ClientID == "" {
-		l.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
-	}
-
-	if instance.Auth0Audience == "" {
-		l.Logger.Warn().Msg("Warning: AUTH0_AUDIENCE is not set; authentication will fail")
-	}
-
-	if instance.Auth0Scopes == "" {
-		instance.Auth0Scopes = DefaultAuth0Scopes
-		l.Logger.Info().Msgf("AUTH0_SCOPES not set; defaulting to: %s", DefaultAuth0Scopes)
-	}
-
-	if instance.CosmosConnectionString == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_CONNECTION_STRING is not set; database access will fail")
-	}
-	if instance.CosmosAccountEndpoint == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_ACCOUNT_ENDPOINT is not set; database access will fail")
-	}
-	if instance.CosmosDatabaseName == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_DATABASE_NAME is not set; database access will fail")
-	}
-	if instance.CosmosContainerName == "" {
-		l.Logger.Warn().Msg("Warning: COSMOS_CONTAINER_NAME is not set; database access will fail")
+		panic(err)
 	}
 
 	return instance

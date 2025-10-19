@@ -8,8 +8,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
-	l "cezzis.com/cezzis-mcp-server/internal/logging"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var authLogoutDescription = `
@@ -41,14 +41,17 @@ func NewAuthLogoutToolHandler(authManager *auth.OAuthFlowManager) *AuthLogoutToo
 
 // Handle processes logout by clearing tokens from memory and disk
 func (handler *AuthLogoutToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
-	if sessionID == nil || sessionID == "" {
+	v := ctx.Value(middleware.McpSessionIDKey)
+	sessionID, ok := v.(string)
+	if !ok || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	if err := handler.authManager.Logout(sessionID.(string)); err != nil {
-		l.Logger.Error().Err(err).Msg("Failed to logout and clear tokens")
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication logout flow")
+
+	if err := handler.authManager.Logout(ctx, sessionID); err != nil {
+		telemetry.Logger.Error().Ctx(ctx).Err(err).Msg("Failed to logout and clear tokens")
 		return mcp.NewToolResultError(fmt.Sprintf("Logout failed: %v", err)), nil
 	}
 	return mcp.NewToolResultText("Logged out. Tokens cleared. Use 'authentication_login_flow' to sign in again."), nil

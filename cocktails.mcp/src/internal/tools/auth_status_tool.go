@@ -7,7 +7,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/auth"
-	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
+	"cezzis.com/cezzis-mcp-server/internal/middleware"
+	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 var authStatusDescription = `
@@ -39,13 +40,16 @@ func NewAuthStatusToolHandler(authManager *auth.OAuthFlowManager) *AuthStatusToo
 
 // Handle handles authentication status requests
 func (handler *AuthStatusToolHandler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	sessionID := ctx.Value(mcpserver.McpSessionIDKey)
-	if sessionID == nil || sessionID == "" {
+	v := ctx.Value(middleware.McpSessionIDKey)
+	sessionID, ok := v.(string)
+	if !ok || sessionID == "" {
 		err := errors.New("missing required Mcp-Session-Id header")
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	if handler.authManager.IsAuthenticated(sessionID.(string)) {
+	telemetry.Logger.Info().Ctx(ctx).Msg("MCP starting authentication status check")
+
+	if handler.authManager.IsAuthenticated(ctx, sessionID) {
 		return mcp.NewToolResultText("You are currently authenticated and can access personalized features."), nil
 	}
 
