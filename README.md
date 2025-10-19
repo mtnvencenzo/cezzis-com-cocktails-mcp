@@ -38,7 +38,7 @@ Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Az
 - **Azure API Management** – Optional façade when exposing HTTP endpoints; routes and policies managed via Terraform
 - **Azure Container Registry** – Stores container images published from CI/CD
 - **Azure Key Vault** – Holds secrets (Cezzis API subscription keys)
-- **Azure Monitor** – Telemetry collection (logs/traces) via OpenTelemetry and OTLP exporter
+- **Azure Monitor** – Telemetry collection (logs/traces) via OpenTelemetry and OTLP exporter over HTTP/protobuf
 - **Shared Infrastructure Modules** – Sourced from the reusable Terraform modules repo for consistency
 
 ## 📚 MCP Tools
@@ -99,7 +99,7 @@ The server exposes the following MCP tools:
 - **Azure AI Search**: Powers semantic/lucene queries in the upstream API
 - **Azure CosmosDB**: Used for secure token storage and account-related data (see `internal/repos/cosmos_token_repository.go`).
 - **Auth0**: Used for OAuth 2.1 / OIDC authentication and secure token management (see `internal/auth/`).
-- **Telemetry**: All telemetry (logs, traces, metrics) is sent via OpenTelemetry using the OTLP exporter.
+- **Telemetry**: All telemetry (logs, traces, metrics) is sent via OpenTelemetry using OTLP exporters over HTTP/protobuf.
 
 
 ### Authentication & Security
@@ -278,7 +278,7 @@ Start the server locally with `--http :8080` and Copilot Chat can call its tools
 
 ## 📈 Monitoring
 
-- Telemetry (logs, traces, metrics) is collected using OpenTelemetry and exported via the OTLP protocol. This enables integration with Azure Monitor and other observability platforms that support OTLP.
+- Telemetry (logs, traces, metrics) is collected using OpenTelemetry and exported via the OTLP protocol over HTTP/protobuf. This enables integration with Azure Monitor and other observability platforms that support OTLP over HTTP.
 - Health checks exposed in HTTP mode for probes
 
 ## 🤖 What is MCP?
