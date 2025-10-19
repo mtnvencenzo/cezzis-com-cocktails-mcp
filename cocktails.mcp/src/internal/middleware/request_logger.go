@@ -33,13 +33,9 @@ func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		start := time.Now()
 
-		correlationID := req.Context().Value(CorrelationIDCtxKey("correlation_id"))
-
 		lrw := newLoggingResponseWriter(w)
 
-		reqLogger := telemetry.Logger.
-			With().
-			Str("correlation_id", correlationID.(string)).Logger()
+		reqLogger := telemetry.Logger.With().Logger()
 
 		req = req.WithContext(reqLogger.WithContext(req.Context()))
 
