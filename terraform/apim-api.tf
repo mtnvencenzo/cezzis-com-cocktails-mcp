@@ -28,6 +28,7 @@ module "apim_cocktails_mcp" {
   application_insights = {
     id                  = data.azurerm_application_insights.appi.id
     instrumentation_key = data.azurerm_application_insights.appi.instrumentation_key
+    sampling_percentage = 80.0
   }
 
   subscriptions = [
