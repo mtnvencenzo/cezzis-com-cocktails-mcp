@@ -18,6 +18,7 @@ import (
 	"net/http"
 
 	"github.com/mark3labs/mcp-go/server"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
@@ -69,7 +70,13 @@ func (s *MCPHTTPServer) Start() error {
 
 	tracingMiddleware := middleware.RequestTracer(loggingMiddleware)
 
-	http.Handle("/mcp", tracingMiddleware)
+	opts := []otelhttp.Option{
+		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
+			return "MCP " + r.Method
+		}),
+	}
+
+	http.Handle("/mcp", otelhttp.NewHandler(tracingMiddleware, "mcp", opts...))
 
 	telemetry.Logger.Info().
 		Str("port", s.addr).
