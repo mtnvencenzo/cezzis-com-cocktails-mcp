@@ -13,12 +13,10 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/rs/xid"
-
-	"cezzis.com/cezzis-mcp-server/internal/telemetry"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 // RequestTracer is a middleware that traces incoming HTTP requests using OpenTelemetry.
@@ -32,49 +30,58 @@ import (
 //
 //	http.Handle("/api", middleware.RequestTracer(apiHandler))
 func RequestTracer(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		ctx, span := telemetry.Tracer.Start(req.Context(), req.Method+" "+req.URL.Path)
-		defer span.End()
-
-		lrw := newTracingResponseWriter(w)
-
-		correlationID := xid.New().String()
-		ctx = context.WithValue(ctx, CorrelationIDCtxKey("correlation_id"), correlationID)
-		req = req.WithContext(ctx)
-
-		w.Header().Add("X-Correlation-ID", correlationID)
-
-		next.ServeHTTP(lrw, req)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		otel.GetTextMapPropagator().Inject(r.Context(), propagation.HeaderCarrier(w.Header()))
+		next.ServeHTTP(w, r)
 	})
+	// return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	// 	ctx, span := telemetry.Tracer.Start(req.Context(), req.Method+" "+req.URL.Path)
+	// 	defer span.End()
+
+	// 	lrw := newTracingResponseWriter(w)
+
+	// 	correlationID := xid.New().String()
+	// 	ctx = context.WithValue(ctx, CorrelationIDCtxKey("correlation_id"), correlationID)
+	// 	ctx = context.WithValue(ctx, TraceParentCtxKey("traceparent"), correlationID)
+	// 	req = req.WithContext(ctx)
+
+	// 	w.Header().Add("X-Correlation-ID", correlationID)
+	// 	w.Header().Add("X-Traceparent", correlationID)
+
+	// 	next.ServeHTTP(lrw, req)
+	// })
 }
 
 // CorrelationIDCtxKey is the context key type for correlation IDs.
 type CorrelationIDCtxKey string
 
-type tracingResponseWriter struct {
-	http.ResponseWriter
-	statusCode int
-	wrote      bool
-}
+// // TraceParentCtxKey is the context key type for trace parent IDs.
+// type TraceParentCtxKey string
 
-func newTracingResponseWriter(w http.ResponseWriter) *tracingResponseWriter {
-	return &tracingResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
-}
+// type tracingResponseWriter struct {
+// 	http.ResponseWriter
+// 	statusCode int
+// 	wrote      bool
+// }
 
-func (lrw *tracingResponseWriter) WriteHeader(code int) {
-	if lrw.wrote {
-		// update observed status but don't write twice
-		lrw.statusCode = code
-		return
-	}
-	lrw.statusCode = code
-	lrw.wrote = true
-	lrw.ResponseWriter.WriteHeader(code)
-}
+// func newTracingResponseWriter(w http.ResponseWriter) *tracingResponseWriter {
+// 	return &tracingResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+// }
 
-func (lrw *tracingResponseWriter) Write(b []byte) (int, error) {
-	if !lrw.wrote {
-		lrw.WriteHeader(http.StatusOK)
-	}
-	return lrw.ResponseWriter.Write(b)
-}
+// func (lrw *tracingResponseWriter) WriteHeader(code int) {
+// 	if lrw.wrote {
+// 		// update observed status but don't write twice
+// 		lrw.statusCode = code
+// 		return
+// 	}
+// 	lrw.statusCode = code
+// 	lrw.wrote = true
+// 	lrw.ResponseWriter.WriteHeader(code)
+// }
+
+// func (lrw *tracingResponseWriter) Write(b []byte) (int, error) {
+// 	if !lrw.wrote {
+// 		lrw.WriteHeader(http.StatusOK)
+// 	}
+// 	return lrw.ResponseWriter.Write(b)
+// }

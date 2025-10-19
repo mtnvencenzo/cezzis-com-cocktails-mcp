@@ -33,7 +33,7 @@ Mcp-Session-Id: mcp-session-9fc61e02-2977-4569-aabe-812c7b6e08f1
   "params": {
     "name": "get_cocktail",
     "arguments": {
-      "cocktailId": "zombie"
+      "cocktailId": "americano"
     }
   }
 }
