@@ -4,15 +4,15 @@ package telemetry
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/log"
@@ -113,18 +113,16 @@ func newPropagator() propagation.TextMapPropagator {
 func newTracerProvider(ctx context.Context, resource *res.Resource) (*trace.TracerProvider, error) {
 	appSettings := config.GetAppSettings()
 
-	opts := []otlptracegrpc.Option{
-		otlptracegrpc.WithEndpointURL(appSettings.OTLPEndpoint),
-		otlptracegrpc.WithHeaders(getHeaderMap(appSettings.OTLPHeaders)),
+	opts := []otlptracehttp.Option{
+		otlptracehttp.WithEndpointURL(fmt.Sprintf("%s/%s", appSettings.OTLPEndpoint, "v1/traces")),
+		otlptracehttp.WithHeaders(getHeaderMap(appSettings.OTLPHeaders)),
 	}
 
 	if appSettings.OTLPInsecure {
-		opts = append(opts, otlptracegrpc.WithInsecure())
+		opts = append(opts, otlptracehttp.WithInsecure())
 	}
 
-	client := otlptracegrpc.NewClient(opts...)
-
-	exporter, err := otlptrace.New(ctx, client)
+	exporter, err := otlptracehttp.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,16 +148,16 @@ func newTracerProvider(ctx context.Context, resource *res.Resource) (*trace.Trac
 func newMeterProvider(ctx context.Context, resource *res.Resource) (*metric.MeterProvider, error) {
 	appSettings := config.GetAppSettings()
 
-	opts := []otlpmetricgrpc.Option{
-		otlpmetricgrpc.WithEndpointURL(appSettings.OTLPEndpoint),
-		otlpmetricgrpc.WithHeaders(getHeaderMap(appSettings.OTLPHeaders)),
+	opts := []otlpmetrichttp.Option{
+		otlpmetrichttp.WithEndpointURL(fmt.Sprintf("%s/%s", appSettings.OTLPEndpoint, "v1/metrics")),
+		otlpmetrichttp.WithHeaders(getHeaderMap(appSettings.OTLPHeaders)),
 	}
 
 	if appSettings.OTLPInsecure {
-		opts = append(opts, otlpmetricgrpc.WithInsecure())
+		opts = append(opts, otlpmetrichttp.WithInsecure())
 	}
 
-	exporter, err := otlpmetricgrpc.New(ctx, opts...)
+	exporter, err := otlpmetrichttp.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -176,16 +174,16 @@ func newMeterProvider(ctx context.Context, resource *res.Resource) (*metric.Mete
 func newLoggerProvider(ctx context.Context, resource *res.Resource) (*log.LoggerProvider, error) {
 	appSettings := config.GetAppSettings()
 
-	opts := []otlploggrpc.Option{
-		otlploggrpc.WithEndpointURL(appSettings.OTLPEndpoint),
-		otlploggrpc.WithHeaders(getHeaderMap(appSettings.OTLPHeaders)),
+	opts := []otlploghttp.Option{
+		otlploghttp.WithEndpointURL(fmt.Sprintf("%s/%s", appSettings.OTLPEndpoint, "v1/logs")),
+		otlploghttp.WithHeaders(getHeaderMap(appSettings.OTLPHeaders)),
 	}
 
 	if appSettings.OTLPInsecure {
-		opts = append(opts, otlploggrpc.WithInsecure())
+		opts = append(opts, otlploghttp.WithInsecure())
 	}
 
-	exporter, err := otlploggrpc.New(ctx, opts...)
+	exporter, err := otlploghttp.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
