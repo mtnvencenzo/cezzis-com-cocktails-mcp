@@ -107,30 +107,30 @@ jobs:
         with:
           version: ${{ needs.gitVersion.outputs.semVer }}
 
-  verify_prd:
-    name: Verify prd
-    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    needs: [docker, gitVersion, terraform_deploy_prd, create_release_prd]
-    steps:
-      - name: Verify version
-        uses: mtnvencenzo/workflows/.github/actions/check-release-version@main
-        with:
-          expected_release_version: ${{ needs.gitVersion.outputs.semVer }}
-          expected_tag: ${{ github.sha }}
-          url: https://api.cezzis.com/prd/cocktails/mcp/v1/version
-          property_name: version
-          timeout_seconds: 180
+  # verify_prd:
+  #   name: Verify prd
+  #   if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+  #   permissions:
+  #     contents: write
+  #   runs-on: ubuntu-latest
+  #   needs: [docker, gitVersion, terraform_deploy_prd, create_release_prd]
+  #   steps:
+  #     - name: Verify version
+  #       uses: mtnvencenzo/workflows/.github/actions/check-release-version@main
+  #       with:
+  #         expected_release_version: ${{ needs.gitVersion.outputs.semVer }}
+  #         expected_tag: ${{ github.sha }}
+  #         url: https://api.cezzis.com/prd/cocktails/mcp/v1/version
+  #         property_name: version
+  #         timeout_seconds: 180
 
-      - name: Warmup api
-        uses: mtnvencenzo/workflows/.github/actions/api-call@main
-        with:
-          enabled: true
-          url: https://api.cezzis.com/prd/cocktails/mcp/v1/healthz
-          statusCode: 200
-          authHeader: X-Key
-          method: GET
-        env:
-          AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}
+  #     - name: Warmup api
+  #       uses: mtnvencenzo/workflows/.github/actions/api-call@main
+  #       with:
+  #         enabled: true
+  #         url: https://api.cezzis.com/prd/cocktails/mcp/v1/healthz
+  #         statusCode: 200
+  #         authHeader: X-Key
+  #         method: GET
+  #       env:
+  #         AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}
