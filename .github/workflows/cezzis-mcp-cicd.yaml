@@ -21,23 +21,23 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     outputs:
-      semVer: ${{ steps.gitVersion.outputs.semVer }}
+      semVer: ${{ steps.gitVersion.outputs.MajorMinorPatch }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with: 
           fetch-depth: 0
       
-      - name: Install GetVersion
-        uses: gittools/actions/gitversion/setup@v1.1.1
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.2.0
         with:
-          versionSpec: "5.x"
+          versionSpec: "6.x"
 
       - name: Use GitVersion
         id: gitVersion
-        uses: gittools/actions/gitversion/execute@v1.1.1
+        uses: gittools/actions/gitversion/execute@v4.2.0
         with:
-          useConfigFile: true
+          configFilePath: ./GitVersion.yml
 
   build:
     name: Build app
@@ -48,21 +48,21 @@ jobs:
       go_mod_directory: './cocktails.mcp/src'
       go_main_directory: 'cmd'
       go_output_directory: 'dist/linux'
-      setup_files: '["cocktails.mcp/Dockerfile-CI"]'
+      setup_files: '["Dockerfile-CI"]'
       go_executable_name: 'cezzis-cocktails'
       artifact_name: 'cocktails-mcp'
       version: "${{ needs.gitVersion.outputs.semVer }}+${{ github.sha }}"
 
   docker:
     name: Containerize app
-    needs: [build]
+    needs: [build, gitVersion]
     uses: mtnvencenzo/workflows/.github/workflows/docker-build-and-push.yaml@main
     with:
       working_directory: 'cocktails.mcp'
       allow_build_and_push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
       artifact_name: 'cocktails-mcp'
       docker_file_name: 'Dockerfile-CI'
-      image_tag: '${{ github.sha }}'
+      image_tags: '${{ github.sha }},${{ needs.gitVersion.outputs.semVer }},latest'
       acr_registry_login_server: 'acrveceusgloshared001.azurecr.io'
       acr_image_repository: 'cocktailsmcp'
     secrets:

@@ -11,5 +11,6 @@ RUN addgroup -S app && adduser -S -G app app
 USER app
 
 EXPOSE 8080
+EXPOSE 7999
 
 CMD ["/cezzis-cocktails"]

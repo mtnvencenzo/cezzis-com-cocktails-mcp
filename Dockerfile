@@ -1,19 +1,19 @@
 FROM golang:1.25 AS builder
 WORKDIR /app
-COPY ../makefile ./makefile
-COPY ../cocktails.mcp ./cocktails.mcp
+COPY ./makefile ./makefile
+COPY ./cocktails.mcp ./cocktails.mcp
 
 # Install build dependencies
 RUN apk add --no-cache go make
 
 # Build the application
-RUN cd ../ && make compile
+RUN make compile
 
 FROM alpine:latest AS final
 WORKDIR /
-COPY ./dist/linux/cezzis-cocktails /cezzis-cocktails/cezzis-cocktails
+COPY ./cocktails.mcp/dist/linux/cezzis-cocktails /cezzis-cocktails/cezzis-cocktails
 # Copy environment files if they exist
-COPY ./dist/linux/.env* ./cezzis-cocktails/
+COPY ./cocktails.mcp/dist/linux/.env* ./cezzis-cocktails/
 
 # Make sure the binary is executable
 RUN chmod +x /cezzis-cocktails/cezzis-cocktails
