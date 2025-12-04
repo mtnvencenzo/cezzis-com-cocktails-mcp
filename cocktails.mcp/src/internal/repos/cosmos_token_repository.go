@@ -8,7 +8,6 @@ package repos
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -23,7 +22,6 @@ import (
 	"go.opentelemetry.io/otel/codes"
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	"cezzis.com/cezzis-mcp-server/internal/environment"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
@@ -223,10 +221,12 @@ func GetCosmosClient() (*azcosmos.Client, error) {
 		// on using connection strings in real environments, changing the options to work with local
 		// cosmos emulator.  (Note: disabling cert checks!)
 		// -------------------------------------------------------------------------------------
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: environment.IsLocalEnv()}, // Skip TLS verification for local emulator (development only)
-		}
-		httpClient := &http.Client{Transport: tr, Timeout: 30 * time.Second}
+		// tr := &http.Transport{
+		// 	TLSClientConfig: &tls.Config{InsecureSkipVerify: environment.IsLocalEnv()}, // Skip TLS verification for local emulator (development only)
+		// }
+		// httpClient := &http.Client{Transport: tr, Timeout: 30 * time.Second}
+
+		httpClient := &http.Client{Timeout: 30 * time.Second}
 
 		clientOptions := azcore.ClientOptions{
 			Transport: httpClient,
