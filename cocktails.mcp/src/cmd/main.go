@@ -101,7 +101,13 @@ func main() {
 	// Finally, start the server in the chosen mode
 	// Proper error handling ensures that any issues during startup are logged.
 	// The server will run until it is manually stopped or encounters a fatal error.
-	httpServer := mcpserver.NewMCPHTTPServer(fmt.Sprintf(":%d", settings.Port), mcpServer, Version)
+	httpServer := mcpserver.NewMCPHTTPServer(
+		fmt.Sprintf(":%d", settings.Port),
+		mcpServer,
+		Version,
+		settings.TLSCertFile,
+		settings.TLSKeyFile,
+	)
 
 	telemetry.Logger.Info().
 		Str("version", Version).
@@ -131,6 +137,7 @@ func assertAppSettings(settings *config.AppSettings) {
 	assertAuth0Settings(settings)
 	assertCosmosSettings(settings)
 	assertOtlpSettings(settings)
+	assertTLSSettings(settings)
 }
 
 func assertAuth0Settings(settings *config.AppSettings) {
@@ -194,5 +201,18 @@ func assertOtlpSettings(settings *config.AppSettings) {
 		telemetry.Logger.Info().Msg("OTLP Log Exporter is enabled")
 	} else {
 		telemetry.Logger.Info().Msg("OTLP Log Exporter is disabled")
+	}
+}
+
+func assertTLSSettings(settings *config.AppSettings) {
+	if settings.TLSCertFile != "" && settings.TLSKeyFile != "" {
+		telemetry.Logger.Info().
+			Str("cert", settings.TLSCertFile).
+			Str("key", settings.TLSKeyFile).
+			Msg("TLS/HTTPS is enabled")
+	} else if settings.TLSCertFile != "" || settings.TLSKeyFile != "" {
+		telemetry.Logger.Warn().Msg("Warning: Both TLS_CERT_FILE and TLS_KEY_FILE must be set for HTTPS; falling back to HTTP")
+	} else {
+		telemetry.Logger.Info().Msg("TLS/HTTPS is not configured; using HTTP")
 	}
 }

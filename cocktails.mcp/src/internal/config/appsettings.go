@@ -92,6 +92,14 @@ type AppSettings struct {
 	// OTLPMetricsEnabled indicates whether to send metrics to the OTLP collector.
 	// Default is true.
 	OTLPMetricsEnabled bool `env:"OTLP_METRICS_ENABLED" envDefault:"true"`
+
+	// TLSCertFile is the path to the TLS certificate file for HTTPS.
+	// Example: "/certs/server.crt"
+	TLSCertFile string `env:"TLS_CERT_FILE" envDefault:""`
+
+	// TLSKeyFile is the path to the TLS private key file for HTTPS.
+	// Example: "/certs/server.key"
+	TLSKeyFile string `env:"TLS_KEY_FILE" envDefault:""`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.
