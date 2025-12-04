@@ -1,5 +1,4 @@
 {
-    "dotnet.defaultSolution": "disable",
     "makefile.configureOnOpen": false,
     "rest-client.enableTelemetry": false,
     "rest-client.environmentVariables": {
