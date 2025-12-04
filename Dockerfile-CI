@@ -6,20 +6,8 @@ COPY ./dist/linux/cezzis-cocktails /cezzis-cocktails
 # Make sure the binary is executable
 RUN chmod +x /cezzis-cocktails
 
-# Create certs directory
+# Create certs directory for volume mounting
 RUN mkdir -p /certs
-
-# Copy SSL certificates
-COPY ./.certs/cocktails-mcp.crt /certs/server.crt
-COPY ./.certs/cocktails-mcp.key /certs/server.key
-
-# add non-root runtime user
-RUN addgroup -S app && adduser -S -G app app
-
-# Change ownership of certs to app user
-RUN chown -R app:app /certs
-
-USER app
 
 EXPOSE 8080
 EXPOSE 7999
