@@ -6,9 +6,6 @@ COPY ./dist/linux/cezzis-cocktails /cezzis-cocktails
 # Make sure the binary is executable
 RUN chmod +x /cezzis-cocktails
 
-# Create certs directory for volume mounting
-RUN mkdir -p /certs
-
 EXPOSE 8080
 EXPOSE 7999
 
