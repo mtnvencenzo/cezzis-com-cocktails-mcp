@@ -3,10 +3,10 @@
     "rest-client.enableTelemetry": false,
     "rest-client.environmentVariables": {
         "local": {
-          "host": "https://localhost:8010"
+          "host": "http://localhost:8010"
         },
         "local-docker": {
-          "host": "https://localhost:7999"
+          "host": "http://localhost:7999"
         },
         "prod-apim": {
           "host": "https://api.cezzis.com/prd/cocktails/mcp/v1"
