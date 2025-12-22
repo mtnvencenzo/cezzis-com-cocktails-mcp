@@ -10,7 +10,7 @@
                 "--app-id",
                 "cocktails-mcp",
                 "--resources-path",
-                "${workspaceFolder}/.dapr/local/",
+                "${workspaceFolder}/.dapr/loc/",
                 "--app-port",
                 "8010",
                 "--app-protocol",

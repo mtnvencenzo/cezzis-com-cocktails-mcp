@@ -10,7 +10,7 @@
                 "program": "${workspaceFolder}/cocktails.mcp/src/cmd",
                 "args": [],
                 "env": {
-                    "ENV": "local",
+                    "ENV": "loc",
                     "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"
                 }
             }
