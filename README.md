@@ -162,7 +162,7 @@ cocktails.mcp/
 
   # Optional: Logging
   LOG_LEVEL=info
-  ENV=local
+  ENV=loc
   ```
 
    Supported environment files: `.env`, `.env.local`, `.env.test`.

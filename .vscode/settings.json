@@ -3,7 +3,7 @@
     "rest-client.enableTelemetry": false,
     "rest-client.environmentVariables": {
         "local": {
-          "host": "http://localhost:8010"
+          "host": "http://localhost:8012"
         },
         "local-docker": {
           "host": "http://localhost:7999"

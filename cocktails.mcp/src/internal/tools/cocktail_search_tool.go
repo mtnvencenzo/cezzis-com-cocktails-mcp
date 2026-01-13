@@ -22,8 +22,7 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 
-	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
-	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/api/aisearch"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
@@ -62,19 +61,19 @@ var CocktailSearchTool = mcp.NewTool(
 	mcp.WithDescription(searchToolDescription),
 	mcp.WithString("freeText",
 		mcp.Required(),
-		mcp.Description("The free text search query to use when search the cocktails."),
+		mcp.Description("The free text search query to use when searching the cocktails."),
 	),
 )
 
 // CocktailSearchToolHandler implements the MCP tool handler for searching cocktails.
 // It maintains a reference to the cocktails API factory for making API calls.
 type CocktailSearchToolHandler struct {
-	client *cocktailsapi.Client
+	client *aisearch.Client
 }
 
 // NewCocktailSearchToolHandler creates a new instance of CocktailSearchToolHandler with the provided API factory.
 // The handler uses the factory to create API clients for searching cocktails.
-func NewCocktailSearchToolHandler(client *cocktailsapi.Client) *CocktailSearchToolHandler {
+func NewCocktailSearchToolHandler(client *aisearch.Client) *CocktailSearchToolHandler {
 	return &CocktailSearchToolHandler{
 		client: client,
 	}
@@ -99,8 +98,6 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	appSettings := config.GetAppSettings()
-
 	telemetry.Logger.Info().Ctx(ctx).Msg("MCP Searching cocktails: " + ft)
 
 	// default to a safe deadline if none present
@@ -111,10 +108,8 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		defer cancel()
 	}
 
-	rs, callErr := handler.client.GetCocktailsList(callCtx, &cocktailsapi.GetCocktailsListParams{
-		FreeText: &freeText,
-		Inc:      &[]cocktailsapi.CocktailDataIncludeModel{"mainImages", "searchTiles", "descriptiveTitle"},
-		XKey:     &appSettings.CocktailsAPISubscriptionKey,
+	rs, callErr := handler.client.SearchV1CocktailsSearchGet(callCtx, &aisearch.SearchV1CocktailsSearchGetParams{
+		Freetext: &freeText,
 	})
 
 	if callErr != nil {

@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"cezzis.com/cezzis-mcp-server/internal/api/aisearch"
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
@@ -27,7 +28,7 @@ const (
 // Setup setup sets up a test HTTP server along with a github.Client that is
 // configured to talk to that test server. Tests should register handlers on
 // mux which provide mock responses for the API method being tested.
-func Setup(t *testing.T) (client *cocktailsapi.Client, mux *http.ServeMux, ctx context.Context, serverURL string) {
+func Setup(t *testing.T) (cocktailsClient *cocktailsapi.Client, aiSearchClient *aisearch.Client, mux *http.ServeMux, ctx context.Context, serverURL string) {
 	t.Helper()
 	// mux is the HTTP request multiplexer used with the test server.
 	mux = http.NewServeMux()
@@ -73,26 +74,43 @@ func Setup(t *testing.T) (client *cocktailsapi.Client, mux *http.ServeMux, ctx c
 	}
 	// client is the GitHub client being tested and is
 	// configured to use test server.
-	client, err := cocktailsapi.NewClient(config.GetAppSettings().CocktailsAPIHost)
+	cocktailsClient, err := cocktailsapi.NewClient(config.GetAppSettings().CocktailsAPIHost)
 	if err != nil {
 		t.Fatalf("Failed to create client: %v", err)
 	}
 
 	// Override the HTTP client and BaseURL to use the test server.
-	err = cocktailsapi.WithHTTPClient(httpClient)(client)
+	err = cocktailsapi.WithHTTPClient(httpClient)(cocktailsClient)
 	if err != nil {
 		t.Fatalf("Failed to set HTTP client: %v", err)
 	}
 
 	rootURL, _ := url.Parse(server.URL + baseURLPath + "/")
-	err = cocktailsapi.WithBaseURL(rootURL.String())(client)
+	err = cocktailsapi.WithBaseURL(rootURL.String())(cocktailsClient)
 	if err != nil {
 		t.Fatalf("Failed to set BaseURL: %v", err)
 	}
 
+	// Create aiSearchClient
+	aiSearchClient, err = aisearch.NewClient(config.GetAppSettings().AISearchAPIHost)
+	if err != nil {
+		t.Fatalf("Failed to create AI search client: %v", err)
+	}
+
+	// Use the same HTTP client and test server
+	err = aisearch.WithHTTPClient(httpClient)(aiSearchClient)
+	if err != nil {
+		t.Fatalf("Failed to set AI search HTTP client: %v", err)
+	}
+
+	err = aisearch.WithBaseURL(rootURL.String())(aiSearchClient)
+	if err != nil {
+		t.Fatalf("Failed to set AI search BaseURL: %v", err)
+	}
+
 	t.Cleanup(server.Close)
 
-	return client, mux, ctx, server.URL
+	return cocktailsClient, aiSearchClient, mux, ctx, server.URL
 }
 
 // TestMethod asserts that the request method is as expected.

@@ -9,7 +9,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/require"
 
-	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
+	"cezzis.com/cezzis-mcp-server/internal/api/aisearch"
 	"cezzis.com/cezzis-mcp-server/internal/testutils"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
@@ -18,7 +18,7 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 	// Arrange
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, _, ctx, _ := testutils.Setup(t)
+	_, searchClient, _, ctx, _ := testutils.Setup(t)
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -30,7 +30,7 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 		},
 	}
 
-	handler := tools.NewCocktailSearchToolHandler(client)
+	handler := tools.NewCocktailSearchToolHandler(searchClient)
 
 	// Act
 	result, err := handler.Handle(ctx, request)
@@ -39,10 +39,10 @@ func Test_cocktailsearch_toolhandler_throws_on_invalid_freetext(t *testing.T) {
 
 func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(t *testing.T) {
 	// Arrange
-	client, mux, ctx, _ := testutils.Setup(t)
+	_, searchClient, mux, ctx, _ := testutils.Setup(t)
 
-	resultRs := cocktailsapi.CocktailsListRs{
-		Items: []cocktailsapi.CocktailsListModel{
+	resultRs := aisearch.CocktailsSearchRs{
+		Items: []aisearch.CocktailModelOutput{
 			{
 				Id:               "pegu-club",
 				DescriptiveTitle: "This is the pegu club",
@@ -56,9 +56,9 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 		return
 	}
 
-	mux.HandleFunc("/api/v1/cocktails", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/v1/cocktails/search", func(w http.ResponseWriter, r *http.Request) {
 		testutils.TestMethod(t, r, "GET")
-		freeText := r.URL.Query().Get("freeText")
+		freeText := r.URL.Query().Get("freetext")
 		require.Equal(t, "Pegu Club", freeText)
 		fmt.Fprint(w, string(jsonData))
 	})
@@ -77,7 +77,7 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 		},
 	}
 
-	handler := tools.NewCocktailSearchToolHandler(client)
+	handler := tools.NewCocktailSearchToolHandler(searchClient)
 
 	// Act
 	result, err := handler.Handle(ctx, request)

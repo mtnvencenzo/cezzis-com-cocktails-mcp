@@ -50,7 +50,7 @@ func LoadEnv() {
 
 // IsLocalEnv returns true if the ENV environment variable is set to "local"
 func IsLocalEnv() bool {
-	return strings.ToLower(os.Getenv("ENV")) == "local"
+	return strings.ToLower(os.Getenv("ENV")) == "loc"
 }
 
 // GetEnvironmentName returns the value of the ENV environment variable in lowercase.

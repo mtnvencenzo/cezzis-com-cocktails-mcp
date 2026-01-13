@@ -18,7 +18,7 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 	// arrange
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, _, ctx, _ := testutils.Setup(t)
+	client, _, _, ctx, _ := testutils.Setup(t)
 
 	request := mcp.CallToolRequest{
 		Request: mcp.Request{
@@ -40,7 +40,7 @@ func Test_cocktailget_toolhandler_returns_error_on_missing_cocktailId(t *testing
 func Test_cocktailget_toolhandler_returns_error_on_invalid_cocktailId(t *testing.T) {
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, _, ctx, _ := testutils.Setup(t)
+	client, _, _, ctx, _ := testutils.Setup(t)
 
 	// arrange
 
@@ -67,7 +67,7 @@ func Test_cocktailget_toolhandler_returns_valid_response_for_cocktailId(t *testi
 	// arrange
 	t.Parallel()
 	testutils.LoadEnvironment("..", "..")
-	client, mux, ctx, _ := testutils.Setup(t)
+	client, _, mux, ctx, _ := testutils.Setup(t)
 
 	resultRs := cocktailsapi.CocktailRs{
 		Item: cocktailsapi.CocktailModel{

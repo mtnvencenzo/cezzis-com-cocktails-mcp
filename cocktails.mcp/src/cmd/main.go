@@ -22,6 +22,7 @@ import (
 
 	"github.com/mark3labs/mcp-go/server"
 
+	"cezzis.com/cezzis-mcp-server/internal/api/aisearch"
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
@@ -74,13 +75,18 @@ func main() {
 		panic(err)
 	}
 
+	aiSearchClient, err := aisearch.GetClient()
+	if err != nil {
+		panic(err)
+	}
+
 	// Add the various tools to the MCP server
 	// Each tool is registered with its corresponding handler function.
 	// This allows clients to invoke the tools via the MCP protocol.
 
 	// Basic cocktail tools (no authentication required)
 	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.NewCocktailGetToolHandler(cocktailsClient).Handle))
-	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(cocktailsClient).Handle))
+	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(aiSearchClient).Handle))
 
 	// Authentication tools
 	mcpServer.AddTool(tools.AuthLoginTool, server.ToolHandlerFunc(tools.NewAuthLoginToolHandler(authManager).Handle))

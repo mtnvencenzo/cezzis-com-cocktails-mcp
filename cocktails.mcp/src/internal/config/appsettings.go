@@ -38,6 +38,14 @@ type AppSettings struct {
 	// requests to the Cocktails API service.
 	CocktailsAPISubscriptionKey string `env:"COCKTAILS_API_XKEY"`
 
+	// AISearchAPIHost is the base URL for the AI Search API service.
+	// Example: "https://api.aisearch.com"
+	AISearchAPIHost string `env:"AISEARCH_API_HOST"`
+
+	// AISearchAPISubscriptionKey is the subscription key required for authenticating
+	// requests to the AI Search API service.
+	AISearchAPISubscriptionKey string `env:"AISEARCH_API_XKEY"`
+
 	// Auth0Domain is your Auth0 domain or custom domain.
 	// Example: "your-tenant.us.auth0.com" or "login.cezzis.com"
 	Auth0Domain string `env:"AUTH0_DOMAIN"`
