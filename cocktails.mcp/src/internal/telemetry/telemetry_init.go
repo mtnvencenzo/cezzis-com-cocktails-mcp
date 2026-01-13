@@ -13,8 +13,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
-
-	"cezzis.com/cezzis-mcp-server/internal/environment"
 )
 
 // Logger is the global logger instance.
@@ -46,13 +44,8 @@ func InitTelemetry() error {
 
 	var multiWriter zerolog.LevelWriter
 
-	if environment.IsLocalEnv() {
-		// Create a console writer with pretty printing for local development
-		consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr}
-		multiWriter = zerolog.MultiLevelWriter(consoleWriter, otelLogger)
-	} else {
-		multiWriter = zerolog.MultiLevelWriter(otelLogger)
-	}
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr}
+	multiWriter = zerolog.MultiLevelWriter(consoleWriter, otelLogger)
 
 	// Create and register the hook
 	otelHook := &otelHook{}
