@@ -18,6 +18,10 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+const (
+	Oauth2Scopes = "oauth2.Scopes"
+)
+
 // AccountAccessibilitySettingsModel The accessibility settings for the account
 type AccountAccessibilitySettingsModel struct {
 	// Theme The accessibility theme
@@ -132,8 +136,23 @@ type AccountOwnedProfileRs struct {
 	SubjectId string `json:"subjectId"`
 }
 
-// CocktailDataIncludeModel defines model for CocktailDataIncludeModel.
-type CocktailDataIncludeModel = interface{}
+// ChangeAccountOwnedEmailRq defines model for ChangeAccountOwnedEmailRq.
+type ChangeAccountOwnedEmailRq struct {
+	// Email The email address for the account
+	Email string `json:"email"`
+}
+
+// ChangeAccountOwnedPasswordRq defines model for ChangeAccountOwnedPasswordRq.
+type ChangeAccountOwnedPasswordRq struct {
+	// Email The email address for the account
+	Email string `json:"email"`
+}
+
+// ChangeAccountOwnedUsernameRq defines model for ChangeAccountOwnedUsernameRq.
+type ChangeAccountOwnedUsernameRq struct {
+	// Username The username to change to for the account
+	Username string `json:"username"`
+}
 
 // CocktailFavoriteActionModel defines model for CocktailFavoriteActionModel.
 type CocktailFavoriteActionModel struct {
@@ -174,43 +193,43 @@ type CocktailImageModel2 struct {
 // CocktailIngredientFiltersRs defines model for CocktailIngredientFiltersRs.
 type CocktailIngredientFiltersRs struct {
 	// BeerWineChampagne The cocktail ingredient filters for searching against beers, wines and champagnes
-	BeerWineChampagne []IngredientFilterModel12 `json:"beerWineChampagne"`
+	BeerWineChampagne []interface{} `json:"beerWineChampagne"`
 
 	// Bitters The cocktail ingredient filters for searching against bitters
-	Bitters []IngredientFilterModel8 `json:"bitters"`
+	Bitters []interface{} `json:"bitters"`
 
 	// Dilutions The cocktail ingredient filters for searching against dilutions
-	Dilutions []IngredientFilterModel11 `json:"dilutions"`
+	Dilutions []interface{} `json:"dilutions"`
 
 	// Eras The cocktail ingredient filters for searching against eras when cocktails were established
-	Eras []IngredientFilterModel13 `json:"eras"`
+	Eras []interface{} `json:"eras"`
 
 	// Fruits The cocktail ingredient filters for searching against friuts
-	Fruits []IngredientFilterModel4 `json:"fruits"`
+	Fruits []interface{} `json:"fruits"`
 
 	// Glassware The cocktail ingredient filters for searching against recommended glassware
 	Glassware []IngredientFilterModel `json:"glassware"`
 
 	// HerbsAndFlowers The cocktail ingredient filters for searching against herbs and flowers
-	HerbsAndFlowers []IngredientFilterModel6 `json:"herbsAndFlowers"`
+	HerbsAndFlowers []interface{} `json:"herbsAndFlowers"`
 
 	// Juices The cocktail ingredient filters for searching against juices
-	Juices []IngredientFilterModel10 `json:"juices"`
+	Juices []interface{} `json:"juices"`
 
 	// Liqueurs The cocktail ingredient filters for searching against liqueurs
-	Liqueurs []IngredientFilterModel3 `json:"liqueurs"`
+	Liqueurs []interface{} `json:"liqueurs"`
 
 	// Proteins The cocktail ingredient filters for searching against proteins
-	Proteins []IngredientFilterModel9 `json:"proteins"`
+	Proteins []interface{} `json:"proteins"`
 
 	// Spirits The cocktail ingredient filters for searching against spirits
-	Spirits []IngredientFilterModel2 `json:"spirits"`
+	Spirits []interface{} `json:"spirits"`
 
 	// SyrupsAndSauces The cocktail ingredient filters for searching against syrups and sauces
-	SyrupsAndSauces []IngredientFilterModel7 `json:"syrupsAndSauces"`
+	SyrupsAndSauces []interface{} `json:"syrupsAndSauces"`
 
 	// Vegetables The cocktail ingredient filters for searching against vegetables
-	Vegetables []IngredientFilterModel5 `json:"vegetables"`
+	Vegetables []interface{} `json:"vegetables"`
 }
 
 // CocktailModel The cocktail recipe model
@@ -381,122 +400,11 @@ type DocumentFormat = interface{}
 // GlasswareTypeModel defines model for GlasswareTypeModel.
 type GlasswareTypeModel = interface{}
 
-// IFormFile defines model for IFormFile.
-type IFormFile = openapi_types.File
-
 // IngredientApplicationModel defines model for IngredientApplicationModel.
 type IngredientApplicationModel = interface{}
 
 // IngredientFilterModel defines model for IngredientFilterModel.
 type IngredientFilterModel struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel10 defines model for IngredientFilterModel10.
-type IngredientFilterModel10 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel11 defines model for IngredientFilterModel11.
-type IngredientFilterModel11 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel12 defines model for IngredientFilterModel12.
-type IngredientFilterModel12 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel13 defines model for IngredientFilterModel13.
-type IngredientFilterModel13 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel2 defines model for IngredientFilterModel2.
-type IngredientFilterModel2 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel3 defines model for IngredientFilterModel3.
-type IngredientFilterModel3 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel4 defines model for IngredientFilterModel4.
-type IngredientFilterModel4 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel5 defines model for IngredientFilterModel5.
-type IngredientFilterModel5 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel6 defines model for IngredientFilterModel6.
-type IngredientFilterModel6 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel7 defines model for IngredientFilterModel7.
-type IngredientFilterModel7 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel8 defines model for IngredientFilterModel8.
-type IngredientFilterModel8 struct {
-	// Id The filter identifier
-	Id string `json:"id"`
-
-	// Name The display name of the filter
-	Name string `json:"name"`
-}
-
-// IngredientFilterModel9 defines model for IngredientFilterModel9.
-type IngredientFilterModel9 struct {
 	// Id The filter identifier
 	Id string `json:"id"`
 
@@ -575,6 +483,12 @@ type ProblemDetails struct {
 	Type     *string `json:"type"`
 }
 
+// PublishCocktailsRq defines model for PublishCocktailsRq.
+type PublishCocktailsRq struct {
+	// CocktailIds A list of cocktail IDs to publish
+	CocktailIds []string `json:"cocktailIds"`
+}
+
 // RateCocktailRq defines model for RateCocktailRq.
 type RateCocktailRq struct {
 	// CocktailId The cocktail identifier
@@ -609,12 +523,6 @@ type UpdateAccountOwnedAccessibilitySettingsRq struct {
 type UpdateAccountOwnedNotificationSettingsRq struct {
 	// OnNewCocktailAdditions The notification setting to use when new cocktail addtions are added
 	OnNewCocktailAdditions CocktailUpdatedNotificationModel `json:"onNewCocktailAdditions"`
-}
-
-// UpdateAccountOwnedProfileEmailRq defines model for UpdateAccountOwnedProfileEmailRq.
-type UpdateAccountOwnedProfileEmailRq struct {
-	// Email The email address for the account
-	Email string `json:"email"`
 }
 
 // UpdateAccountOwnedProfileRq defines model for UpdateAccountOwnedProfileRq.
@@ -686,15 +594,15 @@ type SendCocktailRecommendationParams struct {
 	XKey *string `json:"X-Key,omitempty"`
 }
 
-// UpdateAccountOwnedProfileEmailParams defines parameters for UpdateAccountOwnedProfileEmail.
-type UpdateAccountOwnedProfileEmailParams struct {
+// ChangeAccountOwnedEmailParams defines parameters for ChangeAccountOwnedEmail.
+type ChangeAccountOwnedEmailParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
 
 // UploadProfileImageMultipartBody defines parameters for UploadProfileImage.
 type UploadProfileImageMultipartBody struct {
-	File *IFormFile `json:"file,omitempty"`
+	File *openapi_types.File `json:"file,omitempty"`
 }
 
 // UploadProfileImageParams defines parameters for UploadProfileImage.
@@ -705,6 +613,18 @@ type UploadProfileImageParams struct {
 
 // UpdateAccountOwnedNotificationSettingsParams defines parameters for UpdateAccountOwnedNotificationSettings.
 type UpdateAccountOwnedNotificationSettingsParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// ChangeAccountOwnedPasswordParams defines parameters for ChangeAccountOwnedPassword.
+type ChangeAccountOwnedPasswordParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// ChangeAccountOwnedUsernameParams defines parameters for ChangeAccountOwnedUsername.
+type ChangeAccountOwnedUsernameParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -727,7 +647,7 @@ type GetCocktailsListParams struct {
 	MatchExclusive *bool `form:"match-exclusive,omitempty" json:"match-exclusive,omitempty"`
 
 	// Inc The list of extension objects to include for each cocktail recipe
-	Inc *[]CocktailDataIncludeModel `form:"inc,omitempty" json:"inc,omitempty"`
+	Inc *[]interface{} `form:"inc,omitempty" json:"inc,omitempty"`
 
 	// Sf An optional list of filters to use when quering the cocktail recipes
 	Sf *[]string `form:"sf,omitempty" json:"sf,omitempty"`
@@ -738,6 +658,12 @@ type GetCocktailsListParams struct {
 
 // SeedCocktailsParams defines parameters for SeedCocktails.
 type SeedCocktailsParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// PublishCocktailsParams defines parameters for PublishCocktails.
+type PublishCocktailsParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -772,6 +698,12 @@ type GetTermsOfServiceParams struct {
 	XKey *string `json:"X-Key,omitempty"`
 }
 
+// InitParams defines parameters for Init.
+type InitParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
 // UpdateAccountOwnedProfileApplicationJSONXAPIVersion10RequestBody defines body for UpdateAccountOwnedProfile for application/json; x-api-version=1.0 ContentType.
 type UpdateAccountOwnedProfileApplicationJSONXAPIVersion10RequestBody = UpdateAccountOwnedProfileRq
 
@@ -787,14 +719,23 @@ type RateCocktailApplicationJSONXAPIVersion10RequestBody = RateCocktailRq
 // SendCocktailRecommendationApplicationJSONXAPIVersion10RequestBody defines body for SendCocktailRecommendation for application/json; x-api-version=1.0 ContentType.
 type SendCocktailRecommendationApplicationJSONXAPIVersion10RequestBody = CocktailRecommendationRq
 
-// UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody defines body for UpdateAccountOwnedProfileEmail for application/json; x-api-version=1.0 ContentType.
-type UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody = UpdateAccountOwnedProfileEmailRq
+// ChangeAccountOwnedEmailApplicationJSONXAPIVersion10RequestBody defines body for ChangeAccountOwnedEmail for application/json; x-api-version=1.0 ContentType.
+type ChangeAccountOwnedEmailApplicationJSONXAPIVersion10RequestBody = ChangeAccountOwnedEmailRq
 
 // UploadProfileImageMultipartRequestBody defines body for UploadProfileImage for multipart/form-data; x-api-version=1.0 ContentType.
 type UploadProfileImageMultipartRequestBody UploadProfileImageMultipartBody
 
 // UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody defines body for UpdateAccountOwnedNotificationSettings for application/json; x-api-version=1.0 ContentType.
 type UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody = UpdateAccountOwnedNotificationSettingsRq
+
+// ChangeAccountOwnedPasswordApplicationJSONXAPIVersion10RequestBody defines body for ChangeAccountOwnedPassword for application/json; x-api-version=1.0 ContentType.
+type ChangeAccountOwnedPasswordApplicationJSONXAPIVersion10RequestBody = ChangeAccountOwnedPasswordRq
+
+// ChangeAccountOwnedUsernameApplicationJSONXAPIVersion10RequestBody defines body for ChangeAccountOwnedUsername for application/json; x-api-version=1.0 ContentType.
+type ChangeAccountOwnedUsernameApplicationJSONXAPIVersion10RequestBody = ChangeAccountOwnedUsernameRq
+
+// PublishCocktailsApplicationJSONXAPIVersion10RequestBody defines body for PublishCocktails for application/json; x-api-version=1.0 ContentType.
+type PublishCocktailsApplicationJSONXAPIVersion10RequestBody = PublishCocktailsRq
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -903,10 +844,10 @@ type ClientInterface interface {
 
 	SendCocktailRecommendationWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *SendCocktailRecommendationParams, body SendCocktailRecommendationApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UpdateAccountOwnedProfileEmailWithBody request with any body
-	UpdateAccountOwnedProfileEmailWithBody(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// ChangeAccountOwnedEmailWithBody request with any body
+	ChangeAccountOwnedEmailWithBody(ctx context.Context, params *ChangeAccountOwnedEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateAccountOwnedProfileEmailWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, body UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	ChangeAccountOwnedEmailWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *ChangeAccountOwnedEmailParams, body ChangeAccountOwnedEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UploadProfileImageWithBody request with any body
 	UploadProfileImageWithBody(ctx context.Context, params *UploadProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -916,11 +857,26 @@ type ClientInterface interface {
 
 	UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, body UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ChangeAccountOwnedPasswordWithBody request with any body
+	ChangeAccountOwnedPasswordWithBody(ctx context.Context, params *ChangeAccountOwnedPasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ChangeAccountOwnedPasswordWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *ChangeAccountOwnedPasswordParams, body ChangeAccountOwnedPasswordApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ChangeAccountOwnedUsernameWithBody request with any body
+	ChangeAccountOwnedUsernameWithBody(ctx context.Context, params *ChangeAccountOwnedUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ChangeAccountOwnedUsernameWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *ChangeAccountOwnedUsernameParams, body ChangeAccountOwnedUsernameApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetCocktailsList request
 	GetCocktailsList(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SeedCocktails request
 	SeedCocktails(ctx context.Context, params *SeedCocktailsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PublishCocktailsWithBody request with any body
+	PublishCocktailsWithBody(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PublishCocktailsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SeedIngredients request
 	SeedIngredients(ctx context.Context, params *SeedIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -936,6 +892,9 @@ type ClientInterface interface {
 
 	// GetTermsOfService request
 	GetTermsOfService(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// Init request
+	Init(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetAccountOwnedProfile(ctx context.Context, params *GetAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1094,8 +1053,8 @@ func (c *Client) SendCocktailRecommendationWithApplicationJSONXAPIVersion10Body(
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedProfileEmailWithBody(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedProfileEmailRequestWithBody(c.Server, params, contentType, body)
+func (c *Client) ChangeAccountOwnedEmailWithBody(ctx context.Context, params *ChangeAccountOwnedEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeAccountOwnedEmailRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1106,8 +1065,8 @@ func (c *Client) UpdateAccountOwnedProfileEmailWithBody(ctx context.Context, par
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedProfileEmailWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, body UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedProfileEmailRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
+func (c *Client) ChangeAccountOwnedEmailWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *ChangeAccountOwnedEmailParams, body ChangeAccountOwnedEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeAccountOwnedEmailRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1154,6 +1113,54 @@ func (c *Client) UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVe
 	return c.Client.Do(req)
 }
 
+func (c *Client) ChangeAccountOwnedPasswordWithBody(ctx context.Context, params *ChangeAccountOwnedPasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeAccountOwnedPasswordRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ChangeAccountOwnedPasswordWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *ChangeAccountOwnedPasswordParams, body ChangeAccountOwnedPasswordApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeAccountOwnedPasswordRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ChangeAccountOwnedUsernameWithBody(ctx context.Context, params *ChangeAccountOwnedUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeAccountOwnedUsernameRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ChangeAccountOwnedUsernameWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *ChangeAccountOwnedUsernameParams, body ChangeAccountOwnedUsernameApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeAccountOwnedUsernameRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetCocktailsList(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCocktailsListRequest(c.Server, params)
 	if err != nil {
@@ -1168,6 +1175,30 @@ func (c *Client) GetCocktailsList(ctx context.Context, params *GetCocktailsListP
 
 func (c *Client) SeedCocktails(ctx context.Context, params *SeedCocktailsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSeedCocktailsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PublishCocktailsWithBody(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPublishCocktailsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PublishCocktailsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPublishCocktailsRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1228,6 +1259,18 @@ func (c *Client) GetPrivacyPolicy(ctx context.Context, params *GetPrivacyPolicyP
 
 func (c *Client) GetTermsOfService(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetTermsOfServiceRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Init(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInitRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1639,19 +1682,19 @@ func NewSendCocktailRecommendationRequestWithBody(server string, params *SendCoc
 	return req, nil
 }
 
-// NewUpdateAccountOwnedProfileEmailRequestWithApplicationJSONXAPIVersion10Body calls the generic UpdateAccountOwnedProfileEmail builder with application/json; x-api-version=1.0 body
-func NewUpdateAccountOwnedProfileEmailRequestWithApplicationJSONXAPIVersion10Body(server string, params *UpdateAccountOwnedProfileEmailParams, body UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+// NewChangeAccountOwnedEmailRequestWithApplicationJSONXAPIVersion10Body calls the generic ChangeAccountOwnedEmail builder with application/json; x-api-version=1.0 body
+func NewChangeAccountOwnedEmailRequestWithApplicationJSONXAPIVersion10Body(server string, params *ChangeAccountOwnedEmailParams, body ChangeAccountOwnedEmailApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateAccountOwnedProfileEmailRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
+	return NewChangeAccountOwnedEmailRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
 }
 
-// NewUpdateAccountOwnedProfileEmailRequestWithBody generates requests for UpdateAccountOwnedProfileEmail with any type of body
-func NewUpdateAccountOwnedProfileEmailRequestWithBody(server string, params *UpdateAccountOwnedProfileEmailParams, contentType string, body io.Reader) (*http.Request, error) {
+// NewChangeAccountOwnedEmailRequestWithBody generates requests for ChangeAccountOwnedEmail with any type of body
+func NewChangeAccountOwnedEmailRequestWithBody(server string, params *ChangeAccountOwnedEmailParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1759,6 +1802,116 @@ func NewUpdateAccountOwnedNotificationSettingsRequestWithBody(server string, par
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/notifications")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewChangeAccountOwnedPasswordRequestWithApplicationJSONXAPIVersion10Body calls the generic ChangeAccountOwnedPassword builder with application/json; x-api-version=1.0 body
+func NewChangeAccountOwnedPasswordRequestWithApplicationJSONXAPIVersion10Body(server string, params *ChangeAccountOwnedPasswordParams, body ChangeAccountOwnedPasswordApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewChangeAccountOwnedPasswordRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
+}
+
+// NewChangeAccountOwnedPasswordRequestWithBody generates requests for ChangeAccountOwnedPassword with any type of body
+func NewChangeAccountOwnedPasswordRequestWithBody(server string, params *ChangeAccountOwnedPasswordParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/password")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewChangeAccountOwnedUsernameRequestWithApplicationJSONXAPIVersion10Body calls the generic ChangeAccountOwnedUsername builder with application/json; x-api-version=1.0 body
+func NewChangeAccountOwnedUsernameRequestWithApplicationJSONXAPIVersion10Body(server string, params *ChangeAccountOwnedUsernameParams, body ChangeAccountOwnedUsernameApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewChangeAccountOwnedUsernameRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
+}
+
+// NewChangeAccountOwnedUsernameRequestWithBody generates requests for ChangeAccountOwnedUsername with any type of body
+func NewChangeAccountOwnedUsernameRequestWithBody(server string, params *ChangeAccountOwnedUsernameParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/username")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1995,6 +2148,61 @@ func NewSeedCocktailsRequest(server string, params *SeedCocktailsParams) (*http.
 	return req, nil
 }
 
+// NewPublishCocktailsRequestWithApplicationJSONXAPIVersion10Body calls the generic PublishCocktails builder with application/json; x-api-version=1.0 body
+func NewPublishCocktailsRequestWithApplicationJSONXAPIVersion10Body(server string, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPublishCocktailsRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
+}
+
+// NewPublishCocktailsRequestWithBody generates requests for PublishCocktails with any type of body
+func NewPublishCocktailsRequestWithBody(server string, params *PublishCocktailsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/cocktails/admin/pub")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
 // NewSeedIngredientsRequest generates requests for SeedIngredients
 func NewSeedIngredientsRequest(server string, params *SeedIngredientsParams) (*http.Request, error) {
 	var err error
@@ -2212,6 +2420,48 @@ func NewGetTermsOfServiceRequest(server string, params *GetTermsOfServiceParams)
 	return req, nil
 }
 
+// NewInitRequest generates requests for Init
+func NewInitRequest(server string, params *InitParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/job/initialize-app")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -2289,10 +2539,10 @@ type ClientWithResponsesInterface interface {
 
 	SendCocktailRecommendationWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *SendCocktailRecommendationParams, body SendCocktailRecommendationApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*SendCocktailRecommendationResponse, error)
 
-	// UpdateAccountOwnedProfileEmailWithBodyWithResponse request with any body
-	UpdateAccountOwnedProfileEmailWithBodyWithResponse(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileEmailResponse, error)
+	// ChangeAccountOwnedEmailWithBodyWithResponse request with any body
+	ChangeAccountOwnedEmailWithBodyWithResponse(ctx context.Context, params *ChangeAccountOwnedEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailResponse, error)
 
-	UpdateAccountOwnedProfileEmailWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, body UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileEmailResponse, error)
+	ChangeAccountOwnedEmailWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *ChangeAccountOwnedEmailParams, body ChangeAccountOwnedEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailResponse, error)
 
 	// UploadProfileImageWithBodyWithResponse request with any body
 	UploadProfileImageWithBodyWithResponse(ctx context.Context, params *UploadProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadProfileImageResponse, error)
@@ -2302,11 +2552,26 @@ type ClientWithResponsesInterface interface {
 
 	UpdateAccountOwnedNotificationSettingsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *UpdateAccountOwnedNotificationSettingsParams, body UpdateAccountOwnedNotificationSettingsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsResponse, error)
 
+	// ChangeAccountOwnedPasswordWithBodyWithResponse request with any body
+	ChangeAccountOwnedPasswordWithBodyWithResponse(ctx context.Context, params *ChangeAccountOwnedPasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordResponse, error)
+
+	ChangeAccountOwnedPasswordWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *ChangeAccountOwnedPasswordParams, body ChangeAccountOwnedPasswordApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordResponse, error)
+
+	// ChangeAccountOwnedUsernameWithBodyWithResponse request with any body
+	ChangeAccountOwnedUsernameWithBodyWithResponse(ctx context.Context, params *ChangeAccountOwnedUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameResponse, error)
+
+	ChangeAccountOwnedUsernameWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *ChangeAccountOwnedUsernameParams, body ChangeAccountOwnedUsernameApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameResponse, error)
+
 	// GetCocktailsListWithResponse request
 	GetCocktailsListWithResponse(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*GetCocktailsListResponse, error)
 
 	// SeedCocktailsWithResponse request
 	SeedCocktailsWithResponse(ctx context.Context, params *SeedCocktailsParams, reqEditors ...RequestEditorFn) (*SeedCocktailsResponse, error)
+
+	// PublishCocktailsWithBodyWithResponse request with any body
+	PublishCocktailsWithBodyWithResponse(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error)
+
+	PublishCocktailsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error)
 
 	// SeedIngredientsWithResponse request
 	SeedIngredientsWithResponse(ctx context.Context, params *SeedIngredientsParams, reqEditors ...RequestEditorFn) (*SeedIngredientsResponse, error)
@@ -2322,6 +2587,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetTermsOfServiceWithResponse request
 	GetTermsOfServiceWithResponse(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*GetTermsOfServiceResponse, error)
+
+	// InitWithResponse request
+	InitWithResponse(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*InitResponse, error)
 }
 
 type GetAccountOwnedProfileResponse struct {
@@ -2509,7 +2777,7 @@ func (r SendCocktailRecommendationResponse) StatusCode() int {
 	return 0
 }
 
-type UpdateAccountOwnedProfileEmailResponse struct {
+type ChangeAccountOwnedEmailResponse struct {
 	Body                                []byte
 	HTTPResponse                        *http.Response
 	ApplicationjsonXApiVersion10200     *AccountOwnedProfileRs
@@ -2517,7 +2785,7 @@ type UpdateAccountOwnedProfileEmailResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r UpdateAccountOwnedProfileEmailResponse) Status() string {
+func (r ChangeAccountOwnedEmailResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2525,7 +2793,7 @@ func (r UpdateAccountOwnedProfileEmailResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UpdateAccountOwnedProfileEmailResponse) StatusCode() int {
+func (r ChangeAccountOwnedEmailResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2578,6 +2846,50 @@ func (r UpdateAccountOwnedNotificationSettingsResponse) StatusCode() int {
 	return 0
 }
 
+type ChangeAccountOwnedPasswordResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ChangeAccountOwnedPasswordResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ChangeAccountOwnedPasswordResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ChangeAccountOwnedUsernameResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r ChangeAccountOwnedUsernameResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ChangeAccountOwnedUsernameResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetCocktailsListResponse struct {
 	Body                                []byte
 	HTTPResponse                        *http.Response
@@ -2617,6 +2929,28 @@ func (r SeedCocktailsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r SeedCocktailsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PublishCocktailsResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PublishCocktailsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PublishCocktailsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2737,6 +3071,27 @@ func (r GetTermsOfServiceResponse) StatusCode() int {
 	return 0
 }
 
+type InitResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r InitResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r InitResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // GetAccountOwnedProfileWithResponse request returning *GetAccountOwnedProfileResponse
 func (c *ClientWithResponses) GetAccountOwnedProfileWithResponse(ctx context.Context, params *GetAccountOwnedProfileParams, reqEditors ...RequestEditorFn) (*GetAccountOwnedProfileResponse, error) {
 	rsp, err := c.GetAccountOwnedProfile(ctx, params, reqEditors...)
@@ -2849,21 +3204,21 @@ func (c *ClientWithResponses) SendCocktailRecommendationWithApplicationJSONXAPIV
 	return ParseSendCocktailRecommendationResponse(rsp)
 }
 
-// UpdateAccountOwnedProfileEmailWithBodyWithResponse request with arbitrary body returning *UpdateAccountOwnedProfileEmailResponse
-func (c *ClientWithResponses) UpdateAccountOwnedProfileEmailWithBodyWithResponse(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileEmailResponse, error) {
-	rsp, err := c.UpdateAccountOwnedProfileEmailWithBody(ctx, params, contentType, body, reqEditors...)
+// ChangeAccountOwnedEmailWithBodyWithResponse request with arbitrary body returning *ChangeAccountOwnedEmailResponse
+func (c *ClientWithResponses) ChangeAccountOwnedEmailWithBodyWithResponse(ctx context.Context, params *ChangeAccountOwnedEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailResponse, error) {
+	rsp, err := c.ChangeAccountOwnedEmailWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedProfileEmailResponse(rsp)
+	return ParseChangeAccountOwnedEmailResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateAccountOwnedProfileEmailWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *UpdateAccountOwnedProfileEmailParams, body UpdateAccountOwnedProfileEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileEmailResponse, error) {
-	rsp, err := c.UpdateAccountOwnedProfileEmailWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
+func (c *ClientWithResponses) ChangeAccountOwnedEmailWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *ChangeAccountOwnedEmailParams, body ChangeAccountOwnedEmailApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailResponse, error) {
+	rsp, err := c.ChangeAccountOwnedEmailWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedProfileEmailResponse(rsp)
+	return ParseChangeAccountOwnedEmailResponse(rsp)
 }
 
 // UploadProfileImageWithBodyWithResponse request with arbitrary body returning *UploadProfileImageResponse
@@ -2892,6 +3247,40 @@ func (c *ClientWithResponses) UpdateAccountOwnedNotificationSettingsWithApplicat
 	return ParseUpdateAccountOwnedNotificationSettingsResponse(rsp)
 }
 
+// ChangeAccountOwnedPasswordWithBodyWithResponse request with arbitrary body returning *ChangeAccountOwnedPasswordResponse
+func (c *ClientWithResponses) ChangeAccountOwnedPasswordWithBodyWithResponse(ctx context.Context, params *ChangeAccountOwnedPasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordResponse, error) {
+	rsp, err := c.ChangeAccountOwnedPasswordWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseChangeAccountOwnedPasswordResponse(rsp)
+}
+
+func (c *ClientWithResponses) ChangeAccountOwnedPasswordWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *ChangeAccountOwnedPasswordParams, body ChangeAccountOwnedPasswordApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordResponse, error) {
+	rsp, err := c.ChangeAccountOwnedPasswordWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseChangeAccountOwnedPasswordResponse(rsp)
+}
+
+// ChangeAccountOwnedUsernameWithBodyWithResponse request with arbitrary body returning *ChangeAccountOwnedUsernameResponse
+func (c *ClientWithResponses) ChangeAccountOwnedUsernameWithBodyWithResponse(ctx context.Context, params *ChangeAccountOwnedUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameResponse, error) {
+	rsp, err := c.ChangeAccountOwnedUsernameWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseChangeAccountOwnedUsernameResponse(rsp)
+}
+
+func (c *ClientWithResponses) ChangeAccountOwnedUsernameWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *ChangeAccountOwnedUsernameParams, body ChangeAccountOwnedUsernameApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameResponse, error) {
+	rsp, err := c.ChangeAccountOwnedUsernameWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseChangeAccountOwnedUsernameResponse(rsp)
+}
+
 // GetCocktailsListWithResponse request returning *GetCocktailsListResponse
 func (c *ClientWithResponses) GetCocktailsListWithResponse(ctx context.Context, params *GetCocktailsListParams, reqEditors ...RequestEditorFn) (*GetCocktailsListResponse, error) {
 	rsp, err := c.GetCocktailsList(ctx, params, reqEditors...)
@@ -2908,6 +3297,23 @@ func (c *ClientWithResponses) SeedCocktailsWithResponse(ctx context.Context, par
 		return nil, err
 	}
 	return ParseSeedCocktailsResponse(rsp)
+}
+
+// PublishCocktailsWithBodyWithResponse request with arbitrary body returning *PublishCocktailsResponse
+func (c *ClientWithResponses) PublishCocktailsWithBodyWithResponse(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error) {
+	rsp, err := c.PublishCocktailsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePublishCocktailsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PublishCocktailsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error) {
+	rsp, err := c.PublishCocktailsWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePublishCocktailsResponse(rsp)
 }
 
 // SeedIngredientsWithResponse request returning *SeedIngredientsResponse
@@ -2953,6 +3359,15 @@ func (c *ClientWithResponses) GetTermsOfServiceWithResponse(ctx context.Context,
 		return nil, err
 	}
 	return ParseGetTermsOfServiceResponse(rsp)
+}
+
+// InitWithResponse request returning *InitResponse
+func (c *ClientWithResponses) InitWithResponse(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*InitResponse, error) {
+	rsp, err := c.Init(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInitResponse(rsp)
 }
 
 // ParseGetAccountOwnedProfileResponse parses an HTTP response from a GetAccountOwnedProfileWithResponse call
@@ -3226,15 +3641,15 @@ func ParseSendCocktailRecommendationResponse(rsp *http.Response) (*SendCocktailR
 	return response, nil
 }
 
-// ParseUpdateAccountOwnedProfileEmailResponse parses an HTTP response from a UpdateAccountOwnedProfileEmailWithResponse call
-func ParseUpdateAccountOwnedProfileEmailResponse(rsp *http.Response) (*UpdateAccountOwnedProfileEmailResponse, error) {
+// ParseChangeAccountOwnedEmailResponse parses an HTTP response from a ChangeAccountOwnedEmailWithResponse call
+func ParseChangeAccountOwnedEmailResponse(rsp *http.Response) (*ChangeAccountOwnedEmailResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UpdateAccountOwnedProfileEmailResponse{
+	response := &ChangeAccountOwnedEmailResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -3325,6 +3740,58 @@ func ParseUpdateAccountOwnedNotificationSettingsResponse(rsp *http.Response) (*U
 	return response, nil
 }
 
+// ParseChangeAccountOwnedPasswordResponse parses an HTTP response from a ChangeAccountOwnedPasswordWithResponse call
+func ParseChangeAccountOwnedPasswordResponse(rsp *http.Response) (*ChangeAccountOwnedPasswordResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ChangeAccountOwnedPasswordResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseChangeAccountOwnedUsernameResponse parses an HTTP response from a ChangeAccountOwnedUsernameWithResponse call
+func ParseChangeAccountOwnedUsernameResponse(rsp *http.Response) (*ChangeAccountOwnedUsernameResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ChangeAccountOwnedUsernameResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetCocktailsListResponse parses an HTTP response from a GetCocktailsListWithResponse call
 func ParseGetCocktailsListResponse(rsp *http.Response) (*GetCocktailsListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -3367,6 +3834,32 @@ func ParseSeedCocktailsResponse(rsp *http.Response) (*SeedCocktailsResponse, err
 	}
 
 	response := &SeedCocktailsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePublishCocktailsResponse parses an HTTP response from a PublishCocktailsWithResponse call
+func ParsePublishCocktailsResponse(rsp *http.Response) (*PublishCocktailsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PublishCocktailsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -3537,6 +4030,22 @@ func ParseGetTermsOfServiceResponse(rsp *http.Response) (*GetTermsOfServiceRespo
 		}
 		response.ApplicationjsonXApiVersion10Default = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseInitResponse parses an HTTP response from a InitWithResponse call
+func ParseInitResponse(rsp *http.Response) (*InitResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &InitResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil

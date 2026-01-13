@@ -49,6 +49,12 @@ cover:
 	gocover-cobertura < ../../coverage.out > ../../cobertura.xml && \
 	go tool cover -func=../../coverage.out
 
+gen-aisearch-api:
+	cd ./cocktails.mcp/src && go generate ./internal/api/aisearch
+
+gen-cocktails-api:
+	cd ./cocktails.mcp/src && go generate ./internal/api/cocktailsapi
+
 standards:
 	@echo "Running code standards checks..."
 	@make tidy
