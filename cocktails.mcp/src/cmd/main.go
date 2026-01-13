@@ -28,7 +28,6 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/environment"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
-	"cezzis.com/cezzis-mcp-server/internal/repos"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 	"cezzis.com/cezzis-mcp-server/internal/tools"
 )
@@ -95,14 +94,6 @@ func main() {
 
 	// Account Authenticated tools (require user login)
 	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, cocktailsClient).Handle))
-
-	// Initialize the Cosmos DB (if not already initialized)
-	err = repos.InitializeDatabase(context.Background())
-	if err != nil {
-		telemetry.Logger.Err(err).Msg("Failed to initialize database")
-	} else {
-		telemetry.Logger.Info().Msg("Database initialized")
-	}
 
 	// Finally, start the server in the chosen mode
 	// Proper error handling ensures that any issues during startup are logged.
