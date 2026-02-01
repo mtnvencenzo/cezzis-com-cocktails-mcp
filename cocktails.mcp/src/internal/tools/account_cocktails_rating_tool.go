@@ -10,7 +10,7 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 
-	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
+	"cezzis.com/cezzis-mcp-server/internal/api/accountsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
@@ -48,11 +48,11 @@ var RateCocktailTool = mcp.NewTool(
 // RateCocktailToolHandler handles cocktail rating requests
 type RateCocktailToolHandler struct {
 	authManager *auth.OAuthFlowManager
-	client      *cocktailsapi.Client
+	client      *accountsapi.Client
 }
 
 // NewRateCocktailToolHandler creates a new cocktail rating handler
-func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, client *cocktailsapi.Client) *RateCocktailToolHandler {
+func NewRateCocktailToolHandler(authManager *auth.OAuthFlowManager, client *accountsapi.Client) *RateCocktailToolHandler {
 	return &RateCocktailToolHandler{
 		authManager: authManager,
 		client:      client,
@@ -108,14 +108,22 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		defer cancel()
 	}
 
-	appSettings := config.GetAppSettings()
-
-	rs, callErr := handler.client.RateCocktailWithApplicationJSONXAPIVersion10Body(callCtx, &cocktailsapi.RateCocktailParams{
-		XKey: &appSettings.CocktailsAPISubscriptionKey,
-	}, cocktailsapi.RateCocktailApplicationJSONXAPIVersion10RequestBody{
-		CocktailId: cocktailID,
-		Stars:      int32(stars),
-	}, cocktailsapi.AuthenticatedRequestEditor(handler.authManager))
+	rs, callErr := handler.client.RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost(
+		callCtx,
+		accountsapi.RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody{
+			CocktailId: cocktailID,
+			CurrentRatings: accountsapi.AccountCocktailRatingModel{
+				OneStars:    0,
+				TwoStars:    0,
+				ThreeStars:  0,
+				FourStars:   0,
+				FiveStars:   0,
+				TotalStars:  0,
+				Rating:      0,
+				RatingCount: 0,
+			},
+			Stars: stars,
+		}, accountsapi.RequestEditor(handler.authManager))
 
 	if callErr != nil {
 		telemetry.Logger.Err(callErr).Ctx(ctx).Msg("MCP Error rating cocktail: " + cocktailID)
@@ -141,15 +149,17 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		telemetry.Logger.Warn().Ctx(ctx).Msg("MCP Warning: empty response body when rating cocktail: " + cocktailID)
 	}
 
+	appsettings := config.GetAppSettings()
+
 	result := fmt.Sprintf(`Successfully submitted rating!
 
-Cocktail ID: %s
-Your Rating: %d stars
+Cocktail ID: %[1]s
+Your Rating: %[2]d stars
 
 Your rating has been saved and will contribute to the overall cocktail rating on Cezzis.com.
-Visit https://www.cezzis.com/cocktails/%s to see the updated rating.
+Visit %[3]s/cocktails/%[1]s to see the updated rating.
 
-Thank you for contributing to the Cezzis.com community!`, cocktailID, stars, cocktailID)
+Thank you for contributing to the Cezzis.com community!`, cocktailID, stars, appsettings.CezzisBaseURL)
 
 	telemetry.Logger.Info().
 		Ctx(ctx).

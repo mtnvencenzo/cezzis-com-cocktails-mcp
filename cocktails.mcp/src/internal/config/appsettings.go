@@ -38,6 +38,14 @@ type AppSettings struct {
 	// requests to the Cocktails API service.
 	CocktailsAPISubscriptionKey string `env:"COCKTAILS_API_XKEY"`
 
+	// AccountsApiHost is the base URL for the Accounts API service.
+	// Example: "https://api.accounts.com"
+	AccountsAPIHost string `env:"ACCOUNTS_API_HOST"`
+
+	// AccountsApiSubscriptionKey is the subscription key required for authenticating
+	// requests to the Accounts API service.
+	AccountsAPISubscriptionKey string `env:"ACCOUNTS_API_XKEY"`
+
 	// AISearchAPIHost is the base URL for the AI Search API service.
 	// Example: "https://api.aisearch.com"
 	AISearchAPIHost string `env:"AISEARCH_API_HOST"`
@@ -55,7 +63,7 @@ type AppSettings struct {
 
 	// Auth0Audience is the API Identifier to request an access token for.
 	// Example: "https://api.cezzis.com/cocktails"
-	Auth0Audience string `env:"AUTH0_AUDIENCE"`
+	Auth0AccountsAPIAudience string `env:"AUTH0_ACCOUNTS_API_AUDIENCE"`
 
 	// Auth0Scopes is the list of scopes to request.
 	// Example: "openid profile email offline_access cocktails:read cocktails:write"
@@ -108,6 +116,10 @@ type AppSettings struct {
 	// TLSKeyFile is the path to the TLS private key file for HTTPS.
 	// Example: "/certs/server.key"
 	TLSKeyFile string `env:"TLS_KEY_FILE" envDefault:""`
+
+	// CezzisBaseURL is the base URL for Cezzis.com website.
+	// Example: "https://www.cezzis.com"
+	CezzisBaseURL string `env:"CEZZIS_BASE_URL" envDefault:""`
 }
 
 // GetAppSettings returns a singleton instance of AppSettings loaded from environment variables.

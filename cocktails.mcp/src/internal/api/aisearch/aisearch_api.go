@@ -12,13 +12,12 @@ import (
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
-	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-// AuthenticatedRequestEditor creates a request editor that adds OAuth bearer token
-func AuthenticatedRequestEditor(authManager *auth.OAuthFlowManager) RequestEditorFn {
+// RequestEditor creates a request editor that adds OAuth bearer token
+func RequestEditor() RequestEditorFn {
 	return func(ctx context.Context, req *http.Request) error {
 		// Add subscription key header
 		appSettings := config.GetAppSettings()

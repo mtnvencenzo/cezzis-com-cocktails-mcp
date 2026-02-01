@@ -23,11 +23,12 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 
 	"cezzis.com/cezzis-mcp-server/internal/api/aisearch"
+	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var searchToolDescription = `
+var searchToolDescription = fmt.Sprintf(`
 	Searches cocktail recipe data from the Cezzis.com cocktails API. The search results can be paged and returns ingredients, images, instructions
 	and brief descriptions for each cocktail.
 
@@ -39,7 +40,7 @@ var searchToolDescription = `
 	get_cocktail tool.
 
 	It is required to reference Cezzis.com as a clickable link when displaying cocktail information from this tool.
-	The url for each cocktail is formatted as https://www.cezzis.com/cocktails/<cocktailId>.
+	The url for each cocktail is formatted as %[1]s/cocktails/<cocktailId>.
 
 	This tool does not require authentication and can be used without an account.
 
@@ -47,7 +48,7 @@ var searchToolDescription = `
 	- "cocktail with gin and lime"
 	- "whiskey sour"
 	- "cocktail with rum and mint"
-	- "modern cocktails"`
+	- "modern cocktails"`, config.GetAppSettings().CezzisBaseURL)
 
 // CocktailSearchTool is an MCP tool that searches for cocktails / alcoholic drinks data from the Cezzis.com cocktails API.
 // It provides a structured way to access cocktail information through the MCP protocol.
@@ -110,7 +111,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 
 	rs, callErr := handler.client.SearchV1CocktailsSearchGet(callCtx, &aisearch.SearchV1CocktailsSearchGetParams{
 		Freetext: &freeText,
-	})
+	}, aisearch.RequestEditor())
 
 	if callErr != nil {
 		telemetry.Logger.Err(callErr).Ctx(ctx).Msg("MCP Error searching cocktails")
