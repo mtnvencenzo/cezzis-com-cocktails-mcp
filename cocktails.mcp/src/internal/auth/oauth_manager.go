@@ -70,7 +70,7 @@ func (auth *OAuthFlowManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeR
 		"client_id": {auth.appSettings.Auth0ClientID},
 		"scope":     {auth.appSettings.Auth0Scopes},
 	}
-	audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
+	audience := strings.TrimSpace(auth.appSettings.Auth0AccountsAPIAudience)
 	if audience != "" {
 		data.Set("audience", audience)
 	}
@@ -156,7 +156,7 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 			"client_id":   {auth.appSettings.Auth0ClientID},
 			"device_code": {deviceCode.DeviceCode},
 		}
-		audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
+		audience := strings.TrimSpace(auth.appSettings.Auth0AccountsAPIAudience)
 		if audience != "" {
 			data.Set("audience", audience)
 		}
@@ -284,7 +284,7 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 		"scope":         {token.Scope},
 	}
 
-	audience := strings.TrimSpace(auth.appSettings.Auth0Audience)
+	audience := strings.TrimSpace(auth.appSettings.Auth0AccountsAPIAudience)
 	if audience != "" {
 		data.Set("audience", audience)
 	}

@@ -29,16 +29,16 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var getToolDescription = `
+var getToolDescription = fmt.Sprintf(`
 	Gets the complete cocktail recipe data from the Cezzis.com cocktails API for a given cocktailId.
 
 	The cocktail data includes ingredients images, and instructions, historical and geographic information, 
 	descriptions and instructions for each cocktail.  It also returns ratings and reviews for each cocktail.
 
 	It is required to reference Cezzis.com as a clickable link when displaying cocktail information from this tool.
-	The url for each cocktail is formatted as https://www.cezzis.com/cocktails/<cocktailId>.
+	The url for each cocktail is formatted as %[1]s/cocktails/<cocktailId>.
 
-	This tool does not require authentication and can be used without an account.`
+	This tool does not require authentication and can be used without an account.`, config.GetAppSettings().CezzisBaseURL)
 
 // CocktailGetTool is an MCP tool that retrieves detailed cocktail data from the Cezzis.com cocktails API.
 // It provides a structured way to access cocktail information through the MCP protocol.
@@ -89,8 +89,6 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
-	appSettings := config.GetAppSettings()
-
 	telemetry.Logger.Info().Ctx(ctx).Msg("MCP Getting cocktail: " + cocktailID)
 
 	// default to a safe deadline if none present
@@ -102,8 +100,8 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 	}
 
 	rs, callErr := handler.client.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
-		XKey: &appSettings.CocktailsAPISubscriptionKey,
-	})
+		XKey: &config.GetAppSettings().CocktailsAPISubscriptionKey,
+	}, cocktailsapi.RequestEditor())
 
 	if callErr != nil {
 		telemetry.Logger.Error().Ctx(ctx).Err(callErr).Msg("MCP Error getting cocktail: " + cocktailID)

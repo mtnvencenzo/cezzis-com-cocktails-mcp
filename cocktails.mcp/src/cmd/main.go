@@ -22,6 +22,7 @@ import (
 
 	"github.com/mark3labs/mcp-go/server"
 
+	"cezzis.com/cezzis-mcp-server/internal/api/accountsapi"
 	"cezzis.com/cezzis-mcp-server/internal/api/aisearch"
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
@@ -79,6 +80,11 @@ func main() {
 		panic(err)
 	}
 
+	accountsClient, err := accountsapi.GetClient()
+	if err != nil {
+		panic(err)
+	}
+
 	// Add the various tools to the MCP server
 	// Each tool is registered with its corresponding handler function.
 	// This allows clients to invoke the tools via the MCP protocol.
@@ -93,7 +99,7 @@ func main() {
 	mcpServer.AddTool(tools.AuthLogoutTool, server.ToolHandlerFunc(tools.NewAuthLogoutToolHandler(authManager).Handle))
 
 	// Account Authenticated tools (require user login)
-	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, cocktailsClient).Handle))
+	mcpServer.AddTool(tools.RateCocktailTool, server.ToolHandlerFunc(tools.NewRateCocktailToolHandler(authManager, accountsClient).Handle))
 
 	// Finally, start the server in the chosen mode
 	// Proper error handling ensures that any issues during startup are logged.
@@ -131,6 +137,18 @@ func assertAppSettings(settings *config.AppSettings) {
 		telemetry.Logger.Warn().Msg("Warning: COCKTAILS_API_XKEY is not set")
 	}
 
+	if settings.AccountsAPIHost == "" {
+		telemetry.Logger.Warn().Msg("Warning: ACCOUNTS_API_HOST is not set")
+	}
+
+	if settings.AccountsAPISubscriptionKey == "" {
+		telemetry.Logger.Warn().Msg("Warning: ACCOUNTS_API_XKEY is not set")
+	}
+
+	if settings.CezzisBaseURL == "" {
+		telemetry.Logger.Warn().Msg("Warning: CEZZIS_BASE_URL is not set")
+	}
+
 	assertAuth0Settings(settings)
 	assertCosmosSettings(settings)
 	assertOtlpSettings(settings)
@@ -146,8 +164,8 @@ func assertAuth0Settings(settings *config.AppSettings) {
 		telemetry.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
 	}
 
-	if settings.Auth0Audience == "" {
-		telemetry.Logger.Warn().Msg("Warning: AUTH0_AUDIENCE is not set; authentication will fail")
+	if settings.Auth0AccountsAPIAudience == "" {
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_ACCOUNTS_API_AUDIENCE is not set; authentication will fail")
 	}
 
 	if settings.Auth0Scopes == "" {
