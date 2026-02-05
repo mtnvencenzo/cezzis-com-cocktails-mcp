@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -148,8 +149,8 @@ type AccountOwnedProfileRs struct {
 	SubjectId string `json:"subjectId"`
 }
 
-// BodyUploadProfileImageV1AccountsOwnedProfileImagePost defines model for Body_upload_profile_image_v1_accounts_owned_profile_image_post.
-type BodyUploadProfileImageV1AccountsOwnedProfileImagePost struct {
+// BodyPostV1AccountsOwnedProfileImage defines model for Body_postV1AccountsOwnedProfileImage.
+type BodyPostV1AccountsOwnedProfileImage struct {
 	// File The profile image file to upload
 	File openapi_types.File `json:"file"`
 }
@@ -309,35 +310,113 @@ type UploadProfileImageRs struct {
 	ImageUri string `json:"imageUri"`
 }
 
-// UpdateAccountOwnedProfileV1AccountsOwnedProfilePutJSONRequestBody defines body for UpdateAccountOwnedProfileV1AccountsOwnedProfilePut for application/json ContentType.
-type UpdateAccountOwnedProfileV1AccountsOwnedProfilePutJSONRequestBody = UpdateAccountOwnedProfileRq
+// GetV1AccountsOwnedProfileParams defines parameters for GetV1AccountsOwnedProfile.
+type GetV1AccountsOwnedProfileParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutJSONRequestBody defines body for UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPut for application/json ContentType.
-type UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutJSONRequestBody = UpdateAccountOwnedAccessibilitySettingsRq
+// PostV1AccountsOwnedProfileParams defines parameters for PostV1AccountsOwnedProfile.
+type PostV1AccountsOwnedProfileParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutJSONRequestBody defines body for ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPut for application/json ContentType.
-type ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutJSONRequestBody = ManageFavoriteCocktailsRq
+// PutV1AccountsOwnedProfileParams defines parameters for PutV1AccountsOwnedProfile.
+type PutV1AccountsOwnedProfileParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody defines body for RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost for application/json ContentType.
-type RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody = RateCocktailRq
+// PutV1AccountsOwnedProfileAccessibilityParams defines parameters for PutV1AccountsOwnedProfileAccessibility.
+type PutV1AccountsOwnedProfileAccessibilityParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostJSONRequestBody defines body for SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPost for application/json ContentType.
-type SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostJSONRequestBody = CocktailRecommendationRq
+// PutV1AccountsOwnedProfileCocktailsFavoritesParams defines parameters for PutV1AccountsOwnedProfileCocktailsFavorites.
+type PutV1AccountsOwnedProfileCocktailsFavoritesParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutJSONRequestBody defines body for ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPut for application/json ContentType.
-type ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutJSONRequestBody = ChangeAccountOwnedEmailRq
+// GetV1AccountsOwnedProfileCocktailsRatingsParams defines parameters for GetV1AccountsOwnedProfileCocktailsRatings.
+type GetV1AccountsOwnedProfileCocktailsRatingsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// UploadProfileImageV1AccountsOwnedProfileImagePostMultipartRequestBody defines body for UploadProfileImageV1AccountsOwnedProfileImagePost for multipart/form-data ContentType.
-type UploadProfileImageV1AccountsOwnedProfileImagePostMultipartRequestBody = BodyUploadProfileImageV1AccountsOwnedProfileImagePost
+// PostV1AccountsOwnedProfileCocktailsRatingsParams defines parameters for PostV1AccountsOwnedProfileCocktailsRatings.
+type PostV1AccountsOwnedProfileCocktailsRatingsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutJSONRequestBody defines body for UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPut for application/json ContentType.
-type UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutJSONRequestBody = UpdateAccountOwnedNotificationSettingsRq
+// PostV1AccountsOwnedProfileCocktailsRecommendationsParams defines parameters for PostV1AccountsOwnedProfileCocktailsRecommendations.
+type PostV1AccountsOwnedProfileCocktailsRecommendationsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutJSONRequestBody defines body for ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPut for application/json ContentType.
-type ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutJSONRequestBody = ChangeAccountOwnedPasswordRq
+// PutV1AccountsOwnedProfileEmailParams defines parameters for PutV1AccountsOwnedProfileEmail.
+type PutV1AccountsOwnedProfileEmailParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
 
-// ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutJSONRequestBody defines body for ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePut for application/json ContentType.
-type ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutJSONRequestBody = ChangeAccountOwnedUsernameRq
+// PostV1AccountsOwnedProfileImageParams defines parameters for PostV1AccountsOwnedProfileImage.
+type PostV1AccountsOwnedProfileImageParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PutV1AccountsOwnedProfileNotificationsParams defines parameters for PutV1AccountsOwnedProfileNotifications.
+type PutV1AccountsOwnedProfileNotificationsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PutV1AccountsOwnedProfilePasswordParams defines parameters for PutV1AccountsOwnedProfilePassword.
+type PutV1AccountsOwnedProfilePasswordParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PutV1AccountsOwnedProfileUsernameParams defines parameters for PutV1AccountsOwnedProfileUsername.
+type PutV1AccountsOwnedProfileUsernameParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PutV1AccountsOwnedProfileJSONRequestBody defines body for PutV1AccountsOwnedProfile for application/json ContentType.
+type PutV1AccountsOwnedProfileJSONRequestBody = UpdateAccountOwnedProfileRq
+
+// PutV1AccountsOwnedProfileAccessibilityJSONRequestBody defines body for PutV1AccountsOwnedProfileAccessibility for application/json ContentType.
+type PutV1AccountsOwnedProfileAccessibilityJSONRequestBody = UpdateAccountOwnedAccessibilitySettingsRq
+
+// PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody defines body for PutV1AccountsOwnedProfileCocktailsFavorites for application/json ContentType.
+type PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody = ManageFavoriteCocktailsRq
+
+// PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody defines body for PostV1AccountsOwnedProfileCocktailsRatings for application/json ContentType.
+type PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody = RateCocktailRq
+
+// PostV1AccountsOwnedProfileCocktailsRecommendationsJSONRequestBody defines body for PostV1AccountsOwnedProfileCocktailsRecommendations for application/json ContentType.
+type PostV1AccountsOwnedProfileCocktailsRecommendationsJSONRequestBody = CocktailRecommendationRq
+
+// PutV1AccountsOwnedProfileEmailJSONRequestBody defines body for PutV1AccountsOwnedProfileEmail for application/json ContentType.
+type PutV1AccountsOwnedProfileEmailJSONRequestBody = ChangeAccountOwnedEmailRq
+
+// PostV1AccountsOwnedProfileImageMultipartRequestBody defines body for PostV1AccountsOwnedProfileImage for multipart/form-data ContentType.
+type PostV1AccountsOwnedProfileImageMultipartRequestBody = BodyPostV1AccountsOwnedProfileImage
+
+// PutV1AccountsOwnedProfileNotificationsJSONRequestBody defines body for PutV1AccountsOwnedProfileNotifications for application/json ContentType.
+type PutV1AccountsOwnedProfileNotificationsJSONRequestBody = UpdateAccountOwnedNotificationSettingsRq
+
+// PutV1AccountsOwnedProfilePasswordJSONRequestBody defines body for PutV1AccountsOwnedProfilePassword for application/json ContentType.
+type PutV1AccountsOwnedProfilePasswordJSONRequestBody = ChangeAccountOwnedPasswordRq
+
+// PutV1AccountsOwnedProfileUsernameJSONRequestBody defines body for PutV1AccountsOwnedProfileUsername for application/json ContentType.
+type PutV1AccountsOwnedProfileUsernameJSONRequestBody = ChangeAccountOwnedUsernameRq
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -412,69 +491,69 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// GetAccountOwnedProfileV1AccountsOwnedProfileGet request
-	GetAccountOwnedProfileV1AccountsOwnedProfileGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetV1AccountsOwnedProfile request
+	GetV1AccountsOwnedProfile(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// LoginAccountOwnedProfileV1AccountsOwnedProfilePost request
-	LoginAccountOwnedProfileV1AccountsOwnedProfilePost(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostV1AccountsOwnedProfile request
+	PostV1AccountsOwnedProfile(ctx context.Context, params *PostV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBody request with any body
-	UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutV1AccountsOwnedProfileWithBody request with any body
+	PutV1AccountsOwnedProfileWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateAccountOwnedProfileV1AccountsOwnedProfilePut(ctx context.Context, body UpdateAccountOwnedProfileV1AccountsOwnedProfilePutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutV1AccountsOwnedProfile(ctx context.Context, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBody request with any body
-	UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutV1AccountsOwnedProfileAccessibilityWithBody request with any body
+	PutV1AccountsOwnedProfileAccessibilityWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPut(ctx context.Context, body UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutV1AccountsOwnedProfileAccessibility(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, body PutV1AccountsOwnedProfileAccessibilityJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBody request with any body
-	ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutV1AccountsOwnedProfileCocktailsFavoritesWithBody request with any body
+	PutV1AccountsOwnedProfileCocktailsFavoritesWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPut(ctx context.Context, body ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutV1AccountsOwnedProfileCocktailsFavorites(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, body PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGet request
-	GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetV1AccountsOwnedProfileCocktailsRatings request
+	GetV1AccountsOwnedProfileCocktailsRatings(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsRatingsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBody request with any body
-	RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostV1AccountsOwnedProfileCocktailsRatingsWithBody request with any body
+	PostV1AccountsOwnedProfileCocktailsRatingsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost(ctx context.Context, body RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostV1AccountsOwnedProfileCocktailsRatings(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, body PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBody request with any body
-	SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostV1AccountsOwnedProfileCocktailsRecommendationsWithBody request with any body
+	PostV1AccountsOwnedProfileCocktailsRecommendationsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPost(ctx context.Context, body SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostV1AccountsOwnedProfileCocktailsRecommendations(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, body PostV1AccountsOwnedProfileCocktailsRecommendationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBody request with any body
-	ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutV1AccountsOwnedProfileEmailWithBody request with any body
+	PutV1AccountsOwnedProfileEmailWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPut(ctx context.Context, body ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutV1AccountsOwnedProfileEmail(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, body PutV1AccountsOwnedProfileEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UploadProfileImageV1AccountsOwnedProfileImagePostWithBody request with any body
-	UploadProfileImageV1AccountsOwnedProfileImagePostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostV1AccountsOwnedProfileImageWithBody request with any body
+	PostV1AccountsOwnedProfileImageWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBody request with any body
-	UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutV1AccountsOwnedProfileNotificationsWithBody request with any body
+	PutV1AccountsOwnedProfileNotificationsWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPut(ctx context.Context, body UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutV1AccountsOwnedProfileNotifications(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, body PutV1AccountsOwnedProfileNotificationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBody request with any body
-	ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutV1AccountsOwnedProfilePasswordWithBody request with any body
+	PutV1AccountsOwnedProfilePasswordWithBody(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPut(ctx context.Context, body ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutV1AccountsOwnedProfilePassword(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, body PutV1AccountsOwnedProfilePasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBody request with any body
-	ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutV1AccountsOwnedProfileUsernameWithBody request with any body
+	PutV1AccountsOwnedProfileUsernameWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePut(ctx context.Context, body ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutV1AccountsOwnedProfileUsername(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// HealthCheckV1HealthGet request
 	HealthCheckV1HealthGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) GetAccountOwnedProfileV1AccountsOwnedProfileGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAccountOwnedProfileV1AccountsOwnedProfileGetRequest(c.Server)
+func (c *Client) GetV1AccountsOwnedProfile(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsOwnedProfileRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -485,8 +564,8 @@ func (c *Client) GetAccountOwnedProfileV1AccountsOwnedProfileGet(ctx context.Con
 	return c.Client.Do(req)
 }
 
-func (c *Client) LoginAccountOwnedProfileV1AccountsOwnedProfilePost(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginAccountOwnedProfileV1AccountsOwnedProfilePostRequest(c.Server)
+func (c *Client) PostV1AccountsOwnedProfile(ctx context.Context, params *PostV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -497,8 +576,8 @@ func (c *Client) LoginAccountOwnedProfileV1AccountsOwnedProfilePost(ctx context.
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutV1AccountsOwnedProfileWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -509,8 +588,8 @@ func (c *Client) UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBody(ctx 
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedProfileV1AccountsOwnedProfilePut(ctx context.Context, body UpdateAccountOwnedProfileV1AccountsOwnedProfilePutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequest(c.Server, body)
+func (c *Client) PutV1AccountsOwnedProfile(ctx context.Context, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -521,8 +600,8 @@ func (c *Client) UpdateAccountOwnedProfileV1AccountsOwnedProfilePut(ctx context.
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutV1AccountsOwnedProfileAccessibilityWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileAccessibilityRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -533,8 +612,8 @@ func (c *Client) UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAc
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPut(ctx context.Context, body UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutRequest(c.Server, body)
+func (c *Client) PutV1AccountsOwnedProfileAccessibility(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, body PutV1AccountsOwnedProfileAccessibilityJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileAccessibilityRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -545,8 +624,8 @@ func (c *Client) UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAc
 	return c.Client.Do(req)
 }
 
-func (c *Client) ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutV1AccountsOwnedProfileCocktailsFavoritesWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileCocktailsFavoritesRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -557,8 +636,8 @@ func (c *Client) ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavorites
 	return c.Client.Do(req)
 }
 
-func (c *Client) ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPut(ctx context.Context, body ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRequest(c.Server, body)
+func (c *Client) PutV1AccountsOwnedProfileCocktailsFavorites(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, body PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileCocktailsFavoritesRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -569,8 +648,8 @@ func (c *Client) ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavorites
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetRequest(c.Server)
+func (c *Client) GetV1AccountsOwnedProfileCocktailsRatings(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsRatingsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsOwnedProfileCocktailsRatingsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -581,8 +660,8 @@ func (c *Client) GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGet(ctx
 	return c.Client.Do(req)
 }
 
-func (c *Client) RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostV1AccountsOwnedProfileCocktailsRatingsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileCocktailsRatingsRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -593,8 +672,8 @@ func (c *Client) RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBody(
 	return c.Client.Do(req)
 }
 
-func (c *Client) RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost(ctx context.Context, body RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequest(c.Server, body)
+func (c *Client) PostV1AccountsOwnedProfileCocktailsRatings(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, body PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileCocktailsRatingsRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -605,8 +684,8 @@ func (c *Client) RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost(ctx cont
 	return c.Client.Do(req)
 }
 
-func (c *Client) SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostV1AccountsOwnedProfileCocktailsRecommendationsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -617,8 +696,8 @@ func (c *Client) SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecomm
 	return c.Client.Do(req)
 }
 
-func (c *Client) SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPost(ctx context.Context, body SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostRequest(c.Server, body)
+func (c *Client) PostV1AccountsOwnedProfileCocktailsRecommendations(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, body PostV1AccountsOwnedProfileCocktailsRecommendationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -629,8 +708,8 @@ func (c *Client) SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecomm
 	return c.Client.Do(req)
 }
 
-func (c *Client) ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutV1AccountsOwnedProfileEmailWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileEmailRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -641,8 +720,8 @@ func (c *Client) ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBody(c
 	return c.Client.Do(req)
 }
 
-func (c *Client) ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPut(ctx context.Context, body ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequest(c.Server, body)
+func (c *Client) PutV1AccountsOwnedProfileEmail(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, body PutV1AccountsOwnedProfileEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileEmailRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -653,8 +732,8 @@ func (c *Client) ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPut(ctx conte
 	return c.Client.Do(req)
 }
 
-func (c *Client) UploadProfileImageV1AccountsOwnedProfileImagePostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUploadProfileImageV1AccountsOwnedProfileImagePostRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostV1AccountsOwnedProfileImageWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileImageRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -665,8 +744,8 @@ func (c *Client) UploadProfileImageV1AccountsOwnedProfileImagePostWithBody(ctx c
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutV1AccountsOwnedProfileNotificationsWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileNotificationsRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -677,8 +756,8 @@ func (c *Client) UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNot
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPut(ctx context.Context, body UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutRequest(c.Server, body)
+func (c *Client) PutV1AccountsOwnedProfileNotifications(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, body PutV1AccountsOwnedProfileNotificationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileNotificationsRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -689,8 +768,8 @@ func (c *Client) UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNot
 	return c.Client.Do(req)
 }
 
-func (c *Client) ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutV1AccountsOwnedProfilePasswordWithBody(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfilePasswordRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -701,8 +780,8 @@ func (c *Client) ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWith
 	return c.Client.Do(req)
 }
 
-func (c *Client) ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPut(ctx context.Context, body ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequest(c.Server, body)
+func (c *Client) PutV1AccountsOwnedProfilePassword(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, body PutV1AccountsOwnedProfilePasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfilePasswordRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -713,8 +792,8 @@ func (c *Client) ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPut(ctx
 	return c.Client.Do(req)
 }
 
-func (c *Client) ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutV1AccountsOwnedProfileUsernameWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileUsernameRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -725,8 +804,8 @@ func (c *Client) ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWith
 	return c.Client.Do(req)
 }
 
-func (c *Client) ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePut(ctx context.Context, body ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequest(c.Server, body)
+func (c *Client) PutV1AccountsOwnedProfileUsername(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileUsernameRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -749,8 +828,8 @@ func (c *Client) HealthCheckV1HealthGet(ctx context.Context, reqEditors ...Reque
 	return c.Client.Do(req)
 }
 
-// NewGetAccountOwnedProfileV1AccountsOwnedProfileGetRequest generates requests for GetAccountOwnedProfileV1AccountsOwnedProfileGet
-func NewGetAccountOwnedProfileV1AccountsOwnedProfileGetRequest(server string) (*http.Request, error) {
+// NewGetV1AccountsOwnedProfileRequest generates requests for GetV1AccountsOwnedProfile
+func NewGetV1AccountsOwnedProfileRequest(server string, params *GetV1AccountsOwnedProfileParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -773,11 +852,24 @@ func NewGetAccountOwnedProfileV1AccountsOwnedProfileGetRequest(server string) (*
 		return nil, err
 	}
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewLoginAccountOwnedProfileV1AccountsOwnedProfilePostRequest generates requests for LoginAccountOwnedProfileV1AccountsOwnedProfilePost
-func NewLoginAccountOwnedProfileV1AccountsOwnedProfilePostRequest(server string) (*http.Request, error) {
+// NewPostV1AccountsOwnedProfileRequest generates requests for PostV1AccountsOwnedProfile
+func NewPostV1AccountsOwnedProfileRequest(server string, params *PostV1AccountsOwnedProfileParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -800,22 +892,35 @@ func NewLoginAccountOwnedProfileV1AccountsOwnedProfilePostRequest(server string)
 		return nil, err
 	}
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequest calls the generic UpdateAccountOwnedProfileV1AccountsOwnedProfilePut builder with application/json body
-func NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequest(server string, body UpdateAccountOwnedProfileV1AccountsOwnedProfilePutJSONRequestBody) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileRequest calls the generic PutV1AccountsOwnedProfile builder with application/json body
+func NewPutV1AccountsOwnedProfileRequest(server string, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequestWithBody(server, "application/json", bodyReader)
+	return NewPutV1AccountsOwnedProfileRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequestWithBody generates requests for UpdateAccountOwnedProfileV1AccountsOwnedProfilePut with any type of body
-func NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileRequestWithBody generates requests for PutV1AccountsOwnedProfile with any type of body
+func NewPutV1AccountsOwnedProfileRequestWithBody(server string, params *PutV1AccountsOwnedProfileParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -840,22 +945,35 @@ func NewUpdateAccountOwnedProfileV1AccountsOwnedProfilePutRequestWithBody(server
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutRequest calls the generic UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPut builder with application/json body
-func NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutRequest(server string, body UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutJSONRequestBody) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileAccessibilityRequest calls the generic PutV1AccountsOwnedProfileAccessibility builder with application/json body
+func NewPutV1AccountsOwnedProfileAccessibilityRequest(server string, params *PutV1AccountsOwnedProfileAccessibilityParams, body PutV1AccountsOwnedProfileAccessibilityJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutRequestWithBody(server, "application/json", bodyReader)
+	return NewPutV1AccountsOwnedProfileAccessibilityRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutRequestWithBody generates requests for UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPut with any type of body
-func NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileAccessibilityRequestWithBody generates requests for PutV1AccountsOwnedProfileAccessibility with any type of body
+func NewPutV1AccountsOwnedProfileAccessibilityRequestWithBody(server string, params *PutV1AccountsOwnedProfileAccessibilityParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -880,22 +998,35 @@ func NewUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibili
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRequest calls the generic ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPut builder with application/json body
-func NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRequest(server string, body ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutJSONRequestBody) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileCocktailsFavoritesRequest calls the generic PutV1AccountsOwnedProfileCocktailsFavorites builder with application/json body
+func NewPutV1AccountsOwnedProfileCocktailsFavoritesRequest(server string, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, body PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRequestWithBody(server, "application/json", bodyReader)
+	return NewPutV1AccountsOwnedProfileCocktailsFavoritesRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRequestWithBody generates requests for ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPut with any type of body
-func NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileCocktailsFavoritesRequestWithBody generates requests for PutV1AccountsOwnedProfileCocktailsFavorites with any type of body
+func NewPutV1AccountsOwnedProfileCocktailsFavoritesRequestWithBody(server string, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -920,11 +1051,24 @@ func NewManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutReques
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetRequest generates requests for GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGet
-func NewGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetRequest(server string) (*http.Request, error) {
+// NewGetV1AccountsOwnedProfileCocktailsRatingsRequest generates requests for GetV1AccountsOwnedProfileCocktailsRatings
+func NewGetV1AccountsOwnedProfileCocktailsRatingsRequest(server string, params *GetV1AccountsOwnedProfileCocktailsRatingsParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -947,22 +1091,35 @@ func NewGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetRequest(serve
 		return nil, err
 	}
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequest calls the generic RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost builder with application/json body
-func NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequest(server string, body RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody) (*http.Request, error) {
+// NewPostV1AccountsOwnedProfileCocktailsRatingsRequest calls the generic PostV1AccountsOwnedProfileCocktailsRatings builder with application/json body
+func NewPostV1AccountsOwnedProfileCocktailsRatingsRequest(server string, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, body PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequestWithBody(server, "application/json", bodyReader)
+	return NewPostV1AccountsOwnedProfileCocktailsRatingsRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequestWithBody generates requests for RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost with any type of body
-func NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostV1AccountsOwnedProfileCocktailsRatingsRequestWithBody generates requests for PostV1AccountsOwnedProfileCocktailsRatings with any type of body
+func NewPostV1AccountsOwnedProfileCocktailsRatingsRequestWithBody(server string, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -987,22 +1144,35 @@ func NewRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostRequestWithBody(se
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostRequest calls the generic SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPost builder with application/json body
-func NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostRequest(server string, body SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostJSONRequestBody) (*http.Request, error) {
+// NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequest calls the generic PostV1AccountsOwnedProfileCocktailsRecommendations builder with application/json body
+func NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequest(server string, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, body PostV1AccountsOwnedProfileCocktailsRecommendationsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostRequestWithBody(server, "application/json", bodyReader)
+	return NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostRequestWithBody generates requests for SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPost with any type of body
-func NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequestWithBody generates requests for PostV1AccountsOwnedProfileCocktailsRecommendations with any type of body
+func NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequestWithBody(server string, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1027,22 +1197,35 @@ func NewSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendations
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequest calls the generic ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPut builder with application/json body
-func NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequest(server string, body ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutJSONRequestBody) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileEmailRequest calls the generic PutV1AccountsOwnedProfileEmail builder with application/json body
+func NewPutV1AccountsOwnedProfileEmailRequest(server string, params *PutV1AccountsOwnedProfileEmailParams, body PutV1AccountsOwnedProfileEmailJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequestWithBody(server, "application/json", bodyReader)
+	return NewPutV1AccountsOwnedProfileEmailRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequestWithBody generates requests for ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPut with any type of body
-func NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileEmailRequestWithBody generates requests for PutV1AccountsOwnedProfileEmail with any type of body
+func NewPutV1AccountsOwnedProfileEmailRequestWithBody(server string, params *PutV1AccountsOwnedProfileEmailParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1067,11 +1250,24 @@ func NewChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutRequestWithBody(ser
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewUploadProfileImageV1AccountsOwnedProfileImagePostRequestWithBody generates requests for UploadProfileImageV1AccountsOwnedProfileImagePost with any type of body
-func NewUploadProfileImageV1AccountsOwnedProfileImagePostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostV1AccountsOwnedProfileImageRequestWithBody generates requests for PostV1AccountsOwnedProfileImage with any type of body
+func NewPostV1AccountsOwnedProfileImageRequestWithBody(server string, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1096,22 +1292,35 @@ func NewUploadProfileImageV1AccountsOwnedProfileImagePostRequestWithBody(server 
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutRequest calls the generic UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPut builder with application/json body
-func NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutRequest(server string, body UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutJSONRequestBody) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileNotificationsRequest calls the generic PutV1AccountsOwnedProfileNotifications builder with application/json body
+func NewPutV1AccountsOwnedProfileNotificationsRequest(server string, params *PutV1AccountsOwnedProfileNotificationsParams, body PutV1AccountsOwnedProfileNotificationsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutRequestWithBody(server, "application/json", bodyReader)
+	return NewPutV1AccountsOwnedProfileNotificationsRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutRequestWithBody generates requests for UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPut with any type of body
-func NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileNotificationsRequestWithBody generates requests for PutV1AccountsOwnedProfileNotifications with any type of body
+func NewPutV1AccountsOwnedProfileNotificationsRequestWithBody(server string, params *PutV1AccountsOwnedProfileNotificationsParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1136,22 +1345,35 @@ func NewUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotification
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequest calls the generic ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPut builder with application/json body
-func NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequest(server string, body ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutJSONRequestBody) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfilePasswordRequest calls the generic PutV1AccountsOwnedProfilePassword builder with application/json body
+func NewPutV1AccountsOwnedProfilePasswordRequest(server string, params *PutV1AccountsOwnedProfilePasswordParams, body PutV1AccountsOwnedProfilePasswordJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequestWithBody(server, "application/json", bodyReader)
+	return NewPutV1AccountsOwnedProfilePasswordRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequestWithBody generates requests for ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPut with any type of body
-func NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfilePasswordRequestWithBody generates requests for PutV1AccountsOwnedProfilePassword with any type of body
+func NewPutV1AccountsOwnedProfilePasswordRequestWithBody(server string, params *PutV1AccountsOwnedProfilePasswordParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1176,22 +1398,35 @@ func NewChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutRequestWithBo
 
 	req.Header.Add("Content-Type", contentType)
 
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
 	return req, nil
 }
 
-// NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequest calls the generic ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePut builder with application/json body
-func NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequest(server string, body ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutJSONRequestBody) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileUsernameRequest calls the generic PutV1AccountsOwnedProfileUsername builder with application/json body
+func NewPutV1AccountsOwnedProfileUsernameRequest(server string, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequestWithBody(server, "application/json", bodyReader)
+	return NewPutV1AccountsOwnedProfileUsernameRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequestWithBody generates requests for ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePut with any type of body
-func NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutV1AccountsOwnedProfileUsernameRequestWithBody generates requests for PutV1AccountsOwnedProfileUsername with any type of body
+func NewPutV1AccountsOwnedProfileUsernameRequestWithBody(server string, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1215,6 +1450,19 @@ func NewChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutRequestWithBo
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
 
 	return req, nil
 }
@@ -1289,68 +1537,68 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// GetAccountOwnedProfileV1AccountsOwnedProfileGetWithResponse request
-	GetAccountOwnedProfileV1AccountsOwnedProfileGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse, error)
+	// GetV1AccountsOwnedProfileWithResponse request
+	GetV1AccountsOwnedProfileWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileResponse, error)
 
-	// LoginAccountOwnedProfileV1AccountsOwnedProfilePostWithResponse request
-	LoginAccountOwnedProfileV1AccountsOwnedProfilePostWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse, error)
+	// PostV1AccountsOwnedProfileWithResponse request
+	PostV1AccountsOwnedProfileWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileResponse, error)
 
-	// UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBodyWithResponse request with any body
-	UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse, error)
+	// PutV1AccountsOwnedProfileWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileResponse, error)
 
-	UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithResponse(ctx context.Context, body UpdateAccountOwnedProfileV1AccountsOwnedProfilePutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse, error)
+	PutV1AccountsOwnedProfileWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileResponse, error)
 
-	// UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBodyWithResponse request with any body
-	UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse, error)
+	// PutV1AccountsOwnedProfileAccessibilityWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileAccessibilityWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileAccessibilityResponse, error)
 
-	UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithResponse(ctx context.Context, body UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse, error)
+	PutV1AccountsOwnedProfileAccessibilityWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, body PutV1AccountsOwnedProfileAccessibilityJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileAccessibilityResponse, error)
 
-	// ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBodyWithResponse request with any body
-	ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse, error)
+	// PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error)
 
-	ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithResponse(ctx context.Context, body ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse, error)
+	PutV1AccountsOwnedProfileCocktailsFavoritesWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, body PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error)
 
-	// GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetWithResponse request
-	GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse, error)
+	// GetV1AccountsOwnedProfileCocktailsRatingsWithResponse request
+	GetV1AccountsOwnedProfileCocktailsRatingsWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsRatingsParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileCocktailsRatingsResponse, error)
 
-	// RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBodyWithResponse request with any body
-	RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse, error)
+	// PostV1AccountsOwnedProfileCocktailsRatingsWithBodyWithResponse request with any body
+	PostV1AccountsOwnedProfileCocktailsRatingsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRatingsResponse, error)
 
-	RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithResponse(ctx context.Context, body RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse, error)
+	PostV1AccountsOwnedProfileCocktailsRatingsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, body PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRatingsResponse, error)
 
-	// SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBodyWithResponse request with any body
-	SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse, error)
+	// PostV1AccountsOwnedProfileCocktailsRecommendationsWithBodyWithResponse request with any body
+	PostV1AccountsOwnedProfileCocktailsRecommendationsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRecommendationsResponse, error)
 
-	SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithResponse(ctx context.Context, body SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse, error)
+	PostV1AccountsOwnedProfileCocktailsRecommendationsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, body PostV1AccountsOwnedProfileCocktailsRecommendationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRecommendationsResponse, error)
 
-	// ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBodyWithResponse request with any body
-	ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse, error)
+	// PutV1AccountsOwnedProfileEmailWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileEmailWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileEmailResponse, error)
 
-	ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithResponse(ctx context.Context, body ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse, error)
+	PutV1AccountsOwnedProfileEmailWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, body PutV1AccountsOwnedProfileEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileEmailResponse, error)
 
-	// UploadProfileImageV1AccountsOwnedProfileImagePostWithBodyWithResponse request with any body
-	UploadProfileImageV1AccountsOwnedProfileImagePostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadProfileImageV1AccountsOwnedProfileImagePostResponse, error)
+	// PostV1AccountsOwnedProfileImageWithBodyWithResponse request with any body
+	PostV1AccountsOwnedProfileImageWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileImageResponse, error)
 
-	// UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBodyWithResponse request with any body
-	UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse, error)
+	// PutV1AccountsOwnedProfileNotificationsWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileNotificationsWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileNotificationsResponse, error)
 
-	UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithResponse(ctx context.Context, body UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse, error)
+	PutV1AccountsOwnedProfileNotificationsWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, body PutV1AccountsOwnedProfileNotificationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileNotificationsResponse, error)
 
-	// ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBodyWithResponse request with any body
-	ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse, error)
+	// PutV1AccountsOwnedProfilePasswordWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfilePasswordWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfilePasswordResponse, error)
 
-	ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithResponse(ctx context.Context, body ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse, error)
+	PutV1AccountsOwnedProfilePasswordWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, body PutV1AccountsOwnedProfilePasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfilePasswordResponse, error)
 
-	// ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBodyWithResponse request with any body
-	ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse, error)
+	// PutV1AccountsOwnedProfileUsernameWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileUsernameWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
 
-	ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithResponse(ctx context.Context, body ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse, error)
+	PutV1AccountsOwnedProfileUsernameWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
 
 	// HealthCheckV1HealthGetWithResponse request
 	HealthCheckV1HealthGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthCheckV1HealthGetResponse, error)
 }
 
-type GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse struct {
+type GetV1AccountsOwnedProfileResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
@@ -1359,7 +1607,7 @@ type GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse) Status() string {
+func (r GetV1AccountsOwnedProfileResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1367,14 +1615,14 @@ func (r GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse) Status() string
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse) StatusCode() int {
+func (r GetV1AccountsOwnedProfileResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse struct {
+type PostV1AccountsOwnedProfileResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
@@ -1384,7 +1632,7 @@ type LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse) Status() string {
+func (r PostV1AccountsOwnedProfileResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1392,14 +1640,14 @@ func (r LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse) Status() str
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse) StatusCode() int {
+func (r PostV1AccountsOwnedProfileResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse struct {
+type PutV1AccountsOwnedProfileResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
@@ -1408,7 +1656,7 @@ type UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse) Status() string {
+func (r PutV1AccountsOwnedProfileResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1416,14 +1664,14 @@ func (r UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse) Status() str
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse) StatusCode() int {
+func (r PutV1AccountsOwnedProfileResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse struct {
+type PutV1AccountsOwnedProfileAccessibilityResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
@@ -1432,7 +1680,7 @@ type UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityP
 }
 
 // Status returns HTTPResponse.Status
-func (r UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse) Status() string {
+func (r PutV1AccountsOwnedProfileAccessibilityResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1440,14 +1688,14 @@ func (r UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibili
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse) StatusCode() int {
+func (r PutV1AccountsOwnedProfileAccessibilityResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse struct {
+type PutV1AccountsOwnedProfileCocktailsFavoritesResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
@@ -1456,7 +1704,7 @@ type ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse 
 }
 
 // Status returns HTTPResponse.Status
-func (r ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse) Status() string {
+func (r PutV1AccountsOwnedProfileCocktailsFavoritesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1464,14 +1712,14 @@ func (r ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutRespon
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse) StatusCode() int {
+func (r PutV1AccountsOwnedProfileCocktailsFavoritesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse struct {
+type GetV1AccountsOwnedProfileCocktailsRatingsResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountCocktailRatingsRs
@@ -1480,7 +1728,7 @@ type GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse struct 
 }
 
 // Status returns HTTPResponse.Status
-func (r GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse) Status() string {
+func (r GetV1AccountsOwnedProfileCocktailsRatingsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1488,14 +1736,14 @@ func (r GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse) Sta
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse) StatusCode() int {
+func (r GetV1AccountsOwnedProfileCocktailsRatingsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse struct {
+type PostV1AccountsOwnedProfileCocktailsRatingsResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *interface{}
@@ -1506,7 +1754,7 @@ type RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse) Status() string {
+func (r PostV1AccountsOwnedProfileCocktailsRatingsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1514,14 +1762,14 @@ func (r RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse) Status()
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse) StatusCode() int {
+func (r PostV1AccountsOwnedProfileCocktailsRatingsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse struct {
+type PostV1AccountsOwnedProfileCocktailsRecommendationsResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *interface{}
@@ -1531,7 +1779,7 @@ type SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPos
 }
 
 // Status returns HTTPResponse.Status
-func (r SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse) Status() string {
+func (r PostV1AccountsOwnedProfileCocktailsRecommendationsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1539,14 +1787,14 @@ func (r SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendations
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse) StatusCode() int {
+func (r PostV1AccountsOwnedProfileCocktailsRecommendationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse struct {
+type PutV1AccountsOwnedProfileEmailResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
@@ -1555,7 +1803,7 @@ type ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse) Status() string {
+func (r PutV1AccountsOwnedProfileEmailResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1563,14 +1811,14 @@ func (r ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse) Status() 
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse) StatusCode() int {
+func (r PutV1AccountsOwnedProfileEmailResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type UploadProfileImageV1AccountsOwnedProfileImagePostResponse struct {
+type PostV1AccountsOwnedProfileImageResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *interface{}
@@ -1580,7 +1828,7 @@ type UploadProfileImageV1AccountsOwnedProfileImagePostResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r UploadProfileImageV1AccountsOwnedProfileImagePostResponse) Status() string {
+func (r PostV1AccountsOwnedProfileImageResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1588,14 +1836,14 @@ func (r UploadProfileImageV1AccountsOwnedProfileImagePostResponse) Status() stri
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UploadProfileImageV1AccountsOwnedProfileImagePostResponse) StatusCode() int {
+func (r PostV1AccountsOwnedProfileImageResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse struct {
+type PutV1AccountsOwnedProfileNotificationsResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
@@ -1604,7 +1852,7 @@ type UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPu
 }
 
 // Status returns HTTPResponse.Status
-func (r UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse) Status() string {
+func (r PutV1AccountsOwnedProfileNotificationsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1612,14 +1860,14 @@ func (r UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotification
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse) StatusCode() int {
+func (r PutV1AccountsOwnedProfileNotificationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse struct {
+type PutV1AccountsOwnedProfilePasswordResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *interface{}
@@ -1628,7 +1876,7 @@ type ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse struct 
 }
 
 // Status returns HTTPResponse.Status
-func (r ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse) Status() string {
+func (r PutV1AccountsOwnedProfilePasswordResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1636,14 +1884,14 @@ func (r ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse) Sta
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse) StatusCode() int {
+func (r PutV1AccountsOwnedProfilePasswordResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse struct {
+type PutV1AccountsOwnedProfileUsernameResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *interface{}
@@ -1652,7 +1900,7 @@ type ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse struct 
 }
 
 // Status returns HTTPResponse.Status
-func (r ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse) Status() string {
+func (r PutV1AccountsOwnedProfileUsernameResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1660,7 +1908,7 @@ func (r ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse) Sta
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse) StatusCode() int {
+func (r PutV1AccountsOwnedProfileUsernameResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1691,193 +1939,193 @@ func (r HealthCheckV1HealthGetResponse) StatusCode() int {
 	return 0
 }
 
-// GetAccountOwnedProfileV1AccountsOwnedProfileGetWithResponse request returning *GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse
-func (c *ClientWithResponses) GetAccountOwnedProfileV1AccountsOwnedProfileGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse, error) {
-	rsp, err := c.GetAccountOwnedProfileV1AccountsOwnedProfileGet(ctx, reqEditors...)
+// GetV1AccountsOwnedProfileWithResponse request returning *GetV1AccountsOwnedProfileResponse
+func (c *ClientWithResponses) GetV1AccountsOwnedProfileWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileResponse, error) {
+	rsp, err := c.GetV1AccountsOwnedProfile(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetAccountOwnedProfileV1AccountsOwnedProfileGetResponse(rsp)
+	return ParseGetV1AccountsOwnedProfileResponse(rsp)
 }
 
-// LoginAccountOwnedProfileV1AccountsOwnedProfilePostWithResponse request returning *LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse
-func (c *ClientWithResponses) LoginAccountOwnedProfileV1AccountsOwnedProfilePostWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse, error) {
-	rsp, err := c.LoginAccountOwnedProfileV1AccountsOwnedProfilePost(ctx, reqEditors...)
+// PostV1AccountsOwnedProfileWithResponse request returning *PostV1AccountsOwnedProfileResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfile(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseLoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse(rsp)
+	return ParsePostV1AccountsOwnedProfileResponse(rsp)
 }
 
-// UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBodyWithResponse request with arbitrary body returning *UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse
-func (c *ClientWithResponses) UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse, error) {
-	rsp, err := c.UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithBody(ctx, contentType, body, reqEditors...)
+// PutV1AccountsOwnedProfileWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithResponse(ctx context.Context, body UpdateAccountOwnedProfileV1AccountsOwnedProfilePutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse, error) {
-	rsp, err := c.UpdateAccountOwnedProfileV1AccountsOwnedProfilePut(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfile(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileResponse(rsp)
 }
 
-// UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBodyWithResponse request with arbitrary body returning *UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse
-func (c *ClientWithResponses) UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse, error) {
-	rsp, err := c.UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithBody(ctx, contentType, body, reqEditors...)
+// PutV1AccountsOwnedProfileAccessibilityWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileAccessibilityResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileAccessibilityWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileAccessibilityResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileAccessibilityWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileAccessibilityResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithResponse(ctx context.Context, body UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse, error) {
-	rsp, err := c.UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPut(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileAccessibilityWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileAccessibilityParams, body PutV1AccountsOwnedProfileAccessibilityJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileAccessibilityResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileAccessibility(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileAccessibilityResponse(rsp)
 }
 
-// ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBodyWithResponse request with arbitrary body returning *ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse
-func (c *ClientWithResponses) ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse, error) {
-	rsp, err := c.ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithBody(ctx, contentType, body, reqEditors...)
+// PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileCocktailsFavoritesResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileCocktailsFavoritesWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileCocktailsFavoritesResponse(rsp)
 }
 
-func (c *ClientWithResponses) ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithResponse(ctx context.Context, body ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse, error) {
-	rsp, err := c.ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPut(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsFavoritesWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, body PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileCocktailsFavorites(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileCocktailsFavoritesResponse(rsp)
 }
 
-// GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetWithResponse request returning *GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse
-func (c *ClientWithResponses) GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse, error) {
-	rsp, err := c.GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGet(ctx, reqEditors...)
+// GetV1AccountsOwnedProfileCocktailsRatingsWithResponse request returning *GetV1AccountsOwnedProfileCocktailsRatingsResponse
+func (c *ClientWithResponses) GetV1AccountsOwnedProfileCocktailsRatingsWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsRatingsParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileCocktailsRatingsResponse, error) {
+	rsp, err := c.GetV1AccountsOwnedProfileCocktailsRatings(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse(rsp)
+	return ParseGetV1AccountsOwnedProfileCocktailsRatingsResponse(rsp)
 }
 
-// RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBodyWithResponse request with arbitrary body returning *RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse
-func (c *ClientWithResponses) RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse, error) {
-	rsp, err := c.RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithBody(ctx, contentType, body, reqEditors...)
+// PostV1AccountsOwnedProfileCocktailsRatingsWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileCocktailsRatingsResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsRatingsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRatingsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileCocktailsRatingsWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse(rsp)
+	return ParsePostV1AccountsOwnedProfileCocktailsRatingsResponse(rsp)
 }
 
-func (c *ClientWithResponses) RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithResponse(ctx context.Context, body RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse, error) {
-	rsp, err := c.RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsRatingsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, body PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRatingsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileCocktailsRatings(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse(rsp)
+	return ParsePostV1AccountsOwnedProfileCocktailsRatingsResponse(rsp)
 }
 
-// SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBodyWithResponse request with arbitrary body returning *SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse
-func (c *ClientWithResponses) SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse, error) {
-	rsp, err := c.SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithBody(ctx, contentType, body, reqEditors...)
+// PostV1AccountsOwnedProfileCocktailsRecommendationsWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileCocktailsRecommendationsResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsRecommendationsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRecommendationsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileCocktailsRecommendationsWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse(rsp)
+	return ParsePostV1AccountsOwnedProfileCocktailsRecommendationsResponse(rsp)
 }
 
-func (c *ClientWithResponses) SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithResponse(ctx context.Context, body SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse, error) {
-	rsp, err := c.SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPost(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsRecommendationsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRecommendationsParams, body PostV1AccountsOwnedProfileCocktailsRecommendationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRecommendationsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileCocktailsRecommendations(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse(rsp)
+	return ParsePostV1AccountsOwnedProfileCocktailsRecommendationsResponse(rsp)
 }
 
-// ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBodyWithResponse request with arbitrary body returning *ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse
-func (c *ClientWithResponses) ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse, error) {
-	rsp, err := c.ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithBody(ctx, contentType, body, reqEditors...)
+// PutV1AccountsOwnedProfileEmailWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileEmailResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileEmailWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileEmailResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileEmailWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileEmailResponse(rsp)
 }
 
-func (c *ClientWithResponses) ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithResponse(ctx context.Context, body ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse, error) {
-	rsp, err := c.ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPut(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileEmailWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, body PutV1AccountsOwnedProfileEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileEmailResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileEmail(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileEmailResponse(rsp)
 }
 
-// UploadProfileImageV1AccountsOwnedProfileImagePostWithBodyWithResponse request with arbitrary body returning *UploadProfileImageV1AccountsOwnedProfileImagePostResponse
-func (c *ClientWithResponses) UploadProfileImageV1AccountsOwnedProfileImagePostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadProfileImageV1AccountsOwnedProfileImagePostResponse, error) {
-	rsp, err := c.UploadProfileImageV1AccountsOwnedProfileImagePostWithBody(ctx, contentType, body, reqEditors...)
+// PostV1AccountsOwnedProfileImageWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileImageResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileImageWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileImageResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileImageWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUploadProfileImageV1AccountsOwnedProfileImagePostResponse(rsp)
+	return ParsePostV1AccountsOwnedProfileImageResponse(rsp)
 }
 
-// UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBodyWithResponse request with arbitrary body returning *UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse
-func (c *ClientWithResponses) UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse, error) {
-	rsp, err := c.UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithBody(ctx, contentType, body, reqEditors...)
+// PutV1AccountsOwnedProfileNotificationsWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileNotificationsResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileNotificationsWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileNotificationsResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileNotificationsWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileNotificationsResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithResponse(ctx context.Context, body UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse, error) {
-	rsp, err := c.UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPut(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileNotificationsWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, body PutV1AccountsOwnedProfileNotificationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileNotificationsResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileNotifications(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileNotificationsResponse(rsp)
 }
 
-// ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBodyWithResponse request with arbitrary body returning *ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse
-func (c *ClientWithResponses) ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse, error) {
-	rsp, err := c.ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithBody(ctx, contentType, body, reqEditors...)
+// PutV1AccountsOwnedProfilePasswordWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfilePasswordResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfilePasswordWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfilePasswordResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfilePasswordWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfilePasswordResponse(rsp)
 }
 
-func (c *ClientWithResponses) ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithResponse(ctx context.Context, body ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse, error) {
-	rsp, err := c.ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPut(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PutV1AccountsOwnedProfilePasswordWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfilePasswordParams, body PutV1AccountsOwnedProfilePasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfilePasswordResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfilePassword(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfilePasswordResponse(rsp)
 }
 
-// ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBodyWithResponse request with arbitrary body returning *ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse
-func (c *ClientWithResponses) ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse, error) {
-	rsp, err := c.ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithBody(ctx, contentType, body, reqEditors...)
+// PutV1AccountsOwnedProfileUsernameWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileUsernameResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileUsernameWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileUsernameWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileUsernameResponse(rsp)
 }
 
-func (c *ClientWithResponses) ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithResponse(ctx context.Context, body ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse, error) {
-	rsp, err := c.ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePut(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileUsernameWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileUsername(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse(rsp)
+	return ParsePutV1AccountsOwnedProfileUsernameResponse(rsp)
 }
 
 // HealthCheckV1HealthGetWithResponse request returning *HealthCheckV1HealthGetResponse
@@ -1889,15 +2137,15 @@ func (c *ClientWithResponses) HealthCheckV1HealthGetWithResponse(ctx context.Con
 	return ParseHealthCheckV1HealthGetResponse(rsp)
 }
 
-// ParseGetAccountOwnedProfileV1AccountsOwnedProfileGetResponse parses an HTTP response from a GetAccountOwnedProfileV1AccountsOwnedProfileGetWithResponse call
-func ParseGetAccountOwnedProfileV1AccountsOwnedProfileGetResponse(rsp *http.Response) (*GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse, error) {
+// ParseGetV1AccountsOwnedProfileResponse parses an HTTP response from a GetV1AccountsOwnedProfileWithResponse call
+func ParseGetV1AccountsOwnedProfileResponse(rsp *http.Response) (*GetV1AccountsOwnedProfileResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetAccountOwnedProfileV1AccountsOwnedProfileGetResponse{
+	response := &GetV1AccountsOwnedProfileResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -1929,15 +2177,15 @@ func ParseGetAccountOwnedProfileV1AccountsOwnedProfileGetResponse(rsp *http.Resp
 	return response, nil
 }
 
-// ParseLoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse parses an HTTP response from a LoginAccountOwnedProfileV1AccountsOwnedProfilePostWithResponse call
-func ParseLoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse(rsp *http.Response) (*LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse, error) {
+// ParsePostV1AccountsOwnedProfileResponse parses an HTTP response from a PostV1AccountsOwnedProfileWithResponse call
+func ParsePostV1AccountsOwnedProfileResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &LoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse{
+	response := &PostV1AccountsOwnedProfileResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -1976,15 +2224,15 @@ func ParseLoginAccountOwnedProfileV1AccountsOwnedProfilePostResponse(rsp *http.R
 	return response, nil
 }
 
-// ParseUpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse parses an HTTP response from a UpdateAccountOwnedProfileV1AccountsOwnedProfilePutWithResponse call
-func ParseUpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse(rsp *http.Response) (*UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse, error) {
+// ParsePutV1AccountsOwnedProfileResponse parses an HTTP response from a PutV1AccountsOwnedProfileWithResponse call
+func ParsePutV1AccountsOwnedProfileResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse{
+	response := &PutV1AccountsOwnedProfileResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2016,15 +2264,15 @@ func ParseUpdateAccountOwnedProfileV1AccountsOwnedProfilePutResponse(rsp *http.R
 	return response, nil
 }
 
-// ParseUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse parses an HTTP response from a UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutWithResponse call
-func ParseUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse(rsp *http.Response) (*UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse, error) {
+// ParsePutV1AccountsOwnedProfileAccessibilityResponse parses an HTTP response from a PutV1AccountsOwnedProfileAccessibilityWithResponse call
+func ParsePutV1AccountsOwnedProfileAccessibilityResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileAccessibilityResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibilityPutResponse{
+	response := &PutV1AccountsOwnedProfileAccessibilityResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2056,15 +2304,15 @@ func ParseUpdateAccountOwnedAccessibilitySettingsV1AccountsOwnedProfileAccessibi
 	return response, nil
 }
 
-// ParseManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse parses an HTTP response from a ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutWithResponse call
-func ParseManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse(rsp *http.Response) (*ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse, error) {
+// ParsePutV1AccountsOwnedProfileCocktailsFavoritesResponse parses an HTTP response from a PutV1AccountsOwnedProfileCocktailsFavoritesWithResponse call
+func ParsePutV1AccountsOwnedProfileCocktailsFavoritesResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResponse{
+	response := &PutV1AccountsOwnedProfileCocktailsFavoritesResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2096,15 +2344,15 @@ func ParseManageFavoriteCocktailsV1AccountsOwnedProfileCocktailsFavoritesPutResp
 	return response, nil
 }
 
-// ParseGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse parses an HTTP response from a GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetWithResponse call
-func ParseGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse(rsp *http.Response) (*GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse, error) {
+// ParseGetV1AccountsOwnedProfileCocktailsRatingsResponse parses an HTTP response from a GetV1AccountsOwnedProfileCocktailsRatingsWithResponse call
+func ParseGetV1AccountsOwnedProfileCocktailsRatingsResponse(rsp *http.Response) (*GetV1AccountsOwnedProfileCocktailsRatingsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse{
+	response := &GetV1AccountsOwnedProfileCocktailsRatingsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2136,15 +2384,15 @@ func ParseGetCocktailRatingsV1AccountsOwnedProfileCocktailsRatingsGetResponse(rs
 	return response, nil
 }
 
-// ParseRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse parses an HTTP response from a RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostWithResponse call
-func ParseRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse(rsp *http.Response) (*RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse, error) {
+// ParsePostV1AccountsOwnedProfileCocktailsRatingsResponse parses an HTTP response from a PostV1AccountsOwnedProfileCocktailsRatingsWithResponse call
+func ParsePostV1AccountsOwnedProfileCocktailsRatingsResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileCocktailsRatingsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse{
+	response := &PostV1AccountsOwnedProfileCocktailsRatingsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2190,15 +2438,15 @@ func ParseRateCocktailV1AccountsOwnedProfileCocktailsRatingsPostResponse(rsp *ht
 	return response, nil
 }
 
-// ParseSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse parses an HTTP response from a SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostWithResponse call
-func ParseSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse(rsp *http.Response) (*SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse, error) {
+// ParsePostV1AccountsOwnedProfileCocktailsRecommendationsResponse parses an HTTP response from a PostV1AccountsOwnedProfileCocktailsRecommendationsWithResponse call
+func ParsePostV1AccountsOwnedProfileCocktailsRecommendationsResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileCocktailsRecommendationsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &SendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendationsPostResponse{
+	response := &PostV1AccountsOwnedProfileCocktailsRecommendationsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2237,15 +2485,15 @@ func ParseSendCocktailRecommendationV1AccountsOwnedProfileCocktailsRecommendatio
 	return response, nil
 }
 
-// ParseChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse parses an HTTP response from a ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutWithResponse call
-func ParseChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse(rsp *http.Response) (*ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse, error) {
+// ParsePutV1AccountsOwnedProfileEmailResponse parses an HTTP response from a PutV1AccountsOwnedProfileEmailWithResponse call
+func ParsePutV1AccountsOwnedProfileEmailResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileEmailResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse{
+	response := &PutV1AccountsOwnedProfileEmailResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2277,15 +2525,15 @@ func ParseChangeAccountOwnedEmailV1AccountsOwnedProfileEmailPutResponse(rsp *htt
 	return response, nil
 }
 
-// ParseUploadProfileImageV1AccountsOwnedProfileImagePostResponse parses an HTTP response from a UploadProfileImageV1AccountsOwnedProfileImagePostWithResponse call
-func ParseUploadProfileImageV1AccountsOwnedProfileImagePostResponse(rsp *http.Response) (*UploadProfileImageV1AccountsOwnedProfileImagePostResponse, error) {
+// ParsePostV1AccountsOwnedProfileImageResponse parses an HTTP response from a PostV1AccountsOwnedProfileImageWithResponse call
+func ParsePostV1AccountsOwnedProfileImageResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileImageResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UploadProfileImageV1AccountsOwnedProfileImagePostResponse{
+	response := &PostV1AccountsOwnedProfileImageResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2324,15 +2572,15 @@ func ParseUploadProfileImageV1AccountsOwnedProfileImagePostResponse(rsp *http.Re
 	return response, nil
 }
 
-// ParseUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse parses an HTTP response from a UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutWithResponse call
-func ParseUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse(rsp *http.Response) (*UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse, error) {
+// ParsePutV1AccountsOwnedProfileNotificationsResponse parses an HTTP response from a PutV1AccountsOwnedProfileNotificationsWithResponse call
+func ParsePutV1AccountsOwnedProfileNotificationsResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileNotificationsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificationsPutResponse{
+	response := &PutV1AccountsOwnedProfileNotificationsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2364,15 +2612,15 @@ func ParseUpdateAccountOwnedNotificationSettingsV1AccountsOwnedProfileNotificati
 	return response, nil
 }
 
-// ParseChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse parses an HTTP response from a ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutWithResponse call
-func ParseChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse(rsp *http.Response) (*ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse, error) {
+// ParsePutV1AccountsOwnedProfilePasswordResponse parses an HTTP response from a PutV1AccountsOwnedProfilePasswordWithResponse call
+func ParsePutV1AccountsOwnedProfilePasswordResponse(rsp *http.Response) (*PutV1AccountsOwnedProfilePasswordResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse{
+	response := &PutV1AccountsOwnedProfilePasswordResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2404,15 +2652,15 @@ func ParseChangeAccountOwnedPasswordV1AccountsOwnedProfilePasswordPutResponse(rs
 	return response, nil
 }
 
-// ParseChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse parses an HTTP response from a ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutWithResponse call
-func ParseChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse(rsp *http.Response) (*ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse, error) {
+// ParsePutV1AccountsOwnedProfileUsernameResponse parses an HTTP response from a PutV1AccountsOwnedProfileUsernameWithResponse call
+func ParsePutV1AccountsOwnedProfileUsernameResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileUsernameResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ChangeAccountOwnedUsernameV1AccountsOwnedProfileUsernamePutResponse{
+	response := &PutV1AccountsOwnedProfileUsernameResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

@@ -108,9 +108,14 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		defer cancel()
 	}
 
-	rs, callErr := handler.client.RateCocktailV1AccountsOwnedProfileCocktailsRatingsPost(
+	appsettings := config.GetAppSettings()
+
+	rs, callErr := handler.client.PostV1AccountsOwnedProfileCocktailsRatings(
 		callCtx,
-		accountsapi.RateCocktailV1AccountsOwnedProfileCocktailsRatingsPostJSONRequestBody{
+		&accountsapi.PostV1AccountsOwnedProfileCocktailsRatingsParams{
+			XKey: appsettings.AccountsAPISubscriptionKey,
+		},
+		accountsapi.PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody{
 			CocktailId: cocktailID,
 			CurrentRatings: accountsapi.AccountCocktailRatingModel{
 				OneStars:    0,
@@ -123,7 +128,8 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 				RatingCount: 0,
 			},
 			Stars: stars,
-		}, accountsapi.RequestEditor(handler.authManager))
+		},
+		accountsapi.RequestEditor(handler.authManager))
 
 	if callErr != nil {
 		telemetry.Logger.Err(callErr).Ctx(ctx).Msg("MCP Error rating cocktail: " + cocktailID)
@@ -148,8 +154,6 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	if bodyString == "" {
 		telemetry.Logger.Warn().Ctx(ctx).Msg("MCP Warning: empty response body when rating cocktail: " + cocktailID)
 	}
-
-	appsettings := config.GetAppSettings()
 
 	result := fmt.Sprintf(`Successfully submitted rating!
 

@@ -109,7 +109,7 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		defer cancel()
 	}
 
-	rs, callErr := handler.client.SearchV1CocktailsSearchGet(callCtx, &aisearch.SearchV1CocktailsSearchGetParams{
+	rs, callErr := handler.client.GetV1CocktailsSearch(callCtx, &aisearch.GetV1CocktailsSearchParams{
 		Freetext: &freeText,
 	}, aisearch.RequestEditor())
 
