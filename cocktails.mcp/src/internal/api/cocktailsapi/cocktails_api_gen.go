@@ -33,18 +33,6 @@ type CocktailImageModel struct {
 	Width int32 `json:"width"`
 }
 
-// CocktailImageModel2 defines model for CocktailImageModel2.
-type CocktailImageModel2 struct {
-	// Height The height of the image
-	Height int32 `json:"height"`
-
-	// Uri The uri of the image
-	Uri string `json:"uri"`
-
-	// Width The width of the image
-	Width int32 `json:"width"`
-}
-
 // CocktailIngredientFiltersRs defines model for CocktailIngredientFiltersRs.
 type CocktailIngredientFiltersRs struct {
 	// BeerWineChampagne The cocktail ingredient filters for searching against beers, wines and champagnes
@@ -87,6 +75,42 @@ type CocktailIngredientFiltersRs struct {
 	Vegetables []interface{} `json:"vegetables"`
 }
 
+// CocktailKeywordsModel The keywords associated with the cocktail recipe
+type CocktailKeywordsModel struct {
+	// KeywordsBaseSpirit Base spirit keywords
+	KeywordsBaseSpirit []string `json:"keywordsBaseSpirit"`
+
+	// KeywordsCocktailFamily Cocktail family keywords
+	KeywordsCocktailFamily []string `json:"keywordsCocktailFamily"`
+
+	// KeywordsFlavorProfile Flavor profile keywords
+	KeywordsFlavorProfile []string `json:"keywordsFlavorProfile"`
+
+	// KeywordsMood Mood keywords
+	KeywordsMood []string `json:"keywordsMood"`
+
+	// KeywordsOccasion Occasion keywords
+	KeywordsOccasion []string `json:"keywordsOccasion"`
+
+	// KeywordsSearchTerms Search terms keywords
+	KeywordsSearchTerms []string `json:"keywordsSearchTerms"`
+
+	// KeywordsSeason Season keywords
+	KeywordsSeason []string `json:"keywordsSeason"`
+
+	// KeywordsSpiritSubtype Spirit subtype keywords
+	KeywordsSpiritSubtype []string `json:"keywordsSpiritSubtype"`
+
+	// KeywordsStrength Strength keyword
+	KeywordsStrength string `json:"keywordsStrength"`
+
+	// KeywordsTechnique Technique keywords
+	KeywordsTechnique []string `json:"keywordsTechnique"`
+
+	// KeywordsTemperature Temperature keyword
+	KeywordsTemperature string `json:"keywordsTemperature"`
+}
+
 // CocktailModel The cocktail recipe model
 type CocktailModel struct {
 	// Content The complete descriptive cocktail recipe including ingredients, directions and historical information in markdown format
@@ -113,6 +137,9 @@ type CocktailModel struct {
 	// IsIba Whether or not the cocktail represented by this recipe is recognized by the International Bartenders Association
 	IsIba bool `json:"isIba"`
 
+	// Keywords The keywords associated with the cocktail recipe
+	Keywords CocktailKeywordsModel `json:"keywords"`
+
 	// MainImages A list of primary images for the cocktail recipe
 	MainImages []CocktailImageModel `json:"mainImages"`
 
@@ -129,7 +156,7 @@ type CocktailModel struct {
 	Rating CocktailRatingModel `json:"rating"`
 
 	// SearchTiles A list of secondary, smaller sized images for the cocktail recipe
-	SearchTiles []CocktailImageModel2 `json:"searchTiles"`
+	SearchTiles []interface{} `json:"searchTiles"`
 
 	// SearchableTitles A list of titles that are queried against when issuing cocktail recipe search queries
 	SearchableTitles []string `json:"searchableTitles"`

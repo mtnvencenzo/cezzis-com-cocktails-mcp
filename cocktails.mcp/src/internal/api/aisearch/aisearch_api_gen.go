@@ -126,10 +126,48 @@ type CocktailDescriptionChunk struct {
 
 // CocktailEmbeddingRq Request model for embedding cocktail description chunks into the vector database.
 type CocktailEmbeddingRq struct {
-	CocktailModel CocktailModelInput `json:"cocktail_model"`
+	// CocktailKeywords Keyword metadata for Qdrant payload filtering. Not returned in search responses.
+	CocktailKeywords *CocktailKeywords  `json:"cocktail_keywords,omitempty"`
+	CocktailModel    CocktailModelInput `json:"cocktail_model"`
 
 	// ContentChunks List of text chunks to be embedded
 	ContentChunks []CocktailDescriptionChunk `json:"content_chunks"`
+}
+
+// CocktailKeywords Keyword metadata for Qdrant payload filtering. Not returned in search responses.
+type CocktailKeywords struct {
+	// KeywordsBaseSpirit Base spirit keywords (e.g. gin, rum, bourbon)
+	KeywordsBaseSpirit *[]string `json:"keywordsBaseSpirit,omitempty"`
+
+	// KeywordsCocktailFamily Cocktail family keywords (e.g. sour, tiki, negroni)
+	KeywordsCocktailFamily *[]string `json:"keywordsCocktailFamily,omitempty"`
+
+	// KeywordsFlavorProfile Flavor profile keywords (e.g. bitter, sweet, citrus)
+	KeywordsFlavorProfile *[]string `json:"keywordsFlavorProfile,omitempty"`
+
+	// KeywordsMood Mood keywords (e.g. sophisticated, fun, refreshing)
+	KeywordsMood *[]string `json:"keywordsMood,omitempty"`
+
+	// KeywordsOccasion Occasion keywords (e.g. aperitif, party, brunch)
+	KeywordsOccasion *[]string `json:"keywordsOccasion,omitempty"`
+
+	// KeywordsSearchTerms Additional search terms
+	KeywordsSearchTerms *[]string `json:"keywordsSearchTerms,omitempty"`
+
+	// KeywordsSeason Season keywords (e.g. summer, winter, all-season)
+	KeywordsSeason *[]string `json:"keywordsSeason,omitempty"`
+
+	// KeywordsSpiritSubtype Spirit subtype keywords (e.g. aged-rum, islay-scotch)
+	KeywordsSpiritSubtype *[]string `json:"keywordsSpiritSubtype,omitempty"`
+
+	// KeywordsStrength Strength keyword (light, medium, strong)
+	KeywordsStrength *string `json:"keywordsStrength,omitempty"`
+
+	// KeywordsTechnique Technique keywords (e.g. shaken, stirred, built)
+	KeywordsTechnique *[]string `json:"keywordsTechnique,omitempty"`
+
+	// KeywordsTemperature Temperature keyword (cold, frozen, warm)
+	KeywordsTemperature *string `json:"keywordsTemperature,omitempty"`
 }
 
 // CocktailModelInput defines model for CocktailModel-Input.
@@ -202,11 +240,23 @@ type CocktailModelOutput struct {
 
 // CocktailSearchStatistics defines model for CocktailSearchStatistics.
 type CocktailSearchStatistics struct {
+	// AvgScore Average score across all hits
+	AvgScore *float32 `json:"avg_score,omitempty"`
+
+	// HitCount Number of matching chunks
+	HitCount *int `json:"hit_count,omitempty"`
+
 	// HitResults List of hit results with their scores
 	HitResults *[]CocktailVectorSearchResult `json:"hit_results,omitempty"`
 
-	// TotalScore Total score of the search result
+	// MaxScore Highest individual chunk score
+	MaxScore *float32 `json:"max_score,omitempty"`
+
+	// TotalScore Sum of all hit scores
 	TotalScore float32 `json:"total_score"`
+
+	// WeightedScore Weighted score combining avg with hit count boost
+	WeightedScore *float32 `json:"weighted_score,omitempty"`
 }
 
 // CocktailVectorSearchResult defines model for CocktailVectorSearchResult.
