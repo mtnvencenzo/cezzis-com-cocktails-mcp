@@ -33,6 +33,18 @@ type CocktailImageModel struct {
 	Width int32 `json:"width"`
 }
 
+// CocktailImageModel2 defines model for CocktailImageModel2.
+type CocktailImageModel2 struct {
+	// Height The height of the image
+	Height int32 `json:"height"`
+
+	// Uri The uri of the image
+	Uri string `json:"uri"`
+
+	// Width The width of the image
+	Width int32 `json:"width"`
+}
+
 // CocktailIngredientFiltersRs defines model for CocktailIngredientFiltersRs.
 type CocktailIngredientFiltersRs struct {
 	// BeerWineChampagne The cocktail ingredient filters for searching against beers, wines and champagnes
@@ -156,7 +168,7 @@ type CocktailModel struct {
 	Rating CocktailRatingModel `json:"rating"`
 
 	// SearchTiles A list of secondary, smaller sized images for the cocktail recipe
-	SearchTiles []interface{} `json:"searchTiles"`
+	SearchTiles []CocktailImageModel2 `json:"searchTiles"`
 
 	// SearchableTitles A list of titles that are queried against when issuing cocktail recipe search queries
 	SearchableTitles []string `json:"searchableTitles"`

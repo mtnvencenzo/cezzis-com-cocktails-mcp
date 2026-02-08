@@ -42,7 +42,7 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 	_, searchClient, mux, ctx, _ := testutils.Setup(t)
 
 	resultRs := aisearch.CocktailsSearchRs{
-		Items: []aisearch.CocktailModelOutput{
+		Items: []aisearch.CocktailSearchModel{
 			{
 				Id:               "pegu-club",
 				DescriptiveTitle: "This is the pegu club",

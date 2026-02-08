@@ -20,102 +20,99 @@ const (
 	Auth0Scopes = "auth0.Scopes"
 )
 
-// Defines values for CocktailDataIncludeModel.
+// Defines values for CocktailSearchDataIncludeModel.
 const (
-	DescriptiveTitle CocktailDataIncludeModel = "descriptiveTitle"
-	MainImages       CocktailDataIncludeModel = "mainImages"
-	SearchTiles      CocktailDataIncludeModel = "searchTiles"
+	DescriptiveTitle CocktailSearchDataIncludeModel = "descriptiveTitle"
+	MainImages       CocktailSearchDataIncludeModel = "mainImages"
+	SearchTiles      CocktailSearchDataIncludeModel = "searchTiles"
 )
 
-// Defines values for GlasswareTypeModel.
+// Defines values for CocktailSearchGlasswareTypeModel.
 const (
-	GlasswareTypeModelCocktailGlass     GlasswareTypeModel = "cocktailGlass"
-	GlasswareTypeModelCollins           GlasswareTypeModel = "collins"
-	GlasswareTypeModelCopperMug         GlasswareTypeModel = "copperMug"
-	GlasswareTypeModelCoupe             GlasswareTypeModel = "coupe"
-	GlasswareTypeModelDoubleRocks       GlasswareTypeModel = "doubleRocks"
-	GlasswareTypeModelFizz              GlasswareTypeModel = "fizz"
-	GlasswareTypeModelFlute             GlasswareTypeModel = "flute"
-	GlasswareTypeModelHighball          GlasswareTypeModel = "highball"
-	GlasswareTypeModelHollowedPineapple GlasswareTypeModel = "hollowedPineapple"
-	GlasswareTypeModelHurricane         GlasswareTypeModel = "hurricane"
-	GlasswareTypeModelJulepTin          GlasswareTypeModel = "julepTin"
-	GlasswareTypeModelLowball           GlasswareTypeModel = "lowball"
-	GlasswareTypeModelNone              GlasswareTypeModel = "none"
-	GlasswareTypeModelPintGlass         GlasswareTypeModel = "pintGlass"
-	GlasswareTypeModelRocks             GlasswareTypeModel = "rocks"
-	GlasswareTypeModelScorpionBowl      GlasswareTypeModel = "scorpionBowl"
-	GlasswareTypeModelShotGlass         GlasswareTypeModel = "shotGlass"
-	GlasswareTypeModelSnifter           GlasswareTypeModel = "snifter"
-	GlasswareTypeModelTikiMug           GlasswareTypeModel = "tikiMug"
-	GlasswareTypeModelWineGlass         GlasswareTypeModel = "wineGlass"
+	CocktailSearchGlasswareTypeModelCocktailGlass     CocktailSearchGlasswareTypeModel = "cocktailGlass"
+	CocktailSearchGlasswareTypeModelCollins           CocktailSearchGlasswareTypeModel = "collins"
+	CocktailSearchGlasswareTypeModelCopperMug         CocktailSearchGlasswareTypeModel = "copperMug"
+	CocktailSearchGlasswareTypeModelCoupe             CocktailSearchGlasswareTypeModel = "coupe"
+	CocktailSearchGlasswareTypeModelDoubleRocks       CocktailSearchGlasswareTypeModel = "doubleRocks"
+	CocktailSearchGlasswareTypeModelFizz              CocktailSearchGlasswareTypeModel = "fizz"
+	CocktailSearchGlasswareTypeModelFlute             CocktailSearchGlasswareTypeModel = "flute"
+	CocktailSearchGlasswareTypeModelHighball          CocktailSearchGlasswareTypeModel = "highball"
+	CocktailSearchGlasswareTypeModelHollowedPineapple CocktailSearchGlasswareTypeModel = "hollowedPineapple"
+	CocktailSearchGlasswareTypeModelHurricane         CocktailSearchGlasswareTypeModel = "hurricane"
+	CocktailSearchGlasswareTypeModelJulepTin          CocktailSearchGlasswareTypeModel = "julepTin"
+	CocktailSearchGlasswareTypeModelLowball           CocktailSearchGlasswareTypeModel = "lowball"
+	CocktailSearchGlasswareTypeModelNone              CocktailSearchGlasswareTypeModel = "none"
+	CocktailSearchGlasswareTypeModelPintGlass         CocktailSearchGlasswareTypeModel = "pintGlass"
+	CocktailSearchGlasswareTypeModelRocks             CocktailSearchGlasswareTypeModel = "rocks"
+	CocktailSearchGlasswareTypeModelScorpionBowl      CocktailSearchGlasswareTypeModel = "scorpionBowl"
+	CocktailSearchGlasswareTypeModelShotGlass         CocktailSearchGlasswareTypeModel = "shotGlass"
+	CocktailSearchGlasswareTypeModelSnifter           CocktailSearchGlasswareTypeModel = "snifter"
+	CocktailSearchGlasswareTypeModelTikiMug           CocktailSearchGlasswareTypeModel = "tikiMug"
+	CocktailSearchGlasswareTypeModelWineGlass         CocktailSearchGlasswareTypeModel = "wineGlass"
 )
 
-// Defines values for IngredientApplicationTypeModel.
+// Defines values for CocktailSearchIngredientApplicationTypeModel.
 const (
-	Additional  IngredientApplicationTypeModel = "additional"
-	Base        IngredientApplicationTypeModel = "base"
-	Garnishment IngredientApplicationTypeModel = "garnishment"
-	Muddle      IngredientApplicationTypeModel = "muddle"
+	Additional  CocktailSearchIngredientApplicationTypeModel = "additional"
+	Base        CocktailSearchIngredientApplicationTypeModel = "base"
+	Garnishment CocktailSearchIngredientApplicationTypeModel = "garnishment"
+	Muddle      CocktailSearchIngredientApplicationTypeModel = "muddle"
 )
 
-// Defines values for IngredientRequirementTypeModel.
+// Defines values for CocktailSearchIngredientRequirementTypeModel.
 const (
-	IngredientRequirementTypeModelNone     IngredientRequirementTypeModel = "none"
-	IngredientRequirementTypeModelOptional IngredientRequirementTypeModel = "optional"
-	IngredientRequirementTypeModelRequired IngredientRequirementTypeModel = "required"
+	CocktailSearchIngredientRequirementTypeModelNone     CocktailSearchIngredientRequirementTypeModel = "none"
+	CocktailSearchIngredientRequirementTypeModelOptional CocktailSearchIngredientRequirementTypeModel = "optional"
+	CocktailSearchIngredientRequirementTypeModelRequired CocktailSearchIngredientRequirementTypeModel = "required"
 )
 
-// Defines values for IngredientTypeModel.
+// Defines values for CocktailSearchIngredientTypeModel.
 const (
-	Beer      IngredientTypeModel = "beer"
-	Bitters   IngredientTypeModel = "bitters"
-	Champagne IngredientTypeModel = "champagne"
-	Dilution  IngredientTypeModel = "dilution"
-	Flowers   IngredientTypeModel = "flowers"
-	Fruit     IngredientTypeModel = "fruit"
-	Herb      IngredientTypeModel = "herb"
-	Juice     IngredientTypeModel = "juice"
-	Liqueur   IngredientTypeModel = "liqueur"
-	Protein   IngredientTypeModel = "protein"
-	Sauce     IngredientTypeModel = "sauce"
-	Spirit    IngredientTypeModel = "spirit"
-	Syrup     IngredientTypeModel = "syrup"
-	Vegetable IngredientTypeModel = "vegetable"
-	Wine      IngredientTypeModel = "wine"
+	Beer      CocktailSearchIngredientTypeModel = "beer"
+	Bitters   CocktailSearchIngredientTypeModel = "bitters"
+	Champagne CocktailSearchIngredientTypeModel = "champagne"
+	Dilution  CocktailSearchIngredientTypeModel = "dilution"
+	Flowers   CocktailSearchIngredientTypeModel = "flowers"
+	Fruit     CocktailSearchIngredientTypeModel = "fruit"
+	Herb      CocktailSearchIngredientTypeModel = "herb"
+	Juice     CocktailSearchIngredientTypeModel = "juice"
+	Liqueur   CocktailSearchIngredientTypeModel = "liqueur"
+	Protein   CocktailSearchIngredientTypeModel = "protein"
+	Sauce     CocktailSearchIngredientTypeModel = "sauce"
+	Spirit    CocktailSearchIngredientTypeModel = "spirit"
+	Syrup     CocktailSearchIngredientTypeModel = "syrup"
+	Vegetable CocktailSearchIngredientTypeModel = "vegetable"
+	Wine      CocktailSearchIngredientTypeModel = "wine"
 )
 
-// Defines values for PreparationTypeModel.
+// Defines values for CocktailSearchPreparationTypeModel.
 const (
-	PreparationTypeModelChilled         PreparationTypeModel = "chilled"
-	PreparationTypeModelFreshPressed    PreparationTypeModel = "freshPressed"
-	PreparationTypeModelFreshlyGrated   PreparationTypeModel = "freshlyGrated"
-	PreparationTypeModelFreshlySqueezed PreparationTypeModel = "freshlySqueezed"
-	PreparationTypeModelNone            PreparationTypeModel = "none"
-	PreparationTypeModelPeeledAndJuiced PreparationTypeModel = "peeledAndJuiced"
-	PreparationTypeModelQuartered       PreparationTypeModel = "quartered"
+	CocktailSearchPreparationTypeModelChilled         CocktailSearchPreparationTypeModel = "chilled"
+	CocktailSearchPreparationTypeModelFreshPressed    CocktailSearchPreparationTypeModel = "freshPressed"
+	CocktailSearchPreparationTypeModelFreshlyGrated   CocktailSearchPreparationTypeModel = "freshlyGrated"
+	CocktailSearchPreparationTypeModelFreshlySqueezed CocktailSearchPreparationTypeModel = "freshlySqueezed"
+	CocktailSearchPreparationTypeModelNone            CocktailSearchPreparationTypeModel = "none"
+	CocktailSearchPreparationTypeModelPeeledAndJuiced CocktailSearchPreparationTypeModel = "peeledAndJuiced"
+	CocktailSearchPreparationTypeModelQuartered       CocktailSearchPreparationTypeModel = "quartered"
 )
 
-// Defines values for UofMTypeModel.
+// Defines values for CocktailSearchUofMTypeModel.
 const (
-	UofMTypeModelBarspoon   UofMTypeModel = "barspoon"
-	UofMTypeModelCups       UofMTypeModel = "cups"
-	UofMTypeModelDashes     UofMTypeModel = "dashes"
-	UofMTypeModelDiscretion UofMTypeModel = "discretion"
-	UofMTypeModelItem       UofMTypeModel = "item"
-	UofMTypeModelNone       UofMTypeModel = "none"
-	UofMTypeModelOunces     UofMTypeModel = "ounces"
-	UofMTypeModelSplash     UofMTypeModel = "splash"
-	UofMTypeModelTablespoon UofMTypeModel = "tablespoon"
-	UofMTypeModelTeaspoon   UofMTypeModel = "teaspoon"
-	UofMTypeModelToTaste    UofMTypeModel = "toTaste"
-	UofMTypeModelTopoff     UofMTypeModel = "topoff"
+	CocktailSearchUofMTypeModelBarspoon   CocktailSearchUofMTypeModel = "barspoon"
+	CocktailSearchUofMTypeModelCups       CocktailSearchUofMTypeModel = "cups"
+	CocktailSearchUofMTypeModelDashes     CocktailSearchUofMTypeModel = "dashes"
+	CocktailSearchUofMTypeModelDiscretion CocktailSearchUofMTypeModel = "discretion"
+	CocktailSearchUofMTypeModelItem       CocktailSearchUofMTypeModel = "item"
+	CocktailSearchUofMTypeModelNone       CocktailSearchUofMTypeModel = "none"
+	CocktailSearchUofMTypeModelOunces     CocktailSearchUofMTypeModel = "ounces"
+	CocktailSearchUofMTypeModelSplash     CocktailSearchUofMTypeModel = "splash"
+	CocktailSearchUofMTypeModelTablespoon CocktailSearchUofMTypeModel = "tablespoon"
+	CocktailSearchUofMTypeModelTeaspoon   CocktailSearchUofMTypeModel = "teaspoon"
+	CocktailSearchUofMTypeModelToTaste    CocktailSearchUofMTypeModel = "toTaste"
+	CocktailSearchUofMTypeModelTopoff     CocktailSearchUofMTypeModel = "topoff"
 )
 
-// CocktailDataIncludeModel defines model for CocktailDataIncludeModel.
-type CocktailDataIncludeModel string
-
-// CocktailDescriptionChunk defines model for CocktailDescriptionChunk.
+// CocktailDescriptionChunk Model representing a chunk of cocktail description text, categorized for embedding and vector search.
 type CocktailDescriptionChunk struct {
 	// Category Category of the description chunk
 	Category string `json:"category"`
@@ -124,18 +121,98 @@ type CocktailDescriptionChunk struct {
 	Content string `json:"content"`
 }
 
-// CocktailEmbeddingRq Request model for embedding cocktail description chunks into the vector database.
-type CocktailEmbeddingRq struct {
-	// CocktailKeywords Keyword metadata for Qdrant payload filtering. Not returned in search responses.
-	CocktailKeywords *CocktailKeywords  `json:"cocktail_keywords,omitempty"`
-	CocktailModel    CocktailModelInput `json:"cocktail_model"`
+// CocktailEmbeddingModel Model representing the cocktail embedding data structure used for vector search and storage.
+type CocktailEmbeddingModel struct {
+	// DescriptiveTitle Descriptive title of the cocktail
+	DescriptiveTitle string `json:"descriptiveTitle"`
 
-	// ContentChunks List of text chunks to be embedded
-	ContentChunks []CocktailDescriptionChunk `json:"content_chunks"`
+	// Glassware List of glassware types used for the cocktail
+	Glassware []CocktailSearchGlasswareTypeModel `json:"glassware"`
+
+	// Id Unique identifier for the cocktail
+	Id string `json:"id"`
+
+	// Ingredients List of ingredients in the cocktail
+	Ingredients []CocktailSearchIngredientModel `json:"ingredients"`
+
+	// IsIba Indicates if the cocktail is an IBA official cocktail
+	IsIba bool `json:"isIba"`
+
+	// PrepTimeMinutes Preparation time in minutes
+	PrepTimeMinutes int `json:"prepTimeMinutes"`
+
+	// Rating Rating of the cocktail
+	Rating float32 `json:"rating"`
+
+	// SearchTiles Search tiles associated with the cocktail
+	SearchTiles []string `json:"searchTiles"`
+
+	// Serves Number of servings
+	Serves int `json:"serves"`
+
+	// Title Title of the cocktail
+	Title string `json:"title"`
 }
 
-// CocktailKeywords Keyword metadata for Qdrant payload filtering. Not returned in search responses.
-type CocktailKeywords struct {
+// CocktailEmbeddingRq Request model for embedding cocktail description chunks into the vector database.
+type CocktailEmbeddingRq struct {
+	// CocktailEmbeddingModel Model representing the cocktail embedding data structure used for vector search and storage.
+	CocktailEmbeddingModel CocktailEmbeddingModel `json:"cocktailEmbeddingModel"`
+
+	// CocktailKeywords Keyword metadata for Qdrant payload filtering. Not returned in search responses.
+	CocktailKeywords *CocktailSearchKeywords `json:"cocktailKeywords,omitempty"`
+
+	// ContentChunks List of text chunks to be embedded
+	ContentChunks []CocktailDescriptionChunk `json:"contentChunks"`
+}
+
+// CocktailSearchDataIncludeModel The types of cocktail data to include in the search results.
+type CocktailSearchDataIncludeModel string
+
+// CocktailSearchGlasswareTypeModel The types of glassware used for serving cocktails.
+type CocktailSearchGlasswareTypeModel string
+
+// CocktailSearchIngredientApplicationTypeModel The application types for cocktail ingredients.
+type CocktailSearchIngredientApplicationTypeModel string
+
+// CocktailSearchIngredientModel Model representing an ingredient used in a cocktail, including its name, unit of measure, requirement type, preparation, and suggestions.
+type CocktailSearchIngredientModel struct {
+	// Applications List of ingredient applications
+	Applications []CocktailSearchIngredientApplicationTypeModel `json:"applications"`
+
+	// Display Display string for the ingredient
+	Display string `json:"display"`
+
+	// Name Name of the ingredient
+	Name string `json:"name"`
+
+	// Preparation The preparation types for cocktail ingredients.
+	Preparation CocktailSearchPreparationTypeModel `json:"preparation"`
+
+	// Requirement The requirement types for cocktail ingredients.
+	Requirement CocktailSearchIngredientRequirementTypeModel `json:"requirement"`
+
+	// Suggestions Suggestions for the ingredient
+	Suggestions string `json:"suggestions"`
+
+	// Types List of ingredient types
+	Types []CocktailSearchIngredientTypeModel `json:"types"`
+
+	// Units Quantity of the ingredient
+	Units float32 `json:"units"`
+
+	// UoM The unit of measurment types for cocktail ingredients.
+	UoM CocktailSearchUofMTypeModel `json:"uoM"`
+}
+
+// CocktailSearchIngredientRequirementTypeModel The requirement types for cocktail ingredients.
+type CocktailSearchIngredientRequirementTypeModel string
+
+// CocktailSearchIngredientTypeModel The types of ingredients used in cocktails.
+type CocktailSearchIngredientTypeModel string
+
+// CocktailSearchKeywords Keyword metadata for Qdrant payload filtering. Not returned in search responses.
+type CocktailSearchKeywords struct {
 	// KeywordsBaseSpirit Base spirit keywords (e.g. gin, rum, bourbon)
 	KeywordsBaseSpirit *[]string `json:"keywordsBaseSpirit,omitempty"`
 
@@ -170,19 +247,19 @@ type CocktailKeywords struct {
 	KeywordsTemperature *string `json:"keywordsTemperature,omitempty"`
 }
 
-// CocktailModelInput defines model for CocktailModel-Input.
-type CocktailModelInput struct {
+// CocktailSearchModel Model representing the cocktail data structure used for vector search and storage.
+type CocktailSearchModel struct {
 	// DescriptiveTitle Descriptive title of the cocktail
 	DescriptiveTitle string `json:"descriptiveTitle"`
 
 	// Glassware List of glassware types used for the cocktail
-	Glassware []GlasswareTypeModel `json:"glassware"`
+	Glassware []CocktailSearchGlasswareTypeModel `json:"glassware"`
 
 	// Id Unique identifier for the cocktail
 	Id string `json:"id"`
 
 	// Ingredients List of ingredients in the cocktail
-	Ingredients []IngredientModel `json:"ingredients"`
+	Ingredients []CocktailSearchIngredientModel `json:"ingredients"`
 
 	// IsIba Indicates if the cocktail is an IBA official cocktail
 	IsIba bool `json:"isIba"`
@@ -193,9 +270,11 @@ type CocktailModelInput struct {
 	// Rating Rating of the cocktail
 	Rating float32 `json:"rating"`
 
+	// SearchStatistics Model representing the search statistics for a cocktail search operation, including score metrics and hit details.
+	SearchStatistics *CocktailSearchStatistics `json:"searchStatistics,omitempty"`
+
 	// SearchTiles Search tiles associated with the cocktail
-	SearchTiles      []string                  `json:"searchTiles"`
-	SearchStatistics *CocktailSearchStatistics `json:"search_statistics,omitempty"`
+	SearchTiles []string `json:"searchTiles"`
 
 	// Serves Number of servings
 	Serves int `json:"serves"`
@@ -204,75 +283,44 @@ type CocktailModelInput struct {
 	Title string `json:"title"`
 }
 
-// CocktailModelOutput defines model for CocktailModel-Output.
-type CocktailModelOutput struct {
-	// DescriptiveTitle Descriptive title of the cocktail
-	DescriptiveTitle string `json:"descriptiveTitle"`
+// CocktailSearchPreparationTypeModel The preparation types for cocktail ingredients.
+type CocktailSearchPreparationTypeModel string
 
-	// Glassware List of glassware types used for the cocktail
-	Glassware []GlasswareTypeModel `json:"glassware"`
-
-	// Id Unique identifier for the cocktail
-	Id string `json:"id"`
-
-	// Ingredients List of ingredients in the cocktail
-	Ingredients []IngredientModel `json:"ingredients"`
-
-	// IsIba Indicates if the cocktail is an IBA official cocktail
-	IsIba bool `json:"isIba"`
-
-	// PrepTimeMinutes Preparation time in minutes
-	PrepTimeMinutes int `json:"prepTimeMinutes"`
-
-	// Rating Rating of the cocktail
-	Rating float32 `json:"rating"`
-
-	// SearchTiles Search tiles associated with the cocktail
-	SearchTiles      []string                  `json:"searchTiles"`
-	SearchStatistics *CocktailSearchStatistics `json:"search_statistics,omitempty"`
-
-	// Serves Number of servings
-	Serves int `json:"serves"`
-
-	// Title Title of the cocktail
-	Title string `json:"title"`
-}
-
-// CocktailSearchStatistics defines model for CocktailSearchStatistics.
+// CocktailSearchStatistics Model representing the search statistics for a cocktail search operation, including score metrics and hit details.
 type CocktailSearchStatistics struct {
 	// AvgScore Average score across all hits
-	AvgScore *float32 `json:"avg_score,omitempty"`
+	AvgScore *float32 `json:"avgScore,omitempty"`
 
 	// HitCount Number of matching chunks
-	HitCount *int `json:"hit_count,omitempty"`
+	HitCount *int `json:"hitCount,omitempty"`
 
 	// HitResults List of hit results with their scores
-	HitResults *[]CocktailVectorSearchResult `json:"hit_results,omitempty"`
+	HitResults *[]CocktailVectorSearchResult `json:"hitResults,omitempty"`
 
 	// MaxScore Highest individual chunk score
-	MaxScore *float32 `json:"max_score,omitempty"`
+	MaxScore *float32 `json:"maxScore,omitempty"`
 
 	// TotalScore Sum of all hit scores
-	TotalScore float32 `json:"total_score"`
+	TotalScore float32 `json:"totalScore"`
 
 	// WeightedScore Weighted score combining avg with hit count boost
-	WeightedScore *float32 `json:"weighted_score,omitempty"`
+	WeightedScore *float32 `json:"weightedScore,omitempty"`
 }
 
-// CocktailVectorSearchResult defines model for CocktailVectorSearchResult.
+// CocktailSearchUofMTypeModel The unit of measurment types for cocktail ingredients.
+type CocktailSearchUofMTypeModel string
+
+// CocktailVectorSearchResult Model representing an individual search result from a cocktail vector search, including the score and associated metadata.
 type CocktailVectorSearchResult struct {
 	// Score Score of the search result
 	Score float32 `json:"score"`
 }
 
-// CocktailsSearchRs defines model for CocktailsSearchRs.
+// CocktailsSearchRs Model representing the response structure for a cocktail search operation, containing a list of matching cocktails.
 type CocktailsSearchRs struct {
 	// Items List of cocktails returned from the search
-	Items []CocktailModelOutput `json:"items"`
+	Items []CocktailSearchModel `json:"items"`
 }
-
-// GlasswareTypeModel defines model for GlasswareTypeModel.
-type GlasswareTypeModel string
 
 // HealthCheckRs defines model for HealthCheckRs.
 type HealthCheckRs struct {
@@ -281,44 +329,6 @@ type HealthCheckRs struct {
 	Status  string                  `json:"status"`
 	Version *string                 `json:"version"`
 }
-
-// IngredientApplicationTypeModel defines model for IngredientApplicationTypeModel.
-type IngredientApplicationTypeModel string
-
-// IngredientModel defines model for IngredientModel.
-type IngredientModel struct {
-	// Applications List of ingredient applications
-	Applications []IngredientApplicationTypeModel `json:"applications"`
-
-	// Display Display string for the ingredient
-	Display string `json:"display"`
-
-	// Name Name of the ingredient
-	Name        string                         `json:"name"`
-	Preparation PreparationTypeModel           `json:"preparation"`
-	Requirement IngredientRequirementTypeModel `json:"requirement"`
-
-	// Suggestions Suggestions for the ingredient
-	Suggestions string `json:"suggestions"`
-
-	// Types List of ingredient types
-	Types []IngredientTypeModel `json:"types"`
-
-	// Units Quantity of the ingredient
-	Units float32 `json:"units"`
-
-	// UoM The unit of measurment types for cocktail ingredients.
-	UoM UofMTypeModel `json:"uoM"`
-}
-
-// IngredientRequirementTypeModel defines model for IngredientRequirementTypeModel.
-type IngredientRequirementTypeModel string
-
-// IngredientTypeModel defines model for IngredientTypeModel.
-type IngredientTypeModel string
-
-// PreparationTypeModel defines model for PreparationTypeModel.
-type PreparationTypeModel string
 
 // ProblemDetails RFC 7807 compliant problem details model.
 //
@@ -347,9 +357,6 @@ type ProblemDetails struct {
 	Type *string `json:"type,omitempty"`
 }
 
-// UofMTypeModel The unit of measurment types for cocktail ingredients.
-type UofMTypeModel string
-
 // PutV1CocktailsEmbeddingsParams defines parameters for PutV1CocktailsEmbeddings.
 type PutV1CocktailsEmbeddingsParams struct {
 	// XKey The API gateway subscription key
@@ -374,7 +381,7 @@ type GetV1CocktailsSearchParams struct {
 	MEx *bool `form:"m_ex,omitempty" json:"m_ex,omitempty"`
 
 	// Inc The list of extension objects to include for each cocktail recipe
-	Inc *[]CocktailDataIncludeModel `form:"inc,omitempty" json:"inc,omitempty"`
+	Inc *[]CocktailSearchDataIncludeModel `form:"inc,omitempty" json:"inc,omitempty"`
 
 	// Fi An optional list of filters to use when quering the cocktail recipes
 	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
