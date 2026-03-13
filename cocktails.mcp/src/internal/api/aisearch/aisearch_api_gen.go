@@ -300,6 +300,9 @@ type CocktailSearchStatistics struct {
 	// MaxScore Highest individual chunk score
 	MaxScore *float32 `json:"maxScore,omitempty"`
 
+	// RerankerScore Cross-encoder reranker relevance score
+	RerankerScore *float32 `json:"rerankerScore,omitempty"`
+
 	// TotalScore Sum of all hit scores
 	TotalScore float32 `json:"totalScore"`
 

@@ -2,10 +2,9 @@
         "version": "0.2.0",
         "configurations": [
             {
-                "name": "Cocktails MCP (Dapr)",
+                "name": "k8s Debug: Cocktails MCP",
                 "type": "go",
                 "request": "launch",
-                // "preLaunchTask": "dapr-run",
                 "mode": "debug",
                 "program": "${workspaceFolder}/cocktails.mcp/src/cmd",
                 "args": [],

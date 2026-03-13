@@ -27,7 +27,7 @@ This server works alongside several sibling repositories:
 - [**shared-infrastructure**](https://github.com/mtnvencenzo/shared-infrastructure) – Global Terraform 
 modules that underpin multiple Cezzis.com workloads
 
-![Complete Diagram](./assets/cezzis-com-mcp-interactions.drawio.svg)
+![Complete Diagram](./.assets/cezzis-com-mcp-interactions.drawio.svg)
 
 
 ## ☁️ Cloud-Native Footprint (Azure)
