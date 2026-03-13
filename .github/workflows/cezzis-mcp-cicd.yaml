@@ -88,7 +88,7 @@ jobs:
       pull-requests: write
     with:
       lint_only: true # disabled for now until re-deployed to an environment
-      working_directory: ./iac/terraform
+      working_directory: .iac/terraform
       environment_name: prd
       allow_deploy: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
       terraform_version: 1.11.4
