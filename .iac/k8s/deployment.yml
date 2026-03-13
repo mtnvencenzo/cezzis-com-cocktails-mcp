@@ -28,7 +28,7 @@ spec:
         - name: cezzis-com-cocktails-mcp
           image: acrveceusgloshared001.azurecr.io/cocktailsmcp
           ports:
-            - containerPort: 8010
+            - containerPort: 7999
               name: http
               protocol: TCP
           envFrom:
@@ -38,16 +38,16 @@ spec:
                 name: cezzis-com-cocktails-mcp-shared-secrets
           readinessProbe:
             httpGet:
-              path: /v1/health
-              port: 8010
+              path: /healthz
+              port: 7999
             initialDelaySeconds: 30
             periodSeconds: 300
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /v1/health
-              port: 8010
+              path: /healthz
+              port: 7999
             initialDelaySeconds: 40
             periodSeconds: 300
             timeoutSeconds: 5
