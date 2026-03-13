@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for CocktailFavoritingActionModel.
@@ -152,7 +151,7 @@ type AccountOwnedProfileRs struct {
 // BodyPostV1AccountsOwnedProfileImage defines model for Body_postV1AccountsOwnedProfileImage.
 type BodyPostV1AccountsOwnedProfileImage struct {
 	// File The profile image file to upload
-	File openapi_types.File `json:"file"`
+	File string `json:"file"`
 }
 
 // ChangeAccountOwnedEmailRq The account owned profile upload email request information.

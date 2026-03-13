@@ -1,46 +1,4 @@
 {
     "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "dapr-run",
-            "type": "shell",
-            "command": "dapr",
-            "args": [
-                "run",
-                "--app-id",
-                "cocktails-mcp",
-                "--resources-path",
-                "${workspaceFolder}/.dapr/loc/",
-                "--app-port",
-                "8012",
-                "--app-protocol",
-                "http",
-                "--dapr-http-port",
-                "5296",
-                "--dapr-grpc-port",
-                "50004",
-                "--metrics-port",
-                "9190"
-            ],
-            "isBackground": true,
-            "dependsOn": "build",
-            "problemMatcher": {
-                "pattern": {
-                    "regexp": ".",
-                    "file": 1,
-                    "location": 2,
-                    "message": 3
-                },
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": "Starting Dapr",
-                    "endsPattern": "You're up and running!"
-                }
-            },
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
-        }
-    ]
+    "tasks": []
 } 

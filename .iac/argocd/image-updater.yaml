@@ -1,0 +1,22 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: cezzis-com-cocktails-mcp-updater
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "cezzis-com-cocktails-mcp"
+      commonUpdateSettings:
+        updateStrategy: "semver"
+        forceUpdate: true
+      images:
+        - alias: "cocktailsmcp"
+          imageName: "acrveceusgloshared001.azurecr.io/cocktailsmcp:0.x"
+          manifestTargets:
+            kustomize:
+              name: "acrveceusgloshared001.azurecr.io/cocktailsmcp"
+  writeBackConfig:
+    method: "git:secret:argocd/git-creds"
+    gitConfig:
+      branch: main
+      writeBackTarget: kustomization

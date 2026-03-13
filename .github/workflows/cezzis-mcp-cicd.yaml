@@ -3,10 +3,19 @@ name: cicd-cezzis-mcp
 on:
   pull_request:
     branches: [main]
-    paths: [cocktails.mcp/**, terraform/**, .github/workflows/cezzis-mcp-cicd.yaml]
+    paths-ignore:
+      - '.iac/**'
+      - '.github/**'
+      - '.vscode/**'
+      - '.assets/**'
+
   push:
     branches: [main]
-    paths: [cocktails.mcp/**, terraform/**, .github/workflows/cezzis-mcp-cicd.yaml]
+    paths-ignore:
+      - '.iac/**'
+      - '.github/**'
+      - '.vscode/**'
+      - '.assets/**'
 
   workflow_dispatch:
 
@@ -79,7 +88,7 @@ jobs:
       pull-requests: write
     with:
       lint_only: true # disabled for now until re-deployed to an environment
-      working_directory: terraform
+      working_directory: ./iac/terraform
       environment_name: prd
       allow_deploy: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
       terraform_version: 1.11.4
