@@ -10,6 +10,9 @@
         },
         "prod-apim": {
           "host": "https://api.cezzis.com/prd/cocktails/mcp/v1"
+        },
+        "prod-k8s": {
+          "host": "http://cezzis-cocktails-mcp.127.0.0.1.sslip.io"
         }
     },
     "explorer.fileNesting.enabled": true,
