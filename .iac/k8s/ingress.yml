@@ -8,6 +8,7 @@ metadata:
   annotations:
     # k3s uses Traefik by default
     kubernetes.io/ingress.class: traefik
+    argocd.argoproj.io/sync-wave: "500"
 spec:
   rules:
     - host: cezzis-cocktails-mcp.127.0.0.1.sslip.io
