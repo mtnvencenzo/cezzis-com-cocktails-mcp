@@ -22,7 +22,15 @@ spec:
         app.kubernetes.io/part-of: cezzis
         app.kubernetes.io/managed-by: argocd
       annotations:
-        dapr.io/enabled: "false"
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "cezzis-com-cocktails-mcp"
+        dapr.io/app-port: "7999"
+        dapr.io/app-protocol: "http"
+        dapr.io/log-level: "info"
+        dapr.io/config: "cocktails-mcp-dapr-config"
+        dapr.io/api-token-secret: "cezzis-shared-daprio-dapr-api-token"
+        dapr.io/app-token-secret: "cezzis-shared-daprio-app-api-token"
+        dapr.io/enable-native-sidecar: "true"
     spec:
       imagePullSecrets:
         - name: acr-pull-secret
@@ -38,20 +46,28 @@ spec:
                 name: cezzis-com-cocktails-mcp-config
             - secretRef:
                 name: cezzis-com-cocktails-mcp-shared-secrets
+            - secretRef:
+                name: cezzis-com-cocktails-mcp-secrets
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 7999
+            periodSeconds: 3
+            failureThreshold: 40
           readinessProbe:
             httpGet:
               path: /healthz
               port: 7999
-            initialDelaySeconds: 30
-            periodSeconds: 300
+            initialDelaySeconds: 5
+            periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /healthz
               port: 7999
-            initialDelaySeconds: 40
-            periodSeconds: 300
+            initialDelaySeconds: 10
+            periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
           resources:

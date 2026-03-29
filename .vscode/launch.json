@@ -6,11 +6,29 @@
                 "type": "go",
                 "request": "launch",
                 "mode": "debug",
+                "preLaunchTask": "dapr-run-k8s",
                 "program": "${workspaceFolder}/cocktails.mcp/src/cmd",
                 "args": [],
                 "env": {
                     "ENV": "loc",
-                    "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"
+                    "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src",
+                    "DAPR_HTTP_PORT": "5595",
+                    "DAPR_GRPC_PORT": "53003"
+                }
+            },
+            {
+                "name": "Docker Debug: Cocktails MCP",
+                "type": "go",
+                "request": "launch",
+                "mode": "debug",
+                "preLaunchTask": "dapr-run-docker",
+                "program": "${workspaceFolder}/cocktails.mcp/src/cmd",
+                "args": [],
+                "env": {
+                    "ENV": "loc",
+                    "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src",
+                    "DAPR_HTTP_PORT": "5595",
+                    "DAPR_GRPC_PORT": "53003"
                 }
             }
         ]

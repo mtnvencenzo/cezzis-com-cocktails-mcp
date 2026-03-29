@@ -6,6 +6,7 @@ resources:
   - deployment.yml
   - service.yml
   - ingress.yml
+  - ../dapr/k8s-prd
 images:
   - name: acrveceusgloshared001.azurecr.io/cocktailsmcp
     newName: acrveceusgloshared001.azurecr.io/cocktailsmcp

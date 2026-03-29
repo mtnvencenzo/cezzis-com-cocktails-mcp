@@ -15,11 +15,15 @@
 package mcpserver
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mark3labs/mcp-go/server"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
+	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/db"
 	"cezzis.com/cezzis-mcp-server/internal/middleware"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
@@ -33,6 +37,8 @@ type MCPHTTPServer struct {
 	version     string
 	tlsCertFile string
 	tlsKeyFile  string
+	pool        *pgxpool.Pool
+	settings    *config.AppSettings
 }
 
 // NewMCPHTTPServer creates a new MCPHTTPServer instance.
@@ -44,13 +50,15 @@ type MCPHTTPServer struct {
 //   - tlsKeyFile: Path to TLS private key file (optional, empty string for HTTP)
 //
 // Returns an MCPHTTPServer instance configured with the provided parameters.
-func NewMCPHTTPServer(addr string, mcpServer *server.MCPServer, version string, tlsCertFile string, tlsKeyFile string) *MCPHTTPServer {
+func NewMCPHTTPServer(addr string, mcpServer *server.MCPServer, version string, tlsCertFile string, tlsKeyFile string, pool *pgxpool.Pool, settings *config.AppSettings) *MCPHTTPServer {
 	return &MCPHTTPServer{
 		addr:        addr,
 		mcpServer:   mcpServer,
 		version:     version,
 		tlsCertFile: tlsCertFile,
 		tlsKeyFile:  tlsKeyFile,
+		pool:        pool,
+		settings:    settings,
 	}
 }
 
@@ -68,6 +76,9 @@ func (s *MCPHTTPServer) Start() error {
 	// Register health and version endpoints
 	http.HandleFunc("/healthz", s.healthCheckHandler())
 	http.HandleFunc("/version", s.versionHandler())
+
+	// Register Dapr job endpoint for application initialization
+	http.HandleFunc("/job/initialize-app", s.initializeAppHandler())
 
 	// Use the official streamable HTTP server for MCP
 	streamableHTTP := server.NewStreamableHTTPServer(s.mcpServer)
@@ -118,5 +129,51 @@ func (s *MCPHTTPServer) versionHandler() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"version": "` + s.version + `"}`))
+	}
+}
+
+func (s *MCPHTTPServer) initializeAppHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Validate Dapr app token if configured
+		if s.settings.AppAPIToken != "" {
+			token := r.Header.Get("dapr-api-token")
+			if token != s.settings.AppAPIToken {
+				telemetry.Logger.Warn().Msg("Unauthorized init job request: invalid dapr-api-token")
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+		}
+
+		telemetry.Logger.Info().Msg("Received initialize-app job request")
+
+		ctx := r.Context()
+
+		// Ensure database exists
+		if err := db.EnsureDatabaseExists(ctx, s.settings); err != nil {
+			telemetry.Logger.Error().Err(err).Msg("Failed to ensure database exists")
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			resp, _ := json.Marshal(map[string]string{"error": "failed to ensure database exists"})
+			_, _ = w.Write(resp)
+			return
+		}
+
+		// Ensure tables exist
+		if err := db.EnsureTablesExist(ctx, s.pool); err != nil {
+			telemetry.Logger.Error().Err(err).Msg("Failed to ensure tables exist")
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			resp, _ := json.Marshal(map[string]string{"error": "failed to ensure tables exist"})
+			_, _ = w.Write(resp)
+			return
+		}
+
+		telemetry.Logger.Info().Msg("Application initialization completed successfully")
+		w.WriteHeader(http.StatusOK)
 	}
 }

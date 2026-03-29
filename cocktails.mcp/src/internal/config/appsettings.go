@@ -69,21 +69,44 @@ type AppSettings struct {
 	// Example: "openid profile email offline_access cocktails:read cocktails:write"
 	Auth0Scopes string `env:"AUTH0_SCOPES"`
 
-	// CosmosConnectionString is the connection string for the Azure Cosmos DB account.
-	// Example: "AccountEndpoint=https://<your-account>.documents.azure.com:443/;AccountKey=<your-account-key>;"
-	CosmosConnectionString string `env:"COSMOS_CONNECTION_STRING"`
+	// PostgresHost is the hostname for the PostgreSQL server.
+	PostgresHost string `env:"POSTGRES_HOST" envDefault:"localhost"`
 
-	// CosmosAccountEndpoint is the account endpoint URL for the Azure Cosmos DB account.
-	// Example: "https://<your-account>.documents.azure.com:443/"
-	CosmosAccountEndpoint string `env:"COSMOS_ACCOUNT_ENDPOINT"`
+	// PostgresPort is the port number for the PostgreSQL server.
+	PostgresPort int `env:"POSTGRES_PORT" envDefault:"5432"`
 
-	// CosmosDatabaseName is the name of the database to use within the Azure Cosmos DB account.
-	// Example: "cocktails-db"
-	CosmosDatabaseName string `env:"COSMOS_DATABASE_NAME"`
+	// PostgresDBName is the name of the PostgreSQL database.
+	PostgresDBName string `env:"POSTGRES_DB"`
 
-	// CosmosContainerName is the name of the container to use within the Azure Cosmos DB database.
-	// Example: "tokens"
-	CosmosContainerName string `env:"COSMOS_CONTAINER_NAME"`
+	// PostgresUser is the username for the PostgreSQL connection.
+	PostgresUser string `env:"POSTGRES_USER"`
+
+	// PostgresPassword is the password for the PostgreSQL connection.
+	PostgresPassword string `env:"POSTGRES_PASSWORD"`
+
+	// DaprHost is the hostname for the Dapr sidecar.
+	DaprHost string `env:"DAPR_HOST" envDefault:"localhost"`
+
+	// DaprHTTPPort is the HTTP port for the Dapr sidecar.
+	DaprHTTPPort int `env:"DAPR_HTTP_PORT" envDefault:"3500"`
+
+	// DaprGRPCPort is the gRPC port for the Dapr sidecar.
+	DaprGRPCPort int `env:"DAPR_GRPC_PORT" envDefault:"50001"`
+
+	// DaprHTTPEndpoint is an explicit override for the Dapr HTTP endpoint.
+	DaprHTTPEndpoint string `env:"DAPR_HTTP_ENDPOINT"`
+
+	// DaprGRPCEndpoint is an explicit override for the Dapr gRPC endpoint.
+	DaprGRPCEndpoint string `env:"DAPR_GRPC_ENDPOINT"`
+
+	// DaprAPIToken is the token the app sends TO the Dapr sidecar for outgoing calls.
+	DaprAPIToken string `env:"DAPR_API_TOKEN"`
+
+	// AppAPIToken is the token the Dapr sidecar sends TO the app for incoming calls.
+	AppAPIToken string `env:"APP_API_TOKEN"`
+
+	// DaprInitJobEnabled controls whether the Dapr init job is scheduled at startup.
+	DaprInitJobEnabled bool `env:"DAPR_INIT_JOB_ENABLED" envDefault:"true"`
 
 	// OTLPEndpoint is the OTLP collector endpoint to send telemetry data to.
 	// Example: "localhost:4317"
@@ -149,4 +172,24 @@ func (a *AppSettings) GetAuth0JWKSURI() string {
 		return ""
 	}
 	return fmt.Sprintf("https://%s/.well-known/jwks.json", a.Auth0Domain)
+}
+
+// PostgresConnString assembles a PostgreSQL connection string from decomposed settings.
+func (a *AppSettings) PostgresConnString() string {
+	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s",
+		a.PostgresUser, a.PostgresPassword, a.PostgresHost, a.PostgresPort, a.PostgresDBName)
+}
+
+// PostgresAdminConnString returns a connection string targeting the default 'postgres' database.
+func (a *AppSettings) PostgresAdminConnString() string {
+	return fmt.Sprintf("postgresql://%s:%s@%s:%d/postgres",
+		a.PostgresUser, a.PostgresPassword, a.PostgresHost, a.PostgresPort)
+}
+
+// GetDaprHTTPEndpoint returns the Dapr HTTP endpoint, using the override if set.
+func (a *AppSettings) GetDaprHTTPEndpoint() string {
+	if a.DaprHTTPEndpoint != "" {
+		return a.DaprHTTPEndpoint
+	}
+	return fmt.Sprintf("http://%s:%d", a.DaprHost, a.DaprHTTPPort)
 }

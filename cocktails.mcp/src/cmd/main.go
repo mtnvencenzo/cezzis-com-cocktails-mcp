@@ -27,6 +27,8 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
 	"cezzis.com/cezzis-mcp-server/internal/config"
+	"cezzis.com/cezzis-mcp-server/internal/dapr"
+	"cezzis.com/cezzis-mcp-server/internal/db"
 	"cezzis.com/cezzis-mcp-server/internal/environment"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
@@ -61,6 +63,18 @@ func main() {
 	settings := config.GetAppSettings()
 	assertAppSettings(settings)
 
+	// Initialize PostgreSQL connection pool
+	pool, err := db.NewPool(context.Background(), settings)
+	if err != nil {
+		log.Fatalf("Failed to create PostgreSQL connection pool: %v", err)
+	}
+	defer pool.Close()
+
+	// Ensure database exists at startup
+	if err := db.EnsureDatabaseExists(context.Background(), settings); err != nil {
+		telemetry.Logger.Error().Err(err).Msg("Failed to ensure database exists at startup")
+	}
+
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
 		"1.0.0",
@@ -69,7 +83,7 @@ func main() {
 	)
 
 	// Initialize authentication manager
-	authManager := auth.NewOAuthFlowManager()
+	authManager := auth.NewOAuthFlowManager(pool)
 	cocktailsClient, err := cocktailsapi.GetClient()
 	if err != nil {
 		panic(err)
@@ -110,7 +124,12 @@ func main() {
 		Version,
 		settings.TLSCertFile,
 		settings.TLSKeyFile,
+		pool,
+		settings,
 	)
+
+	// Schedule Dapr init job in background (will wait for sidecar + schedule job)
+	go dapr.ScheduleInitJobBackground(settings)
 
 	telemetry.Logger.Info().
 		Str("version", Version).
@@ -150,7 +169,8 @@ func assertAppSettings(settings *config.AppSettings) {
 	}
 
 	assertAuth0Settings(settings)
-	assertCosmosSettings(settings)
+	assertPostgresSettings(settings)
+	assertDaprSettings(settings)
 	assertOtlpSettings(settings)
 	assertTLSSettings(settings)
 }
@@ -173,21 +193,33 @@ func assertAuth0Settings(settings *config.AppSettings) {
 	}
 }
 
-func assertCosmosSettings(settings *config.AppSettings) {
-	if settings.CosmosConnectionString == "" {
-		telemetry.Logger.Warn().Msg("Warning: COSMOS_CONNECTION_STRING is not set; database access will fail")
+func assertPostgresSettings(settings *config.AppSettings) {
+	if settings.PostgresHost == "" {
+		telemetry.Logger.Warn().Msg("Warning: POSTGRES_HOST is not set; database access will fail")
 	}
 
-	if settings.CosmosAccountEndpoint == "" {
-		telemetry.Logger.Warn().Msg("Warning: COSMOS_ACCOUNT_ENDPOINT is not set; database access will fail")
+	if settings.PostgresPort == 0 {
+		telemetry.Logger.Warn().Msg("Warning: POSTGRES_PORT is not set; database access will fail")
 	}
 
-	if settings.CosmosDatabaseName == "" {
-		telemetry.Logger.Warn().Msg("Warning: COSMOS_DATABASE_NAME is not set; database access will fail")
+	if settings.PostgresDBName == "" {
+		telemetry.Logger.Warn().Msg("Warning: POSTGRES_DB is not set; database access will fail")
 	}
 
-	if settings.CosmosContainerName == "" {
-		telemetry.Logger.Warn().Msg("Warning: COSMOS_CONTAINER_NAME is not set; database access will fail")
+	if settings.PostgresUser == "" {
+		telemetry.Logger.Warn().Msg("Warning: POSTGRES_USER is not set; database access will fail")
+	}
+
+	if settings.PostgresPassword == "" {
+		telemetry.Logger.Warn().Msg("Warning: POSTGRES_PASSWORD is not set; database access will fail")
+	}
+}
+
+func assertDaprSettings(settings *config.AppSettings) {
+	if settings.DaprInitJobEnabled {
+		telemetry.Logger.Info().Msg("Dapr init job scheduling is enabled")
+	} else {
+		telemetry.Logger.Info().Msg("Dapr init job scheduling is disabled")
 	}
 }
 
