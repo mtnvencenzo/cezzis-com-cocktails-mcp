@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
@@ -44,11 +46,8 @@ type OAuthFlowManager struct {
 }
 
 // NewOAuthFlowManager creates a new OAuth flow manager
-func NewOAuthFlowManager() *OAuthFlowManager {
-	storage, err := NewTokenStorage()
-	if err != nil {
-		telemetry.Logger.Error().Err(err).Msg("Failed to create token storage")
-	}
+func NewOAuthFlowManager(pool *pgxpool.Pool) *OAuthFlowManager {
+	storage := NewTokenStorage(pool)
 
 	manager := &OAuthFlowManager{
 		appSettings: config.GetAppSettings(),

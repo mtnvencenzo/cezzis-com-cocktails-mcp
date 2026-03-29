@@ -5,25 +5,22 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"cezzis.com/cezzis-mcp-server/internal/repos"
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
 // TokenStorage handles secure storage and retrieval of OAuth tokens
 type TokenStorage struct {
-	repo *repos.CosmosAccountRepository
+	repo *repos.PostgresTokenRepository
 }
 
-// NewTokenStorage creates a new token storage instance
-func NewTokenStorage() (*TokenStorage, error) {
-	repo, err := repos.NewCosmosAccountRepository()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create token repository: %w", err)
-	}
-
+// NewTokenStorage creates a new token storage instance using a PostgreSQL connection pool
+func NewTokenStorage(pool *pgxpool.Pool) *TokenStorage {
 	return &TokenStorage{
-		repo: repo,
-	}, nil
+		repo: repos.NewPostgresTokenRepository(pool),
+	}
 }
 
 // SaveToken saves tokens to encrypted storage
