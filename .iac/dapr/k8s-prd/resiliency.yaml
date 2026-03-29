@@ -1,7 +1,7 @@
 apiVersion: dapr.io/v1alpha1
 kind: Resiliency
 metadata:
-  name: dapr-resiliency
+  name: cocktails-mcp-dapr-resiliency
   namespace: cezzis
   labels:
     app.kubernetes.io/part-of: cezzis
