@@ -21,3 +21,4 @@ spec:
         interval: 10s
         timeout: 30s
         trip: consecutiveFailures >= 3
+  targets: {}
