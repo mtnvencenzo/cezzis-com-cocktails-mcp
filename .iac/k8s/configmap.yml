@@ -31,4 +31,4 @@ data:
   POSTGRES_DB: "cezzis-cocktailsmcp-db-prd"
   POSTGRES_HOST: "postgres.postgres-platform.svc.cluster.local"
   POSTGRES_PORT: "5432"
-  POSTGRES_USER: "cezzis-app-user-prd"
+  POSTGRES_USER: "admin"
