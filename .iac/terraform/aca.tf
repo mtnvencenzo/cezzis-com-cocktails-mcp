@@ -10,7 +10,6 @@ module "aca_cocktails_mcp" {
   domain                       = var.domain
   name_discriminator           = "mcp"
   sequence                     = var.sequence
-  tenant_id                    = data.azurerm_client_config.current.tenant_id
   resource_group_name          = data.azurerm_resource_group.cocktails_resource_group.name
   resource_group_location      = data.azurerm_resource_group.cocktails_resource_group.location
   container_app_environment_id = data.azurerm_container_app_environment.cae_shared.id
