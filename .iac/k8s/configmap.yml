@@ -9,7 +9,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "100"
 data:
-  ENV: "prd"
+  ENV: "loc"
   PORT: "7999"
   ACCOUNTS_API_HOST: "http://cezzis-com-accounts-api:8016"
   ACCOUNTS_API_XKEY: ""
@@ -29,7 +29,7 @@ data:
   OTLP_LOG_ENABLED: "true"
   OTLP_METRICS_ENABLED: "false"
   OTLP_TRACE_ENABLED: "true"
-  POSTGRES_DB: "cezzis-cocktailsmcp-db-prd"
+  POSTGRES_DB: "cezzis-cocktailsmcp-db-loc"
   POSTGRES_HOST: "postgres.postgres-platform.svc.cluster.local"
   POSTGRES_PORT: "5432"
   POSTGRES_USER: "admin"

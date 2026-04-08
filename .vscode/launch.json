@@ -13,19 +13,6 @@
                     "ENV": "loc",
                     "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"
                 }
-            },
-            {
-                "name": "Docker Debug: Cocktails MCP",
-                "type": "go",
-                "request": "launch",
-                "mode": "debug",
-                "preLaunchTask": "build",
-                "program": "${workspaceFolder}/cocktails.mcp/src/cmd",
-                "args": [],
-                "env": {
-                    "ENV": "loc",
-                    "ENV_DIR_OVERRIDE": "${workspaceFolder}/cocktails.mcp/src"
-                }
             }
         ]
     }
