@@ -11,6 +11,7 @@
 [![Docs](https://img.shields.io/badge/docs-MCP-blue)](https://modelcontextprotocol.io)
 [![Project](https://img.shields.io/badge/project-Cezzis.com%20Cocktails-181717?logo=github&logoColor=white)](https://github.com/users/mtnvencenzo/projects/2)
 [![Website](https://img.shields.io/badge/website-cezzis.com-2ea44f?logo=google-chrome&logoColor=white)](https://www.cezzis.com)
+[![SafeSkill 91/100](https://img.shields.io/badge/SafeSkill-91%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/mtnvencenzo-cezzis-com-cocktails-mcp)
 
 An MCP (Model Context Protocol) server that gives AI agents secure, first‑class access to Cezzis.com cocktail data. It provides high‑level tools for searching cocktails, retrieving detailed recipes and metadata, authenticating users, and submitting ratings. The server runs over HTTP only and exposes a streamable MCP endpoint.
 
