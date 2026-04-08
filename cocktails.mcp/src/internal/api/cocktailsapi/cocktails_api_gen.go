@@ -309,20 +309,8 @@ type PublishCocktailsRq struct {
 // UofMTypeModel The unit of measure when using this ingredient in a cocktail recipe
 type UofMTypeModel = interface{}
 
-// SeedCocktailsParams defines parameters for SeedCocktails.
-type SeedCocktailsParams struct {
-	// XKey Subscription key
-	XKey *string `json:"X-Key,omitempty"`
-}
-
 // PublishCocktailsParams defines parameters for PublishCocktails.
 type PublishCocktailsParams struct {
-	// XKey Subscription key
-	XKey *string `json:"X-Key,omitempty"`
-}
-
-// SeedIngredientsParams defines parameters for SeedIngredients.
-type SeedIngredientsParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -347,12 +335,6 @@ type GetPrivacyPolicyParams struct {
 
 // GetTermsOfServiceParams defines parameters for GetTermsOfService.
 type GetTermsOfServiceParams struct {
-	// XKey Subscription key
-	XKey *string `json:"X-Key,omitempty"`
-}
-
-// InitParams defines parameters for Init.
-type InitParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -433,16 +415,10 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// SeedCocktails request
-	SeedCocktails(ctx context.Context, params *SeedCocktailsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// PublishCocktailsWithBody request with any body
 	PublishCocktailsWithBody(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PublishCocktailsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// SeedIngredients request
-	SeedIngredients(ctx context.Context, params *SeedIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetCocktailIngredientFilters request
 	GetCocktailIngredientFilters(ctx context.Context, params *GetCocktailIngredientFiltersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -455,21 +431,6 @@ type ClientInterface interface {
 
 	// GetTermsOfService request
 	GetTermsOfService(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// Init request
-	Init(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-}
-
-func (c *Client) SeedCocktails(ctx context.Context, params *SeedCocktailsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewSeedCocktailsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
 }
 
 func (c *Client) PublishCocktailsWithBody(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -486,18 +447,6 @@ func (c *Client) PublishCocktailsWithBody(ctx context.Context, params *PublishCo
 
 func (c *Client) PublishCocktailsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPublishCocktailsRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) SeedIngredients(ctx context.Context, params *SeedIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewSeedIngredientsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -556,60 +505,6 @@ func (c *Client) GetTermsOfService(ctx context.Context, params *GetTermsOfServic
 	return c.Client.Do(req)
 }
 
-func (c *Client) Init(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewInitRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// NewSeedCocktailsRequest generates requests for SeedCocktails
-func NewSeedCocktailsRequest(server string, params *SeedCocktailsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/cocktails")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-
-		if params.XKey != nil {
-			var headerParam0 string
-
-			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
-			if err != nil {
-				return nil, err
-			}
-
-			req.Header.Set("X-Key", headerParam0)
-		}
-
-	}
-
-	return req, nil
-}
-
 // NewPublishCocktailsRequestWithApplicationJSONXAPIVersion10Body calls the generic PublishCocktails builder with application/json; x-api-version=1.0 body
 func NewPublishCocktailsRequestWithApplicationJSONXAPIVersion10Body(server string, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -646,48 +541,6 @@ func NewPublishCocktailsRequestWithBody(server string, params *PublishCocktailsP
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	if params != nil {
-
-		if params.XKey != nil {
-			var headerParam0 string
-
-			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
-			if err != nil {
-				return nil, err
-			}
-
-			req.Header.Set("X-Key", headerParam0)
-		}
-
-	}
-
-	return req, nil
-}
-
-// NewSeedIngredientsRequest generates requests for SeedIngredients
-func NewSeedIngredientsRequest(server string, params *SeedIngredientsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/cocktails/ingredients")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	if params != nil {
 
@@ -882,48 +735,6 @@ func NewGetTermsOfServiceRequest(server string, params *GetTermsOfServiceParams)
 	return req, nil
 }
 
-// NewInitRequest generates requests for Init
-func NewInitRequest(server string, params *InitParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/job/initialize-app")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-
-		if params.XKey != nil {
-			var headerParam0 string
-
-			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
-			if err != nil {
-				return nil, err
-			}
-
-			req.Header.Set("X-Key", headerParam0)
-		}
-
-	}
-
-	return req, nil
-}
-
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -967,16 +778,10 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// SeedCocktailsWithResponse request
-	SeedCocktailsWithResponse(ctx context.Context, params *SeedCocktailsParams, reqEditors ...RequestEditorFn) (*SeedCocktailsResponse, error)
-
 	// PublishCocktailsWithBodyWithResponse request with any body
 	PublishCocktailsWithBodyWithResponse(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error)
 
 	PublishCocktailsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error)
-
-	// SeedIngredientsWithResponse request
-	SeedIngredientsWithResponse(ctx context.Context, params *SeedIngredientsParams, reqEditors ...RequestEditorFn) (*SeedIngredientsResponse, error)
 
 	// GetCocktailIngredientFiltersWithResponse request
 	GetCocktailIngredientFiltersWithResponse(ctx context.Context, params *GetCocktailIngredientFiltersParams, reqEditors ...RequestEditorFn) (*GetCocktailIngredientFiltersResponse, error)
@@ -989,31 +794,6 @@ type ClientWithResponsesInterface interface {
 
 	// GetTermsOfServiceWithResponse request
 	GetTermsOfServiceWithResponse(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*GetTermsOfServiceResponse, error)
-
-	// InitWithResponse request
-	InitWithResponse(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*InitResponse, error)
-}
-
-type SeedCocktailsResponse struct {
-	Body                                []byte
-	HTTPResponse                        *http.Response
-	ApplicationjsonXApiVersion10Default *ProblemDetails
-}
-
-// Status returns HTTPResponse.Status
-func (r SeedCocktailsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r SeedCocktailsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
 }
 
 type PublishCocktailsResponse struct {
@@ -1032,28 +812,6 @@ func (r PublishCocktailsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PublishCocktailsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type SeedIngredientsResponse struct {
-	Body                                []byte
-	HTTPResponse                        *http.Response
-	ApplicationjsonXApiVersion10Default *ProblemDetails
-}
-
-// Status returns HTTPResponse.Status
-func (r SeedIngredientsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r SeedIngredientsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1152,36 +910,6 @@ func (r GetTermsOfServiceResponse) StatusCode() int {
 	return 0
 }
 
-type InitResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r InitResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r InitResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// SeedCocktailsWithResponse request returning *SeedCocktailsResponse
-func (c *ClientWithResponses) SeedCocktailsWithResponse(ctx context.Context, params *SeedCocktailsParams, reqEditors ...RequestEditorFn) (*SeedCocktailsResponse, error) {
-	rsp, err := c.SeedCocktails(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseSeedCocktailsResponse(rsp)
-}
-
 // PublishCocktailsWithBodyWithResponse request with arbitrary body returning *PublishCocktailsResponse
 func (c *ClientWithResponses) PublishCocktailsWithBodyWithResponse(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error) {
 	rsp, err := c.PublishCocktailsWithBody(ctx, params, contentType, body, reqEditors...)
@@ -1197,15 +925,6 @@ func (c *ClientWithResponses) PublishCocktailsWithApplicationJSONXAPIVersion10Bo
 		return nil, err
 	}
 	return ParsePublishCocktailsResponse(rsp)
-}
-
-// SeedIngredientsWithResponse request returning *SeedIngredientsResponse
-func (c *ClientWithResponses) SeedIngredientsWithResponse(ctx context.Context, params *SeedIngredientsParams, reqEditors ...RequestEditorFn) (*SeedIngredientsResponse, error) {
-	rsp, err := c.SeedIngredients(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseSeedIngredientsResponse(rsp)
 }
 
 // GetCocktailIngredientFiltersWithResponse request returning *GetCocktailIngredientFiltersResponse
@@ -1244,41 +963,6 @@ func (c *ClientWithResponses) GetTermsOfServiceWithResponse(ctx context.Context,
 	return ParseGetTermsOfServiceResponse(rsp)
 }
 
-// InitWithResponse request returning *InitResponse
-func (c *ClientWithResponses) InitWithResponse(ctx context.Context, params *InitParams, reqEditors ...RequestEditorFn) (*InitResponse, error) {
-	rsp, err := c.Init(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseInitResponse(rsp)
-}
-
-// ParseSeedCocktailsResponse parses an HTTP response from a SeedCocktailsWithResponse call
-func ParseSeedCocktailsResponse(rsp *http.Response) (*SeedCocktailsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &SeedCocktailsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.ApplicationjsonXApiVersion10Default = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParsePublishCocktailsResponse parses an HTTP response from a PublishCocktailsWithResponse call
 func ParsePublishCocktailsResponse(rsp *http.Response) (*PublishCocktailsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -1288,32 +972,6 @@ func ParsePublishCocktailsResponse(rsp *http.Response) (*PublishCocktailsRespons
 	}
 
 	response := &PublishCocktailsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.ApplicationjsonXApiVersion10Default = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseSeedIngredientsResponse parses an HTTP response from a SeedIngredientsWithResponse call
-func ParseSeedIngredientsResponse(rsp *http.Response) (*SeedIngredientsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &SeedIngredientsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -1458,22 +1116,6 @@ func ParseGetTermsOfServiceResponse(rsp *http.Response) (*GetTermsOfServiceRespo
 		}
 		response.ApplicationjsonXApiVersion10Default = &dest
 
-	}
-
-	return response, nil
-}
-
-// ParseInitResponse parses an HTTP response from a InitWithResponse call
-func ParseInitResponse(rsp *http.Response) (*InitResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &InitResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
 	}
 
 	return response, nil

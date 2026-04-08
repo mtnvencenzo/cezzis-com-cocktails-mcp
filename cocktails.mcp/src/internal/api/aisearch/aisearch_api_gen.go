@@ -20,13 +20,6 @@ const (
 	Auth0Scopes = "auth0.Scopes"
 )
 
-// Defines values for CocktailSearchDataIncludeModel.
-const (
-	DescriptiveTitle CocktailSearchDataIncludeModel = "descriptiveTitle"
-	MainImages       CocktailSearchDataIncludeModel = "mainImages"
-	SearchTiles      CocktailSearchDataIncludeModel = "searchTiles"
-)
-
 // Defines values for CocktailSearchGlasswareTypeModel.
 const (
 	CocktailSearchGlasswareTypeModelCocktailGlass     CocktailSearchGlasswareTypeModel = "cocktailGlass"
@@ -165,9 +158,6 @@ type CocktailEmbeddingRq struct {
 	// ContentChunks List of text chunks to be embedded
 	ContentChunks []CocktailDescriptionChunk `json:"contentChunks"`
 }
-
-// CocktailSearchDataIncludeModel The types of cocktail data to include in the search results.
-type CocktailSearchDataIncludeModel string
 
 // CocktailSearchGlasswareTypeModel The types of glassware used for serving cocktails.
 type CocktailSearchGlasswareTypeModel string
@@ -325,14 +315,6 @@ type CocktailsSearchRs struct {
 	Items []CocktailSearchModel `json:"items"`
 }
 
-// HealthCheckRs defines model for HealthCheckRs.
-type HealthCheckRs struct {
-	Details *map[string]interface{} `json:"details"`
-	Output  *string                 `json:"output"`
-	Status  string                  `json:"status"`
-	Version *string                 `json:"version"`
-}
-
 // ProblemDetails RFC 7807 compliant problem details model.
 //
 // This model provides a standard way to carry machine-readable details
@@ -382,9 +364,6 @@ type GetV1CocktailsSearchParams struct {
 
 	// MEx Whether or not the supplied matches must be exclusively returned
 	MEx *bool `form:"m_ex,omitempty" json:"m_ex,omitempty"`
-
-	// Inc The list of extension objects to include for each cocktail recipe
-	Inc *[]CocktailSearchDataIncludeModel `form:"inc,omitempty" json:"inc,omitempty"`
 
 	// Fi An optional list of filters to use when quering the cocktail recipes
 	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
@@ -497,9 +476,6 @@ type ClientInterface interface {
 
 	// GetV1CocktailsTypeahead request
 	GetV1CocktailsTypeahead(ctx context.Context, params *GetV1CocktailsTypeaheadParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// HealthCheckV1HealthGet request
-	HealthCheckV1HealthGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) PutV1CocktailsEmbeddingsWithBody(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -550,18 +526,6 @@ func (c *Client) GetV1CocktailsTypeahead(ctx context.Context, params *GetV1Cockt
 	return c.Client.Do(req)
 }
 
-func (c *Client) HealthCheckV1HealthGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewHealthCheckV1HealthGetRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // NewPutV1CocktailsEmbeddingsRequest calls the generic PutV1CocktailsEmbeddings builder with application/json body
 func NewPutV1CocktailsEmbeddingsRequest(server string, params *PutV1CocktailsEmbeddingsParams, body PutV1CocktailsEmbeddingsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -582,7 +546,7 @@ func NewPutV1CocktailsEmbeddingsRequestWithBody(server string, params *PutV1Cock
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/cocktails/embeddings")
+	operationPath := fmt.Sprintf("/api/v1/search/embeddings")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -624,7 +588,7 @@ func NewGetV1CocktailsSearchRequest(server string, params *GetV1CocktailsSearchP
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/cocktails/search")
+	operationPath := fmt.Sprintf("/api/v1/search/semantic")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -717,22 +681,6 @@ func NewGetV1CocktailsSearchRequest(server string, params *GetV1CocktailsSearchP
 
 		}
 
-		if params.Inc != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "inc", runtime.ParamLocationQuery, *params.Inc); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
 		if params.Fi != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "fi", runtime.ParamLocationQuery, *params.Fi); err != nil {
@@ -782,7 +730,7 @@ func NewGetV1CocktailsTypeaheadRequest(server string, params *GetV1CocktailsType
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/cocktails/typeahead")
+	operationPath := fmt.Sprintf("/api/v1/search/typeahead")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -883,33 +831,6 @@ func NewGetV1CocktailsTypeaheadRequest(server string, params *GetV1CocktailsType
 	return req, nil
 }
 
-// NewHealthCheckV1HealthGetRequest generates requests for HealthCheckV1HealthGet
-func NewHealthCheckV1HealthGetRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/health")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -963,9 +884,6 @@ type ClientWithResponsesInterface interface {
 
 	// GetV1CocktailsTypeaheadWithResponse request
 	GetV1CocktailsTypeaheadWithResponse(ctx context.Context, params *GetV1CocktailsTypeaheadParams, reqEditors ...RequestEditorFn) (*GetV1CocktailsTypeaheadResponse, error)
-
-	// HealthCheckV1HealthGetWithResponse request
-	HealthCheckV1HealthGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthCheckV1HealthGetResponse, error)
 }
 
 type PutV1CocktailsEmbeddingsResponse struct {
@@ -1039,30 +957,6 @@ func (r GetV1CocktailsTypeaheadResponse) StatusCode() int {
 	return 0
 }
 
-type HealthCheckV1HealthGetResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON200                       *HealthCheckRs
-	JSONDefault                   *ProblemDetails
-	ApplicationproblemJSONDefault *ProblemDetails
-}
-
-// Status returns HTTPResponse.Status
-func (r HealthCheckV1HealthGetResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r HealthCheckV1HealthGetResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 // PutV1CocktailsEmbeddingsWithBodyWithResponse request with arbitrary body returning *PutV1CocktailsEmbeddingsResponse
 func (c *ClientWithResponses) PutV1CocktailsEmbeddingsWithBodyWithResponse(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1CocktailsEmbeddingsResponse, error) {
 	rsp, err := c.PutV1CocktailsEmbeddingsWithBody(ctx, params, contentType, body, reqEditors...)
@@ -1096,15 +990,6 @@ func (c *ClientWithResponses) GetV1CocktailsTypeaheadWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseGetV1CocktailsTypeaheadResponse(rsp)
-}
-
-// HealthCheckV1HealthGetWithResponse request returning *HealthCheckV1HealthGetResponse
-func (c *ClientWithResponses) HealthCheckV1HealthGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthCheckV1HealthGetResponse, error) {
-	rsp, err := c.HealthCheckV1HealthGet(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseHealthCheckV1HealthGetResponse(rsp)
 }
 
 // ParsePutV1CocktailsEmbeddingsResponse parses an HTTP response from a PutV1CocktailsEmbeddingsWithResponse call
@@ -1210,46 +1095,6 @@ func ParseGetV1CocktailsTypeaheadResponse(rsp *http.Response) (*GetV1CocktailsTy
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest CocktailsSearchRs
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseHealthCheckV1HealthGetResponse parses an HTTP response from a HealthCheckV1HealthGetWithResponse call
-func ParseHealthCheckV1HealthGetResponse(rsp *http.Response) (*HealthCheckV1HealthGetResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &HealthCheckV1HealthGetResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case rsp.Header.Get("Content-Type") == "application/json" && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.ApplicationproblemJSONDefault = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest HealthCheckRs
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

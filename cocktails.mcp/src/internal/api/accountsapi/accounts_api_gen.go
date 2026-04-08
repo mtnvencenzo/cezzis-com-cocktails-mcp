@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for CocktailFavoritingActionModel.
@@ -151,7 +152,7 @@ type AccountOwnedProfileRs struct {
 // BodyPostV1AccountsOwnedProfileImage defines model for Body_postV1AccountsOwnedProfileImage.
 type BodyPostV1AccountsOwnedProfileImage struct {
 	// File The profile image file to upload
-	File string `json:"file"`
+	File openapi_types.File `json:"file"`
 }
 
 // ChangeAccountOwnedEmailRq The account owned profile upload email request information.
@@ -210,14 +211,6 @@ type CocktailUpdatedNotificationModel string
 
 // DisplayThemeModel The display themes available for profile accessibility settings.
 type DisplayThemeModel string
-
-// HealthCheckRs defines model for HealthCheckRs.
-type HealthCheckRs struct {
-	Details *map[string]interface{} `json:"details"`
-	Output  *string                 `json:"output"`
-	Status  string                  `json:"status"`
-	Version *string                 `json:"version"`
-}
 
 // ManageFavoriteCocktailsRq The request to manage an owned account's favorite cocktails.
 type ManageFavoriteCocktailsRq struct {
@@ -546,9 +539,6 @@ type ClientInterface interface {
 	PutV1AccountsOwnedProfileUsernameWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutV1AccountsOwnedProfileUsername(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// HealthCheckV1HealthGet request
-	HealthCheckV1HealthGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetV1AccountsOwnedProfile(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -815,18 +805,6 @@ func (c *Client) PutV1AccountsOwnedProfileUsername(ctx context.Context, params *
 	return c.Client.Do(req)
 }
 
-func (c *Client) HealthCheckV1HealthGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewHealthCheckV1HealthGetRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // NewGetV1AccountsOwnedProfileRequest generates requests for GetV1AccountsOwnedProfile
 func NewGetV1AccountsOwnedProfileRequest(server string, params *GetV1AccountsOwnedProfileParams) (*http.Request, error) {
 	var err error
@@ -836,7 +814,7 @@ func NewGetV1AccountsOwnedProfileRequest(server string, params *GetV1AccountsOwn
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -876,7 +854,7 @@ func NewPostV1AccountsOwnedProfileRequest(server string, params *PostV1AccountsO
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -927,7 +905,7 @@ func NewPutV1AccountsOwnedProfileRequestWithBody(server string, params *PutV1Acc
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -980,7 +958,7 @@ func NewPutV1AccountsOwnedProfileAccessibilityRequestWithBody(server string, par
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/accessibility")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/accessibility")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1033,7 +1011,7 @@ func NewPutV1AccountsOwnedProfileCocktailsFavoritesRequestWithBody(server string
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/cocktails/favorites")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/favorites")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1075,7 +1053,7 @@ func NewGetV1AccountsOwnedProfileCocktailsRatingsRequest(server string, params *
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/cocktails/ratings")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/ratings")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1126,7 +1104,7 @@ func NewPostV1AccountsOwnedProfileCocktailsRatingsRequestWithBody(server string,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/cocktails/ratings")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/ratings")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1179,7 +1157,7 @@ func NewPostV1AccountsOwnedProfileCocktailsRecommendationsRequestWithBody(server
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/cocktails/recommendations")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/recommendations")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1232,7 +1210,7 @@ func NewPutV1AccountsOwnedProfileEmailRequestWithBody(server string, params *Put
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/email")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/email")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1274,7 +1252,7 @@ func NewPostV1AccountsOwnedProfileImageRequestWithBody(server string, params *Po
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/image")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/image")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1327,7 +1305,7 @@ func NewPutV1AccountsOwnedProfileNotificationsRequestWithBody(server string, par
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/notifications")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/notifications")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1380,7 +1358,7 @@ func NewPutV1AccountsOwnedProfilePasswordRequestWithBody(server string, params *
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/password")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/password")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1433,7 +1411,7 @@ func NewPutV1AccountsOwnedProfileUsernameRequestWithBody(server string, params *
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/accounts/owned/profile/username")
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/username")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1461,33 +1439,6 @@ func NewPutV1AccountsOwnedProfileUsernameRequestWithBody(server string, params *
 
 		req.Header.Set("X-Key", headerParam0)
 
-	}
-
-	return req, nil
-}
-
-// NewHealthCheckV1HealthGetRequest generates requests for HealthCheckV1HealthGet
-func NewHealthCheckV1HealthGetRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/health")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
 	}
 
 	return req, nil
@@ -1592,9 +1543,6 @@ type ClientWithResponsesInterface interface {
 	PutV1AccountsOwnedProfileUsernameWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
 
 	PutV1AccountsOwnedProfileUsernameWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
-
-	// HealthCheckV1HealthGetWithResponse request
-	HealthCheckV1HealthGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthCheckV1HealthGetResponse, error)
 }
 
 type GetV1AccountsOwnedProfileResponse struct {
@@ -1914,30 +1862,6 @@ func (r PutV1AccountsOwnedProfileUsernameResponse) StatusCode() int {
 	return 0
 }
 
-type HealthCheckV1HealthGetResponse struct {
-	Body                          []byte
-	HTTPResponse                  *http.Response
-	JSON200                       *HealthCheckRs
-	JSONDefault                   *ProblemDetails
-	ApplicationproblemJSONDefault *ProblemDetails
-}
-
-// Status returns HTTPResponse.Status
-func (r HealthCheckV1HealthGetResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r HealthCheckV1HealthGetResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 // GetV1AccountsOwnedProfileWithResponse request returning *GetV1AccountsOwnedProfileResponse
 func (c *ClientWithResponses) GetV1AccountsOwnedProfileWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileResponse, error) {
 	rsp, err := c.GetV1AccountsOwnedProfile(ctx, params, reqEditors...)
@@ -2125,15 +2049,6 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileUsernameWithResponse(ctx 
 		return nil, err
 	}
 	return ParsePutV1AccountsOwnedProfileUsernameResponse(rsp)
-}
-
-// HealthCheckV1HealthGetWithResponse request returning *HealthCheckV1HealthGetResponse
-func (c *ClientWithResponses) HealthCheckV1HealthGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthCheckV1HealthGetResponse, error) {
-	rsp, err := c.HealthCheckV1HealthGet(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseHealthCheckV1HealthGetResponse(rsp)
 }
 
 // ParseGetV1AccountsOwnedProfileResponse parses an HTTP response from a GetV1AccountsOwnedProfileWithResponse call
@@ -2681,46 +2596,6 @@ func ParsePutV1AccountsOwnedProfileUsernameResponse(rsp *http.Response) (*PutV1A
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest interface{}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseHealthCheckV1HealthGetResponse parses an HTTP response from a HealthCheckV1HealthGetWithResponse call
-func ParseHealthCheckV1HealthGetResponse(rsp *http.Response) (*HealthCheckV1HealthGetResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &HealthCheckV1HealthGetResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case rsp.Header.Get("Content-Type") == "application/json" && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
-		var dest ProblemDetails
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.ApplicationproblemJSONDefault = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest HealthCheckRs
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

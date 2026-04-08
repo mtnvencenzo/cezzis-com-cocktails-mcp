@@ -84,29 +84,11 @@ type AppSettings struct {
 	// PostgresPassword is the password for the PostgreSQL connection.
 	PostgresPassword string `env:"POSTGRES_PASSWORD"`
 
-	// DaprHost is the hostname for the Dapr sidecar.
-	DaprHost string `env:"DAPR_HOST" envDefault:"localhost"`
+	// InitJobEnabled controls whether the background init job runs at startup.
+	InitJobEnabled bool `env:"INIT_JOB_ENABLED" envDefault:"true"`
 
-	// DaprHTTPPort is the HTTP port for the Dapr sidecar.
-	DaprHTTPPort int `env:"DAPR_HTTP_PORT" envDefault:"3500"`
-
-	// DaprGRPCPort is the gRPC port for the Dapr sidecar.
-	DaprGRPCPort int `env:"DAPR_GRPC_PORT" envDefault:"50001"`
-
-	// DaprHTTPEndpoint is an explicit override for the Dapr HTTP endpoint.
-	DaprHTTPEndpoint string `env:"DAPR_HTTP_ENDPOINT"`
-
-	// DaprGRPCEndpoint is an explicit override for the Dapr gRPC endpoint.
-	DaprGRPCEndpoint string `env:"DAPR_GRPC_ENDPOINT"`
-
-	// DaprAPIToken is the token the app sends TO the Dapr sidecar for outgoing calls.
-	DaprAPIToken string `env:"DAPR_API_TOKEN"`
-
-	// AppAPIToken is the token the Dapr sidecar sends TO the app for incoming calls.
-	AppAPIToken string `env:"APP_API_TOKEN"`
-
-	// DaprInitJobEnabled controls whether the Dapr init job is scheduled at startup.
-	DaprInitJobEnabled bool `env:"DAPR_INIT_JOB_ENABLED" envDefault:"true"`
+	// InitDelaySeconds is the delay in seconds before the background init job runs.
+	InitDelaySeconds int `env:"INIT_DELAY_SECONDS" envDefault:"30"`
 
 	// OTLPEndpoint is the OTLP collector endpoint to send telemetry data to.
 	// Example: "localhost:4317"
@@ -184,12 +166,4 @@ func (a *AppSettings) PostgresConnString() string {
 func (a *AppSettings) PostgresAdminConnString() string {
 	return fmt.Sprintf("postgresql://%s:%s@%s:%d/postgres",
 		a.PostgresUser, a.PostgresPassword, a.PostgresHost, a.PostgresPort)
-}
-
-// GetDaprHTTPEndpoint returns the Dapr HTTP endpoint, using the override if set.
-func (a *AppSettings) GetDaprHTTPEndpoint() string {
-	if a.DaprHTTPEndpoint != "" {
-		return a.DaprHTTPEndpoint
-	}
-	return fmt.Sprintf("http://%s:%d", a.DaprHost, a.DaprHTTPPort)
 }

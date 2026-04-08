@@ -26,8 +26,8 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/api/aisearch"
 	"cezzis.com/cezzis-mcp-server/internal/api/cocktailsapi"
 	"cezzis.com/cezzis-mcp-server/internal/auth"
+	"cezzis.com/cezzis-mcp-server/internal/background"
 	"cezzis.com/cezzis-mcp-server/internal/config"
-	"cezzis.com/cezzis-mcp-server/internal/dapr"
 	"cezzis.com/cezzis-mcp-server/internal/db"
 	"cezzis.com/cezzis-mcp-server/internal/environment"
 	"cezzis.com/cezzis-mcp-server/internal/mcpserver"
@@ -69,11 +69,6 @@ func main() {
 		log.Fatalf("Failed to create PostgreSQL connection pool: %v", err)
 	}
 	defer pool.Close()
-
-	// Ensure database exists at startup
-	if err := db.EnsureDatabaseExists(context.Background(), settings); err != nil {
-		telemetry.Logger.Error().Err(err).Msg("Failed to ensure database exists at startup")
-	}
 
 	mcpServer := server.NewMCPServer(
 		"Cezzi Cocktails Server",
@@ -124,12 +119,10 @@ func main() {
 		Version,
 		settings.TLSCertFile,
 		settings.TLSKeyFile,
-		pool,
-		settings,
 	)
 
-	// Schedule Dapr init job in background (will wait for sidecar + schedule job)
-	go dapr.ScheduleInitJobBackground(settings)
+	// Run background init job (ensures database and tables exist after a delay)
+	go background.RunInitJob(context.Background(), pool, settings)
 
 	telemetry.Logger.Info().
 		Str("version", Version).
@@ -170,7 +163,7 @@ func assertAppSettings(settings *config.AppSettings) {
 
 	assertAuth0Settings(settings)
 	assertPostgresSettings(settings)
-	assertDaprSettings(settings)
+	assertInitJobSettings(settings)
 	assertOtlpSettings(settings)
 	assertTLSSettings(settings)
 }
@@ -215,11 +208,13 @@ func assertPostgresSettings(settings *config.AppSettings) {
 	}
 }
 
-func assertDaprSettings(settings *config.AppSettings) {
-	if settings.DaprInitJobEnabled {
-		telemetry.Logger.Info().Msg("Dapr init job scheduling is enabled")
+func assertInitJobSettings(settings *config.AppSettings) {
+	if settings.InitJobEnabled {
+		telemetry.Logger.Info().
+			Int("delay_seconds", settings.InitDelaySeconds).
+			Msg("Background init job is enabled")
 	} else {
-		telemetry.Logger.Info().Msg("Dapr init job scheduling is disabled")
+		telemetry.Logger.Info().Msg("Background init job is disabled")
 	}
 }
 

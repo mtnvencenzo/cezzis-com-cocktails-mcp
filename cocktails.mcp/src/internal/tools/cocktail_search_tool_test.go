@@ -56,7 +56,7 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 		return
 	}
 
-	mux.HandleFunc("/v1/cocktails/search", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/v1/search/semantic", func(w http.ResponseWriter, r *http.Request) {
 		testutils.TestMethod(t, r, "GET")
 		freeText := r.URL.Query().Get("freetext")
 		require.Equal(t, "Pegu Club", freeText)
