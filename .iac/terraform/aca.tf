@@ -24,10 +24,17 @@ module "aca_cocktails_mcp" {
     login_server = data.azurerm_container_registry.shared_acr.login_server
   }
 
-  key_vault = {
-    id   = data.azurerm_key_vault.cocktails_keyvault.id
-    name = data.azurerm_key_vault.cocktails_keyvault.name
+  key_vaults = {
+    cocktails = {
+      id   = data.azurerm_key_vault.cocktails_keyvault.id
+      name = data.azurerm_key_vault.cocktails_keyvault.name
+    }
+    global = {
+      id   = data.azurerm_key_vault.global_keyvault.id
+      name = data.azurerm_key_vault.global_keyvault.name
+    }
   }
+
 
   container = {
     name       = "cocktails-mcp"
@@ -41,10 +48,12 @@ module "aca_cocktails_mcp" {
     {
       name                  = "apim-host-key"
       key_vault_secret_name = azurerm_key_vault_secret.cocktails_mcp_apimhostkey.name
+      key_vault_key         = "cocktails"
     },
     {
       name                  = "apim-cocktails-api-subscription-key"
       key_vault_secret_name = data.azurerm_key_vault_secret.cocktails_api_mcp_subscription_key.name
+      key_vault_key         = "cocktails"
     }
   ]
 
