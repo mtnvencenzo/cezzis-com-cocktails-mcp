@@ -290,6 +290,19 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open 
 - Retrieve rich recipe data with measurements and techniques
 - Integrate seamlessly across MCP‑compatible tools and IDEs
 
+
+### Deploy cezzis-com-cocktails-mcp
+
+``` shell
+# app
+kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/cezzis-com-cocktails-mcp.yaml
+
+# image updater
+kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/image-updater.yaml
+```
+
+
+
 ## 🌐 Community & Support
 
 - 🤝 Contributing Guide – see [CONTRIBUTING.md](.github/CONTRIBUTING.md)
