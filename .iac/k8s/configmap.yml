@@ -24,7 +24,7 @@ data:
   INIT_DELAY_SECONDS: "30"
   INIT_JOB_ENABLED: "true"
   LOG_LEVEL: "info"
-  OTLP_ENDPOINT: "http://otel-collector.openobserve-platform.svc.cluster.local:4318"
+  OTLP_ENDPOINT: "http://otel-collector.elastic-platform.svc.cluster.local:4318"
   OTLP_INSECURE: "true"
   OTLP_LOG_ENABLED: "true"
   OTLP_METRICS_ENABLED: "false"
