@@ -28,8 +28,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var searchToolDescription = fmt.Sprintf(`
-	Searches cocktail recipe data from the Cezzis.com cocktails API. The search results can be paged and returns ingredients, images, instructions
+var searchToolDescription = fmt.Sprintf(`Searches cocktail recipe data from the Cezzis.com cocktails API. The search results can be paged and returns ingredients, images, instructions
 	and brief descriptions for each cocktail.
 
 	The supplied freeText search terms queries against the names and descriptions of the cocktails, their ingredients, historical 

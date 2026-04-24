@@ -28,11 +28,9 @@ import (
 // It provides HTTP endpoints for health monitoring, version information,
 // and MCP protocol communication.
 type MCPHTTPServer struct {
-	addr        string
-	mcpServer   *server.MCPServer
-	version     string
-	tlsCertFile string
-	tlsKeyFile  string
+	addr      string
+	mcpServer *server.MCPServer
+	version   string
 }
 
 // NewMCPHTTPServer creates a new MCPHTTPServer instance.
@@ -40,17 +38,13 @@ type MCPHTTPServer struct {
 //   - addr: The address to listen on (e.g., ":8080")
 //   - mcpServer: An initialized MCP protocol server
 //   - version: The server version string
-//   - tlsCertFile: Path to TLS certificate file (optional, empty string for HTTP)
-//   - tlsKeyFile: Path to TLS private key file (optional, empty string for HTTP)
 //
 // Returns an MCPHTTPServer instance configured with the provided parameters.
-func NewMCPHTTPServer(addr string, mcpServer *server.MCPServer, version string, tlsCertFile string, tlsKeyFile string) *MCPHTTPServer {
+func NewMCPHTTPServer(addr string, mcpServer *server.MCPServer, version string) *MCPHTTPServer {
 	return &MCPHTTPServer{
-		addr:        addr,
-		mcpServer:   mcpServer,
-		version:     version,
-		tlsCertFile: tlsCertFile,
-		tlsKeyFile:  tlsKeyFile,
+		addr:      addr,
+		mcpServer: mcpServer,
+		version:   version,
 	}
 }
 
@@ -59,9 +53,6 @@ func NewMCPHTTPServer(addr string, mcpServer *server.MCPServer, version string, 
 //   - /healthz: Health check endpoint
 //   - /version: Server version information
 //   - /mcp: MCP protocol endpoint with request logging
-//
-// If TLS certificate and key files are configured, the server will start with HTTPS.
-// Otherwise, it will start with HTTP.
 //
 // Returns an error if the server fails to start or encounters an error while running.
 func (s *MCPHTTPServer) Start() error {
@@ -86,16 +77,6 @@ func (s *MCPHTTPServer) Start() error {
 	}
 
 	http.Handle("/mcp", otelhttp.NewHandler(tracingMiddleware, "mcp", opts...))
-
-	// Check if TLS is configured
-	if s.tlsCertFile != "" && s.tlsKeyFile != "" {
-		telemetry.Logger.Info().
-			Str("port", s.addr).
-			Str("protocol", "https").
-			Msgf("Starting MCP Server with HTTPS on port '%s'", s.addr)
-
-		return http.ListenAndServeTLS(s.addr, s.tlsCertFile, s.tlsKeyFile, nil)
-	}
 
 	telemetry.Logger.Info().
 		Str("port", s.addr).

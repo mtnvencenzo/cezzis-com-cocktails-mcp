@@ -12,8 +12,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var authLoginDescription = `
-	This tool initiates the OAuth device login flow for accessing your Cezzis.com account
+var authLoginDescription = `This tool initiates the OAuth device login flow for accessing your Cezzis.com account
 	and personalized features.
 
 	Calling this tool will start the device code authentication process, which will return

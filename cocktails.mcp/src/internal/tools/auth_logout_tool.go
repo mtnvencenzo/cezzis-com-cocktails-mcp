@@ -12,8 +12,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var authLogoutDescription = `
-	This tool logs out a session by clearing stored authentication tokens associated with the mcp session.
+var authLogoutDescription = `This tool logs out a session by clearing stored authentication tokens associated with the mcp session.
 	Use this when the user closes the chat, wants to switch accounts, or to ensure
 	that no authentication tokens remain stored on disk.
 

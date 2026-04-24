@@ -17,8 +17,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var rateCocktailDescription = `
-This tool allows you to submit a rating (1-5 stars) for a specific cocktail.  The rating will be associated with your Cezzis.com account
+var rateCocktailDescription = `This tool allows you to submit a rating (1-5 stars) for a specific cocktail.  The rating will be associated with your Cezzis.com account
 and be reflected in the cocktail's overall rating on the website. Ratings help other users discover great cocktails and contribute to the community. 
 
 To use this tool, provide a valid cocktail ID and your star rating as an integer between 1 and 5. A cocktail ID can be obtained from the

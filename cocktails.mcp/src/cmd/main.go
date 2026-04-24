@@ -102,6 +102,12 @@ func main() {
 	mcpServer.AddTool(tools.CocktailGetTool, server.ToolHandlerFunc(tools.NewCocktailGetToolHandler(cocktailsClient).Handle))
 	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(aiSearchClient).Handle))
 
+	// Simple formating and cleaning tools (no authentication required)
+	mcpServer.AddTool(tools.CleanMarkdownTool, server.ToolHandlerFunc(tools.NewCleanMarkdownToolHandler().Handle))
+	mcpServer.AddTool(tools.RemoveEmojisTool, server.ToolHandlerFunc(tools.NewRemoveEmojisToolHandler().Handle))
+	mcpServer.AddTool(tools.RemoveHTMLTagsTool, server.ToolHandlerFunc(tools.NewRemoveHTMLTagsToolHandler().Handle))
+	mcpServer.AddTool(tools.RemoveSpecialJSONCharactersTool, server.ToolHandlerFunc(tools.NewRemoveSpecialJSONCharactersToolHandler().Handle))
+
 	// Authentication tools
 	mcpServer.AddTool(tools.AuthLoginTool, server.ToolHandlerFunc(tools.NewAuthLoginToolHandler(authManager).Handle))
 	mcpServer.AddTool(tools.AuthStatusTool, server.ToolHandlerFunc(tools.NewAuthStatusToolHandler(authManager).Handle))
@@ -117,8 +123,6 @@ func main() {
 		fmt.Sprintf(":%d", settings.Port),
 		mcpServer,
 		Version,
-		settings.TLSCertFile,
-		settings.TLSKeyFile,
 	)
 
 	// Run background init job (ensures database and tables exist after a delay)
@@ -165,7 +169,6 @@ func assertAppSettings(settings *config.AppSettings) {
 	assertPostgresSettings(settings)
 	assertInitJobSettings(settings)
 	assertOtlpSettings(settings)
-	assertTLSSettings(settings)
 }
 
 func assertAuth0Settings(settings *config.AppSettings) {
@@ -243,18 +246,5 @@ func assertOtlpSettings(settings *config.AppSettings) {
 		telemetry.Logger.Info().Msg("OTLP Log Exporter is enabled")
 	} else {
 		telemetry.Logger.Info().Msg("OTLP Log Exporter is disabled")
-	}
-}
-
-func assertTLSSettings(settings *config.AppSettings) {
-	if settings.TLSCertFile != "" && settings.TLSKeyFile != "" {
-		telemetry.Logger.Info().
-			Str("cert", settings.TLSCertFile).
-			Str("key", settings.TLSKeyFile).
-			Msg("TLS/HTTPS is enabled")
-	} else if settings.TLSCertFile != "" || settings.TLSKeyFile != "" {
-		telemetry.Logger.Warn().Msg("Warning: Both TLS_CERT_FILE and TLS_KEY_FILE must be set for HTTPS; falling back to HTTP")
-	} else {
-		telemetry.Logger.Info().Msg("TLS/HTTPS is not configured; using HTTP")
 	}
 }

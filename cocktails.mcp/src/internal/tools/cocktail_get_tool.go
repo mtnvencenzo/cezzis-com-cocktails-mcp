@@ -29,8 +29,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var getToolDescription = fmt.Sprintf(`
-	Gets the complete cocktail recipe data from the Cezzis.com cocktails API for a given cocktailId.
+var getToolDescription = fmt.Sprintf(`Gets the complete cocktail recipe data from the Cezzis.com cocktails API for a given cocktailId.
 
 	The cocktail data includes ingredients images, and instructions, historical and geographic information, 
 	descriptions and instructions for each cocktail.  It also returns ratings and reviews for each cocktail.

@@ -11,8 +11,7 @@ import (
 	"cezzis.com/cezzis-mcp-server/internal/telemetry"
 )
 
-var authStatusDescription = `
-	Use this tool to check the current authentication status for Cezzis.com account access.
+var authStatusDescription = `Use this tool to check the current authentication status for Cezzis.com account access.
 	This tool returns whether you are currently authenticated and can access
 	personalized features like cocktail favorites, ratings, and profile management for your Cezzis.com account.
 
