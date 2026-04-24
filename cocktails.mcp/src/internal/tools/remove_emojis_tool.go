@@ -46,7 +46,7 @@ var RemoveEmojisTool = mcp.NewTool(
 	mcp.WithDescription(removeEmojisToolDescription),
 	mcp.WithString("content",
 		mcp.Required(),
-		mcp.Description("The content to clean. This can include cocktail information in HTML format or with html tags within it."),
+		mcp.Description("The content to clean. This can include cocktail information in HTML format, plain text or markdown."),
 	),
 )
 

@@ -46,7 +46,7 @@ var RemoveHTMLTagsTool = mcp.NewTool(
 	mcp.WithDescription(removeHTMLTagsToolDescription),
 	mcp.WithString("content",
 		mcp.Required(),
-		mcp.Description("The HTML content to clean. This can include cocktail information in HTML format or with html tags within it."),
+		mcp.Description("The content to clean. This can include cocktail information in HTML format, plain text or markdown."),
 	),
 )
 
@@ -94,6 +94,9 @@ func cleanHTML(content string) (string, error) {
 	cleaned, err := extractor.PlainText(content)
 	if err != nil {
 		return "", err
+	}
+	if cleaned == nil {
+		return "", nil
 	}
 	return *cleaned, nil
 }

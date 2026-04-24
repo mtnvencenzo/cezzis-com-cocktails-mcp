@@ -95,5 +95,8 @@ func cleanMarkdown(content string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if cleaned == nil {
+		return "", nil
+	}
 	return *cleaned, nil
 }
