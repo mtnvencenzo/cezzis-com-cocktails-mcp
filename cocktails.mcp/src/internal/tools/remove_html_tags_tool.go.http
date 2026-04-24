@@ -1,0 +1,41 @@
+
+// ------------------------------------------------------------
+// Get Healthz
+// ------------------------------------------------------------
+
+GET {{host}}/healthz
+Accept: application/json
+
+###
+
+// ------------------------------------------------------------
+// Get Version
+// ------------------------------------------------------------
+
+GET {{host}}/version
+Accept: application/json
+
+###
+
+// ------------------------------------------------------------
+// POST Remove HTML Tags
+// ------------------------------------------------------------
+
+POST {{host}}/mcp
+Accept: application/json
+Content-Type: application/json
+Mcp-Session-Id: mcp-session-a94254f7-0378-45d1-822f-efcea775a5a8
+
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "tools/call",
+  "params": {
+    "name": "remove_html_tags",
+    "arguments": {
+      "content": "This is a <b>test</b> message with <i>HTML</i> tags."
+    }
+  }
+}
+
+###

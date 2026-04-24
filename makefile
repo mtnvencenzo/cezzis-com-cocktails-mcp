@@ -22,7 +22,7 @@ tidy:
 	cd ./cocktails.mcp/src && go mod tidy
 
 lint:
-	cd ./cocktails.mcp/src && golangci-lint run --fix && dotenv-linter fix
+	cd ./cocktails.mcp/src && golangci-lint run --fix && dotenv-linter fix .
 	
 imports:
 	goimports-reviser -rm-unused -format -recursive ./cocktails.mcp/src

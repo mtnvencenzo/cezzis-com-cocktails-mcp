@@ -114,14 +114,6 @@ type AppSettings struct {
 	// Default is true.
 	OTLPMetricsEnabled bool `env:"OTLP_METRICS_ENABLED" envDefault:"true"`
 
-	// TLSCertFile is the path to the TLS certificate file for HTTPS.
-	// Example: "/certs/server.crt"
-	TLSCertFile string `env:"TLS_CERT_FILE" envDefault:""`
-
-	// TLSKeyFile is the path to the TLS private key file for HTTPS.
-	// Example: "/certs/server.key"
-	TLSKeyFile string `env:"TLS_KEY_FILE" envDefault:""`
-
 	// CezzisBaseURL is the base URL for Cezzis.com website.
 	// Example: "https://www.cezzis.com"
 	CezzisBaseURL string `env:"CEZZIS_BASE_URL" envDefault:""`
