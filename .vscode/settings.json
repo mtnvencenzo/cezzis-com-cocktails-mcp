@@ -9,7 +9,8 @@
           "host": "http://localhost:7999"
         },
         "prod-apim": {
-          "host": "https://api.cezzis.com/prd/cocktails/mcp/v1"
+          "host": "https://www.cezzis.com/prd/cocktails",
+          "xKey": "-- INSERT PROD API KEY HERE --"
         },
         "prod-k8s": {
           "host": "http://cezzis-cocktails-mcp.127.0.0.1.sslip.io"
