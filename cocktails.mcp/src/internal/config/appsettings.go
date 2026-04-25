@@ -58,8 +58,8 @@ type AppSettings struct {
 	// Example: "your-tenant.us.auth0.com" or "login.cezzis.com"
 	Auth0Domain string `env:"AUTH0_DOMAIN"`
 
-	// Auth0ClientID is the public client identifier for your Auth0 Application (Native/Public).
-	Auth0ClientID string `env:"AUTH0_CLIENT_ID"`
+	// Auth0NativeClientID is the public client identifier for your Auth0 Application (Native/Public).
+	Auth0NativeClientID string `env:"AUTH0_NATIVE_CLIENT_ID"`
 
 	// Auth0Audience is the API Identifier to request an access token for.
 	// Example: "https://api.cezzis.com/cocktails"

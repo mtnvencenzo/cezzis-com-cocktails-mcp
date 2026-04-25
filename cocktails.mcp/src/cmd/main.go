@@ -173,8 +173,8 @@ func assertAuth0Settings(settings *config.AppSettings) {
 		telemetry.Logger.Warn().Msg("Warning: AUTH0_DOMAIN is not set; authentication will fail")
 	}
 
-	if settings.Auth0ClientID == "" {
-		telemetry.Logger.Warn().Msg("Warning: AUTH0_CLIENT_ID is not set; authentication will fail")
+	if settings.Auth0NativeClientID == "" {
+		telemetry.Logger.Warn().Msg("Warning: AUTH0_NATIVE_CLIENT_ID is not set; authentication will fail")
 	}
 
 	if settings.Auth0AccountsAPIAudience == "" {

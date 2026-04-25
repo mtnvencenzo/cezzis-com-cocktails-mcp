@@ -36,13 +36,13 @@ jobs:
           fetch-depth: 0
       
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v4.2.0
+        uses: gittools/actions/gitversion/setup@v4.5.0
         with:
           versionSpec: "6.x"
 
       - name: Use GitVersion
         id: gitVersion
-        uses: gittools/actions/gitversion/execute@v4.2.0
+        uses: gittools/actions/gitversion/execute@v4.5.0
         with:
           configFilePath: ./GitVersion.yml
 
@@ -51,7 +51,7 @@ jobs:
     uses: mtnvencenzo/workflows/.github/workflows/go-build.yaml@main
     needs: [gitVersion]
     with:
-      go_version: '1.25.1'
+      go_version: '1.22.2'
       go_mod_directory: './cocktails.mcp/src'
       go_main_directory: 'cmd'
       go_output_directory: 'dist/linux'
@@ -97,11 +97,11 @@ jobs:
       contents: read
       pull-requests: write
     with:
-      lint_only: true # disabled for now until re-deployed to an environment
+      lint_only: false
       working_directory: .iac/terraform
       environment_name: prd
       allow_deploy: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
-      terraform_version: 1.11.4
+      terraform_version: 1.11.8
       arm_client_id: ${{ vars.ARM_CLIENT_ID }}
       arm_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
       arm_tenant_id: ${{ vars.ARM_TENANT_ID }}

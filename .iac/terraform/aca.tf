@@ -14,7 +14,9 @@ module "aca_cocktails_mcp" {
   resource_group_location      = data.azurerm_resource_group.cocktails_resource_group.location
   container_app_environment_id = data.azurerm_container_app_environment.cae_shared.id
   ingress_target_port          = "8080"
-  startup_probe_relative_url   = "/healthz"
+  startup_probe_relative_url   = "/mcp/v1/healthz"
+  readiness_probe_relative_url = "/mcp/v1/healthz"
+  liveness_probe_relative_url  = "/mcp/v1/healthz"
 
   tags = local.tags
 
@@ -50,36 +52,53 @@ module "aca_cocktails_mcp" {
       key_vault_key         = "cocktails"
     },
     {
-      name                  = "apim-cocktails-api-subscription-key"
-      key_vault_secret_name = data.azurerm_key_vault_secret.cocktails_api_mcp_subscription_key.name
-      key_vault_key         = "cocktails"
-    }
+      name                  = "cocktails-apim-subscription-key"
+      key_vault_secret_name = "cocktails-api-cezzis-com-subscription-primary-key"
+    },
+    {
+      name                  = "accounts-apim-subscription-key"
+      key_vault_secret_name = "accounts-api-cezzis-com-subscription-primary-key"
+    },
+    {
+      name                  = "aisearch-apim-subscription-key"
+      key_vault_secret_name = "aisearch-api-cezzis-com-subscription-primary-key"
+    },
+    {
+      name                  = "antiforgery-signing-secret"
+      key_vault_secret_name = data.azurerm_key_vault_secret.antiforgery_signing_secret.name
+    },
+    {
+      name                  = "postgres-password"
+      key_vault_secret_name = data.azurerm_key_vault_secret.postgres_password.name
+      key_vault_key         = "global"
+    },
+    {
+      name                  = "otel-collector-api-key"
+      key_vault_secret_name = "otel-collector-api-key-1"
+      key_vault_key         = "global"
+    },
   ]
 
   env_vars = [
     {
-      name  = "APPLICATIONINSIGHTS_CONNECTION_STRING"
-      value = data.azurerm_application_insights.appi.connection_string
-    },
-    {
-      name  = "APPLICATIONINSIGHTS_INSTRUMENTATIONKEY"
-      value = data.azurerm_application_insights.appi.instrumentation_key
-    },
-    {
-      name  = "ApplicationInsightsAgent_EXTENSION_VERSION"
-      value = "~2"
+      name  = "ACCOUNTS_API_HOST"
+      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.accounts_api_version_v1.path}/${data.azurerm_api_management_api.accounts_api_version_v1.version}", "/api/${data.azurerm_api_management_api.accounts_api_version_v1.version}")
     },
     {
       name  = "COCKTAILS_API_HOST"
-      value = "https://api.cezzis.com/prd/cocktails"
+      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.cocktails_api_version_v1.path}/${data.azurerm_api_management_api.cocktails_api_version_v1.version}", "/api/${data.azurerm_api_management_api.cocktails_api_version_v1.version}")
     },
     {
-      name  = "AUTH0_AUDIENCE"
-      value = var.auth0_audience
+      name  = "AISEARCH_API_HOST"
+      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.aisearch_api_version_v1.path}/${data.azurerm_api_management_api.aisearch_api_version_v1.version}", "/api/${data.azurerm_api_management_api.aisearch_api_version_v1.version}")
     },
     {
-      name  = "AUTH0_CLIENT_ID"
-      value = var.auth0_naive_client_id
+      name  = "AUTH0_ACCOUNTS_API_AUDIENCE"
+      value = var.auth0_accounts_api_audience
+    },
+    {
+      name  = "AUTH0_NATIVE_CLIENT_ID"
+      value = var.auth0_native_client_id
     },
     {
       name  = "AUTH0_DOMAIN"
@@ -90,32 +109,24 @@ module "aca_cocktails_mcp" {
       value = var.auth0_scopes
     },
     {
-      name  = "COSMOS_ACCOUNT_ENDPOINT"
-      value = data.azurerm_cosmosdb_account.cosmosdb_account.endpoint
+      name  = "CEZZIS_BASE_URL"
+      value = var.app_url
     },
     {
-      name  = "COSMOS_CONNECTION_STRING"
-      value = ""
+      name  = "INIT_DELAY_SECONDS"
+      value = var.init_delay_seconds
     },
     {
-      name  = "COSMOS_CONTAINER_NAME"
-      value = "cezzis-${var.environment}-device-auth"
-    },
-    {
-      name  = "COSMOS_DATABASE_NAME"
-      value = var.cocktails_cosmosdb_database_name
-    },
-    {
-      name  = "ENV"
-      value = var.environment
+      name  = "INIT_JOB_ENABLED"
+      value = var.init_job_enabled
     },
     {
       name  = "LOG_LEVEL"
-      value = "info"
+      value = var.log_level
     },
     {
       name  = "OTLP_ENDPOINT"
-      value = "https://${data.azurerm_container_app.otel_collector.ingress[0].fqdn}"
+      value = "http://${data.azurerm_container_app.otel_collector.name}:4318"
     },
     {
       name  = "OTLP_HEADERS"
@@ -123,34 +134,66 @@ module "aca_cocktails_mcp" {
     },
     {
       name  = "OTLP_INSECURE"
-      value = "false"
+      value = var.otlp_insecure
     },
     {
       name  = "OTLP_LOG_ENABLED"
-      value = "true"
+      value = var.otlp_log_enabled
     },
     {
       name  = "OTLP_METRICS_ENABLED"
-      value = "false"
+      value = var.otlp_metrics_enabled
     },
     {
       name  = "OTLP_TRACE_ENABLED"
-      value = "true"
+      value = var.otlp_trace_enabled
     },
     {
       name  = "PORT"
       value = var.port
     },
+    {
+      name  = "POSTGRES_DB"
+      value = var.postgres_db
+    },
+    {
+      name  = "POSTGRES_HOST"
+      value = data.azurerm_postgresql_flexible_server.postgres.fqdn
+    },
+    {
+      name  = "POSTGRES_PORT"
+      value = var.postgres_port
+    },
+    {
+      name  = "POSTGRES_USER"
+      value = var.postgres_user
+    },
+    {
+      name  = "ENV"
+      value = var.environment
+    },
   ]
 
   env_secret_vars = [
     {
-      name        = "CocktailsMcp__ApimHostKey"
+      name        = "APIM_HOST_KEY"
       secret_name = "apim-host-key"
     },
     {
       name        = "COCKTAILS_API_XKEY"
       secret_name = "apim-cocktails-api-subscription-key"
+    },
+    {
+      name        = "ACCOUNTS_API_XKEY"
+      secret_name = "accounts-apim-subscription-key"
+    },
+    {
+      name        = "AISEARCH_API_XKEY"
+      secret_name = "aisearch-apim-subscription-key"
+    },
+    {
+      name        = "POSTGRES_PASSWORD"
+      secret_name = "postgres-password"
     }
   ]
 }

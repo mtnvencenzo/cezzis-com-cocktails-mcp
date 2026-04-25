@@ -60,13 +60,13 @@ func NewOAuthFlowManager(pool *pgxpool.Pool) *OAuthFlowManager {
 
 // StartDeviceFlow initiates the device code authentication flow
 func (auth *OAuthFlowManager) StartDeviceFlow(ctx context.Context) (*DeviceCodeResponse, error) {
-	if strings.TrimSpace(auth.appSettings.Auth0Domain) == "" || strings.TrimSpace(auth.appSettings.Auth0ClientID) == "" {
-		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
+	if strings.TrimSpace(auth.appSettings.Auth0Domain) == "" || strings.TrimSpace(auth.appSettings.Auth0NativeClientID) == "" {
+		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_NATIVE_CLIENT_ID")
 	}
 	deviceEndpoint := fmt.Sprintf("https://%s/oauth/device/code", strings.TrimRight(auth.appSettings.Auth0Domain, "/"))
 
 	data := url.Values{
-		"client_id": {auth.appSettings.Auth0ClientID},
+		"client_id": {auth.appSettings.Auth0NativeClientID},
 		"scope":     {auth.appSettings.Auth0Scopes},
 	}
 	audience := strings.TrimSpace(auth.appSettings.Auth0AccountsAPIAudience)
@@ -152,7 +152,7 @@ func (auth *OAuthFlowManager) PollForTokens(ctx context.Context, deviceCode *Dev
 
 		data := url.Values{
 			"grant_type":  {"urn:ietf:params:oauth:grant-type:device_code"},
-			"client_id":   {auth.appSettings.Auth0ClientID},
+			"client_id":   {auth.appSettings.Auth0NativeClientID},
 			"device_code": {deviceCode.DeviceCode},
 		}
 		audience := strings.TrimSpace(auth.appSettings.Auth0AccountsAPIAudience)
@@ -270,15 +270,15 @@ func (auth *OAuthFlowManager) refreshAccessToken(ctx context.Context, sessionID 
 		return nil, fmt.Errorf("no refresh token available")
 	}
 
-	if strings.TrimSpace(auth.appSettings.Auth0Domain) == "" || strings.TrimSpace(auth.appSettings.Auth0ClientID) == "" {
-		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_CLIENT_ID")
+	if strings.TrimSpace(auth.appSettings.Auth0Domain) == "" || strings.TrimSpace(auth.appSettings.Auth0NativeClientID) == "" {
+		return nil, fmt.Errorf("Auth0 not configured: set AUTH0_DOMAIN and AUTH0_NATIVE_CLIENT_ID")
 	}
 
 	tokenURL := fmt.Sprintf("https://%s/oauth/token", strings.TrimRight(auth.appSettings.Auth0Domain, "/"))
 
 	data := url.Values{
 		"grant_type":    {"refresh_token"},
-		"client_id":     {auth.appSettings.Auth0ClientID},
+		"client_id":     {auth.appSettings.Auth0NativeClientID},
 		"refresh_token": {token.RefreshToken},
 		"scope":         {token.Scope},
 	}
