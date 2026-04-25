@@ -43,30 +43,19 @@ data "azurerm_key_vault_secret" "antiforgery_signing_secret" {
   key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
 }
 
-data "azurerm_api_management_api" "cocktails_api_version_v1" {
-  name                = "${var.environment}-cocktails-api-v1"
-  api_management_name = data.azurerm_api_management.apim_shared.name
-  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
-  revision            = "v1"
+data "azurerm_container_app" "cocktails_api" {
+  name                = "aca-${var.sub}-${var.region}-${var.environment}-${var.domain}api-${var.sequence}"
+  resource_group_name = data.azurerm_resource_group.cocktails_resource_group.name
 }
 
-data "azurerm_api_management_api" "accounts_api_version_v1" {
-  name                = "${var.environment}-accounts-api-v1"
-  api_management_name = data.azurerm_api_management.apim_shared.name
-  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
-  revision            = "v1"
+data "azurerm_container_app" "accounts_api" {
+  name                = "aca-${var.sub}-${var.region}-${var.environment}-accountsapi-${var.sequence}"
+  resource_group_name = data.azurerm_resource_group.cocktails_resource_group.name
 }
 
-data "azurerm_api_management_api" "aisearch_api_version_v1" {
-  name                = "${var.environment}-aisearch-api-v1"
-  api_management_name = data.azurerm_api_management.apim_shared.name
-  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
-  revision            = "v1"
-}
-
-data "azurerm_key_vault_secret" "cocktails_api_mcp_subscription_key" {
-  name         = "cocktails-api-mcp-subscription-primary-key"
-  key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
+data "azurerm_container_app" "aisearch_api" {
+  name                = "aca-${var.sub}-${var.region}-${var.environment}-aisearchapi-${var.sequence}"
+  resource_group_name = data.azurerm_resource_group.cocktails_resource_group.name
 }
 
 data "azurerm_key_vault_secret" "otel_collector_api_key" {
@@ -92,9 +81,4 @@ data "azurerm_postgresql_flexible_server" "postgres" {
 data "azurerm_container_app" "otel_collector" {
   name                = "aca-${var.sub}-${var.region}-${var.global_environment}-otelcol-${var.sequence}"
   resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
-}
-
-data "azurerm_container_app" "cocktails_api" {
-  name                = "aca-${var.sub}-${var.region}-${var.environment}-${var.domain}api-${var.sequence}"
-  resource_group_name = data.azurerm_resource_group.cocktails_resource_group.name
 }

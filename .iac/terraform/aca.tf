@@ -45,52 +45,18 @@ module "aca_cocktails_mcp" {
     memory     = "0.5Gi"
   }
 
-  secrets = [
-    {
-      name                  = "apim-host-key"
-      key_vault_secret_name = azurerm_key_vault_secret.cocktails_mcp_apimhostkey.name
-      key_vault_key         = "cocktails"
-    },
-    {
-      name                  = "cocktails-apim-subscription-key"
-      key_vault_secret_name = "cocktails-api-cezzis-com-subscription-primary-key"
-    },
-    {
-      name                  = "accounts-apim-subscription-key"
-      key_vault_secret_name = "accounts-api-cezzis-com-subscription-primary-key"
-    },
-    {
-      name                  = "aisearch-apim-subscription-key"
-      key_vault_secret_name = "aisearch-api-cezzis-com-subscription-primary-key"
-    },
-    {
-      name                  = "antiforgery-signing-secret"
-      key_vault_secret_name = data.azurerm_key_vault_secret.antiforgery_signing_secret.name
-    },
-    {
-      name                  = "postgres-password"
-      key_vault_secret_name = data.azurerm_key_vault_secret.postgres_password.name
-      key_vault_key         = "global"
-    },
-    {
-      name                  = "otel-collector-api-key"
-      key_vault_secret_name = "otel-collector-api-key-1"
-      key_vault_key         = "global"
-    },
-  ]
-
   env_vars = [
     {
       name  = "ACCOUNTS_API_HOST"
-      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.accounts_api_version_v1.path}/${data.azurerm_api_management_api.accounts_api_version_v1.version}", "/api/${data.azurerm_api_management_api.accounts_api_version_v1.version}")
+      value = "https://${data.azurerm_container_app.accounts_api.ingress[0].fqdn}"
     },
     {
       name  = "COCKTAILS_API_HOST"
-      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.cocktails_api_version_v1.path}/${data.azurerm_api_management_api.cocktails_api_version_v1.version}", "/api/${data.azurerm_api_management_api.cocktails_api_version_v1.version}")
+      value = "https://${data.azurerm_container_app.cocktails_api.ingress[0].fqdn}"
     },
     {
       name  = "AISEARCH_API_HOST"
-      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.aisearch_api_version_v1.path}/${data.azurerm_api_management_api.aisearch_api_version_v1.version}", "/api/${data.azurerm_api_management_api.aisearch_api_version_v1.version}")
+      value = "https://${data.azurerm_container_app.aisearch_api.ingress[0].fqdn}"
     },
     {
       name  = "AUTH0_ACCOUNTS_API_AUDIENCE"
@@ -174,22 +140,32 @@ module "aca_cocktails_mcp" {
     },
   ]
 
+  secrets = [
+    {
+      name                  = "apim-host-key"
+      key_vault_secret_name = azurerm_key_vault_secret.cocktails_mcp_apimhostkey.name
+      key_vault_key         = "cocktails"
+    },
+    {
+      name                  = "antiforgery-signing-secret"
+      key_vault_secret_name = data.azurerm_key_vault_secret.antiforgery_signing_secret.name
+    },
+    {
+      name                  = "postgres-password"
+      key_vault_secret_name = data.azurerm_key_vault_secret.postgres_password.name
+      key_vault_key         = "global"
+    },
+    {
+      name                  = "otel-collector-api-key"
+      key_vault_secret_name = "otel-collector-api-key-1"
+      key_vault_key         = "global"
+    },
+  ]
+
   env_secret_vars = [
     {
       name        = "APIM_HOST_KEY"
       secret_name = "apim-host-key"
-    },
-    {
-      name        = "COCKTAILS_API_XKEY"
-      secret_name = "apim-cocktails-api-subscription-key"
-    },
-    {
-      name        = "ACCOUNTS_API_XKEY"
-      secret_name = "accounts-apim-subscription-key"
-    },
-    {
-      name        = "AISEARCH_API_XKEY"
-      secret_name = "aisearch-apim-subscription-key"
     },
     {
       name        = "POSTGRES_PASSWORD"
