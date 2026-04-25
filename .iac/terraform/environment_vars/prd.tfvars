@@ -1,7 +1,8 @@
-environment   = "prd"
-postgres_db   = "cezzis-cocktailsmcp-db-loc"
-postgres_port = "5432"
-postgres_user = "admin"
+environment      = "prd"
+postgres_db      = "cezzis-cocktailsmcp-db-loc"
+postgres_port    = "5432"
+postgres_user    = "admin"
+postgres_use_tls = true
 allowed_origins = [
   "https://www.cezzis.com",
   "https://cezzis.com",

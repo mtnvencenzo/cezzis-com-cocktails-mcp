@@ -125,6 +125,10 @@ module "aca_cocktails_mcp" {
       value = data.azurerm_postgresql_flexible_server.postgres.fqdn
     },
     {
+      name  = "POSTGRES_USE_TLS"
+      value = var.postgres_use_tls
+    },
+    {
       name  = "POSTGRES_PORT"
       value = var.postgres_port
     },

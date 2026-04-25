@@ -3,6 +3,7 @@ package db
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -15,7 +16,7 @@ import (
 
 // NewPool creates a new PostgreSQL connection pool using the application settings.
 func NewPool(ctx context.Context, settings *config.AppSettings) (*pgxpool.Pool, error) {
-	poolConfig, err := pgxpool.ParseConfig("sslmode=prefer")
+	poolConfig, err := pgxpool.ParseConfig("")
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize postgres pool config: %w", err)
 	}
@@ -42,7 +43,7 @@ func EnsureDatabaseExists(ctx context.Context, settings *config.AppSettings) err
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	adminConnConfig, err := pgx.ParseConfig("sslmode=prefer")
+	adminConnConfig, err := pgx.ParseConfig("")
 	if err != nil {
 		return fmt.Errorf("failed to initialize postgres admin config: %w", err)
 	}
@@ -108,6 +109,13 @@ func applyPostgresConnSettings(connConfig *pgx.ConnConfig, settings *config.AppS
 	connConfig.Database = databaseName
 	connConfig.User = settings.PostgresUser
 	connConfig.Password = settings.PostgresPassword
+	connConfig.TLSConfig = nil
+	if settings.PostgresUseTLS {
+		connConfig.TLSConfig = &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			ServerName: settings.PostgresHost,
+		}
+	}
 }
 
 // isValidIdentifier checks that a database name contains only safe characters.

@@ -85,6 +85,9 @@ type AppSettings struct {
 	// PostgresPassword is the password for the PostgreSQL connection.
 	PostgresPassword string `env:"POSTGRES_PASSWORD"`
 
+	// PostgresUseTLS controls whether PostgreSQL connections use TLS.
+	PostgresUseTLS bool `env:"POSTGRES_USE_TLS" envDefault:"false"`
+
 	// InitJobEnabled controls whether the background init job runs at startup.
 	InitJobEnabled bool `env:"INIT_JOB_ENABLED" envDefault:"true"`
 
