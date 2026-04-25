@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"net/url"
 	"testing"
 
 	"cezzis.com/cezzis-mcp-server/internal/config"
@@ -49,5 +50,51 @@ func Test_appsettings_produces_correct_jwks_url(t *testing.T) {
 	// assert
 	if jwks != expectedJWKS {
 		t.Errorf("Expected GetAuth0JWKSURI() to be %s, got %s", expectedJWKS, jwks)
+	}
+}
+
+func Test_appsettings_escapes_postgres_userinfo(t *testing.T) {
+	settings := &config.AppSettings{
+		PostgresHost:     "psqlfs-vec-eus2-glo-shared-001.postgres.database.azure.com",
+		PostgresPort:     5432,
+		PostgresDBName:   "cezzis-cocktailsmcp-db-loc",
+		PostgresUser:     "admin",
+		PostgresPassword: "pa:ss@wo/rd?x#y%z",
+	}
+
+	connString := settings.PostgresConnString()
+	parsedURL, err := url.Parse(connString)
+	if err != nil {
+		t.Fatalf("expected PostgresConnString() to produce a valid URL, got error: %v", err)
+	}
+
+	password, hasPassword := parsedURL.User.Password()
+	if !hasPassword {
+		t.Fatal("expected PostgresConnString() to include a password")
+	}
+
+	if parsedURL.User.Username() != settings.PostgresUser {
+		t.Errorf("expected username %q, got %q", settings.PostgresUser, parsedURL.User.Username())
+	}
+
+	if password != settings.PostgresPassword {
+		t.Errorf("expected password %q, got %q", settings.PostgresPassword, password)
+	}
+
+	if parsedURL.Path != "/"+settings.PostgresDBName {
+		t.Errorf("expected database path %q, got %q", "/"+settings.PostgresDBName, parsedURL.Path)
+	}
+
+	adminConnString := settings.PostgresAdminConnString()
+	adminURL, err := url.Parse(adminConnString)
+	if err != nil {
+		t.Fatalf("expected PostgresAdminConnString() to produce a valid URL, got error: %v", err)
+	}
+
+	if adminURL.Path != "/postgres" {
+		t.Errorf("expected admin database path %q, got %q", "/postgres", adminURL.Path)
+	}
+	if adminPassword, _ := adminURL.User.Password(); adminPassword != settings.PostgresPassword {
+		t.Errorf("expected admin password %q, got %q", settings.PostgresPassword, adminPassword)
 	}
 }

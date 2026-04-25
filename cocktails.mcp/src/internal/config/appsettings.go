@@ -13,6 +13,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/caarlos0/env/v11"
 )
@@ -150,12 +151,21 @@ func (a *AppSettings) GetAuth0JWKSURI() string {
 
 // PostgresConnString assembles a PostgreSQL connection string from decomposed settings.
 func (a *AppSettings) PostgresConnString() string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s",
-		a.PostgresUser, a.PostgresPassword, a.PostgresHost, a.PostgresPort, a.PostgresDBName)
+	return a.postgresConnString(a.PostgresDBName)
 }
 
 // PostgresAdminConnString returns a connection string targeting the default 'postgres' database.
 func (a *AppSettings) PostgresAdminConnString() string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%d/postgres",
-		a.PostgresUser, a.PostgresPassword, a.PostgresHost, a.PostgresPort)
+	return a.postgresConnString("postgres")
+}
+
+func (a *AppSettings) postgresConnString(databaseName string) string {
+	connURL := &url.URL{
+		Scheme: "postgresql",
+		User:   url.UserPassword(a.PostgresUser, a.PostgresPassword),
+		Host:   fmt.Sprintf("%s:%d", a.PostgresHost, a.PostgresPort),
+		Path:   databaseName,
+	}
+
+	return connURL.String()
 }
