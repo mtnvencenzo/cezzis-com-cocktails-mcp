@@ -1,19 +1,3 @@
-module "apim_cocktails_mcp_jwtvalidate_policy" {
-  source = "git::ssh://git@github.com/mtnvencenzo/Terraform-Modules.git//modules/apim-jwtvalidate-policy-fragment"
-  providers = {
-    azurerm = azurerm
-  }
-  environment        = var.environment
-  domain             = var.domain
-  name_discriminator = "mcp"
-  apim_instance_id   = data.azurerm_api_management.apim_shared.id
-  oidc_config_url    = "https://${var.auth0_domain}/.well-known/openid-configuration"
-  audiences = [
-    var.auth0_audience
-  ]
-  issuers = ["https://${var.auth0_domain}/"]
-}
-
 module "apim_cocktails_mcp_cors_policy" {
   source = "git::ssh://git@github.com/mtnvencenzo/Terraform-Modules.git//modules/apim-cors-policy-fragment"
   providers = {

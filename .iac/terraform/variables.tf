@@ -94,7 +94,7 @@ variable "port" {
   }
 }
 
-variable "postgres_database_name" {
+variable "postgres_db" {
   type = string
 }
 
