@@ -90,7 +90,7 @@ module "aca_cocktails_mcp" {
     },
     {
       name  = "OTLP_ENDPOINT"
-      value = "https://${data.azurerm_container_app.otel_collector.name}:4318"
+      value = "https://${data.azurerm_container_app.otel_collector.ingress[0].fqdn}"
     },
     {
       name  = "OTLP_HEADERS"
