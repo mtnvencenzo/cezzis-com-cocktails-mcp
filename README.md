@@ -80,7 +80,7 @@ The server exposes the following MCP tools:
 - Returns: Text confirmation of submitted rating
 
 ### HTTP Endpoints
-- `GET /healthz` – Health check
+- `GET /health` – Health check
 - `GET /version` – Version info
 - `GET|POST /mcp` – Streamable MCP endpoint over HTTP
 

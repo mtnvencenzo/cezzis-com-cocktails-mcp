@@ -65,7 +65,7 @@ module "apim_cocktails_mcp" {
     {
       display_name        = "Get Health Status"
       method              = "GET"
-      url_template        = "/healthz"
+      url_template        = "/health"
       description         = "Get health"
       success_status_code = 200
       policy_xml_content  = local.apim_anonymous_operation_policy

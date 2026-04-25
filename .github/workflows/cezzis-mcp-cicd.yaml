@@ -136,7 +136,7 @@ jobs:
         uses: mtnvencenzo/workflows/.github/actions/api-call@main
         with:
           enabled: true
-          url: https://api.cezzis.com/prd/cocktails/mcp/v1/healthz
+          url: https://api.cezzis.com/prd/cocktails/mcp/v1/health
           statusCode: 200
           authHeader: X-Key
           method: GET
