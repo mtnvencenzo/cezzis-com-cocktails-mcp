@@ -48,15 +48,15 @@ module "aca_cocktails_mcp" {
   env_vars = [
     {
       name  = "ACCOUNTS_API_HOST"
-      value = "https://${data.azurerm_container_app.accounts_api.ingress[0].fqdn}"
+      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.aisearch_api_version_v1.path}/${data.azurerm_api_management_api.aisearch_api_version_v1.version}", "/api/${data.azurerm_api_management_api.aisearch_api_version_v1.version}")
     },
     {
       name  = "COCKTAILS_API_HOST"
-      value = "https://${data.azurerm_container_app.cocktails_api.ingress[0].fqdn}"
+      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.cocktails_api_version_v1.path}/${data.azurerm_api_management_api.cocktails_api_version_v1.version}", "/api/${data.azurerm_api_management_api.cocktails_api_version_v1.version}")
     },
     {
       name  = "AISEARCH_API_HOST"
-      value = "https://${data.azurerm_container_app.aisearch_api.ingress[0].fqdn}"
+      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.aisearch_api_version_v1.path}/${data.azurerm_api_management_api.aisearch_api_version_v1.version}", "/api/${data.azurerm_api_management_api.aisearch_api_version_v1.version}")
     },
     {
       name  = "AUTH0_ACCOUNTS_API_AUDIENCE"
@@ -146,6 +146,21 @@ module "aca_cocktails_mcp" {
 
   secrets = [
     {
+      name                  = "cocktails-apim-subscription-key"
+      key_vault_secret_name = "cocktails-api-cezzis-com-subscription-primary-key"
+      key_vault_key         = "cocktails"
+    },
+    {
+      name                  = "accounts-apim-subscription-key"
+      key_vault_secret_name = "accounts-api-cezzis-com-subscription-primary-key"
+      key_vault_key         = "cocktails"
+    },
+    {
+      name                  = "aisearch-apim-subscription-key"
+      key_vault_secret_name = "aisearch-api-cezzis-com-subscription-primary-key"
+      key_vault_key         = "cocktails"
+    },
+    {
       name                  = "apim-host-key"
       key_vault_secret_name = azurerm_key_vault_secret.cocktails_mcp_apimhostkey.name
       key_vault_key         = "cocktails"
@@ -175,6 +190,18 @@ module "aca_cocktails_mcp" {
     {
       name        = "POSTGRES_PASSWORD"
       secret_name = "postgres-password"
-    }
+    },
+    {
+      name        = "COCKTAILS_API_XKEY"
+      secret_name = "cocktails-apim-subscription-key"
+    },
+    {
+      name        = "ACCOUNTS_API_XKEY"
+      secret_name = "accounts-apim-subscription-key"
+    },
+    {
+      name        = "AISEARCH_API_XKEY"
+      secret_name = "aisearch-apim-subscription-key"
+    },
   ]
 }
