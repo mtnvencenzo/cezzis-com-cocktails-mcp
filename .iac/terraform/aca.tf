@@ -90,7 +90,7 @@ module "aca_cocktails_mcp" {
     },
     {
       name  = "OTLP_ENDPOINT"
-      value = "http://${data.azurerm_container_app.otel_collector.name}:4318"
+      value = "https://${data.azurerm_container_app.otel_collector.name}"
     },
     {
       name  = "OTLP_HEADERS"
@@ -134,7 +134,7 @@ module "aca_cocktails_mcp" {
     },
     {
       name  = "POSTGRES_USER"
-      value = var.postgres_user
+      value = data.azurerm_key_vault_secret.postgres_username.value
     },
     {
       name  = "ENV"

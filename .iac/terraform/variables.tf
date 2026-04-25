@@ -107,10 +107,6 @@ variable "postgres_port" {
   }
 }
 
-variable "postgres_user" {
-  type = string
-}
-
 variable "postgres_use_tls" {
   type        = bool
   description = "Whether to use TLS for PostgreSQL connections"
