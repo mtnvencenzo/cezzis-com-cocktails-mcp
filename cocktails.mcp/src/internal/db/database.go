@@ -15,16 +15,12 @@ import (
 
 // NewPool creates a new PostgreSQL connection pool using the application settings.
 func NewPool(ctx context.Context, settings *config.AppSettings) (*pgxpool.Pool, error) {
-	poolConfig, err := pgxpool.ParseConfig("")
+	poolConfig, err := pgxpool.ParseConfig("sslmode=prefer")
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize postgres pool config: %w", err)
 	}
 
-	poolConfig.ConnConfig.Host = settings.PostgresHost
-	poolConfig.ConnConfig.Port = uint16(settings.PostgresPort)
-	poolConfig.ConnConfig.Database = settings.PostgresDBName
-	poolConfig.ConnConfig.User = settings.PostgresUser
-	poolConfig.ConnConfig.Password = settings.PostgresPassword
+	applyPostgresConnSettings(poolConfig.ConnConfig, settings, settings.PostgresDBName)
 
 	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
 	if err != nil {
@@ -46,16 +42,12 @@ func EnsureDatabaseExists(ctx context.Context, settings *config.AppSettings) err
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	adminConnConfig, err := pgx.ParseConfig("")
+	adminConnConfig, err := pgx.ParseConfig("sslmode=prefer")
 	if err != nil {
 		return fmt.Errorf("failed to initialize postgres admin config: %w", err)
 	}
 
-	adminConnConfig.Host = settings.PostgresHost
-	adminConnConfig.Port = uint16(settings.PostgresPort)
-	adminConnConfig.Database = "postgres"
-	adminConnConfig.User = settings.PostgresUser
-	adminConnConfig.Password = settings.PostgresPassword
+	applyPostgresConnSettings(adminConnConfig, settings, "postgres")
 
 	conn, err := pgx.ConnectConfig(ctx, adminConnConfig)
 	if err != nil {
@@ -108,6 +100,14 @@ func EnsureTablesExist(ctx context.Context, pool *pgxpool.Pool) error {
 
 	telemetry.Logger.Info().Msg("Database tables ensured")
 	return nil
+}
+
+func applyPostgresConnSettings(connConfig *pgx.ConnConfig, settings *config.AppSettings, databaseName string) {
+	connConfig.Host = settings.PostgresHost
+	connConfig.Port = uint16(settings.PostgresPort)
+	connConfig.Database = databaseName
+	connConfig.User = settings.PostgresUser
+	connConfig.Password = settings.PostgresPassword
 }
 
 // isValidIdentifier checks that a database name contains only safe characters.
