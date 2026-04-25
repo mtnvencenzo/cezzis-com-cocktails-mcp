@@ -48,7 +48,7 @@ module "aca_cocktails_mcp" {
   env_vars = [
     {
       name  = "ACCOUNTS_API_HOST"
-      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.aisearch_api_version_v1.path}/${data.azurerm_api_management_api.aisearch_api_version_v1.version}", "/api/${data.azurerm_api_management_api.aisearch_api_version_v1.version}")
+      value = trimsuffix("${var.app_url}/${data.azurerm_api_management_api.accounts_api_version_v1.path}/${data.azurerm_api_management_api.accounts_api_version_v1.version}", "/api/${data.azurerm_api_management_api.accounts_api_version_v1.version}")
     },
     {
       name  = "COCKTAILS_API_HOST"
