@@ -149,6 +149,7 @@ module "aca_cocktails_mcp" {
     {
       name                  = "antiforgery-signing-secret"
       key_vault_secret_name = data.azurerm_key_vault_secret.antiforgery_signing_secret.name
+      key_vault_key         = "cocktails"
     },
     {
       name                  = "postgres-password"
