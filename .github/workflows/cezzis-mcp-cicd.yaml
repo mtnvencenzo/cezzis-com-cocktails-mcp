@@ -101,7 +101,7 @@ jobs:
       working_directory: .iac/terraform
       environment_name: prd
       allow_deploy: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
-      terraform_version: 1.11.8
+      terraform_version: 1.11.4
       arm_client_id: ${{ vars.ARM_CLIENT_ID }}
       arm_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
       arm_tenant_id: ${{ vars.ARM_TENANT_ID }}

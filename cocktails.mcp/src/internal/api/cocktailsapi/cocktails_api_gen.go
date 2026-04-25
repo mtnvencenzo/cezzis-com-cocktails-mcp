@@ -323,6 +323,12 @@ type GetCocktailIngredientFiltersParams struct {
 
 // GetCocktailParams defines parameters for GetCocktail.
 type GetCocktailParams struct {
+	// ResolveIngredients Whether to resolve the ingredients display values in the content
+	ResolveIngredients *bool `form:"resolveIngredients,omitempty" json:"resolveIngredients,omitempty"`
+
+	// MeasurementSystem The measurement system for ingredient display values (imperial or metric)
+	MeasurementSystem *interface{} `form:"measurementSystem,omitempty" json:"measurementSystem,omitempty"`
+
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -626,6 +632,44 @@ func NewGetCocktailRequest(server string, id string, params *GetCocktailParams) 
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ResolveIngredients != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "resolveIngredients", runtime.ParamLocationQuery, *params.ResolveIngredients); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.MeasurementSystem != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "measurementSystem", runtime.ParamLocationQuery, *params.MeasurementSystem); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
