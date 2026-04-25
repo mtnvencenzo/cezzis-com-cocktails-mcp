@@ -63,17 +63,17 @@ module "apim_cocktails_mcp" {
 
   operations = [
     {
-      display_name        = "Get Health Status"
+      display_name        = "Get Health Ping"
       method              = "GET"
-      url_template        = "/health"
+      url_template        = "/health/ping"
       description         = "Get health"
       success_status_code = 200
       policy_xml_content  = local.apim_anonymous_operation_policy
     },
     {
-      display_name        = "Get Version"
+      display_name        = "Get Health Version"
       method              = "GET"
-      url_template        = "/version"
+      url_template        = "/health/version"
       description         = "Get version"
       success_status_code = 200
       policy_xml_content  = local.apim_anonymous_operation_policy
