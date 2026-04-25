@@ -21,9 +21,6 @@ module "apim_cocktails_mcp" {
   domain                         = var.domain
   name_discriminator             = "mcp"
   keyvault_apimhostkey_secret_id = azurerm_key_vault_secret.cocktails_mcp_apimhostkey.id
-  subscription_required          = false
-  backend_url_override           = "https://${module.aca_cocktails_mcp.ingress_fqdn}"
-  service_url_override           = "https://${module.aca_cocktails_mcp.ingress_fqdn}"
 
   apim_instance = {
     id                  = data.azurerm_api_management.apim_shared.id
