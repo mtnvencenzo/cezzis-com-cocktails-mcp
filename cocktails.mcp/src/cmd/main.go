@@ -103,10 +103,7 @@ func main() {
 	mcpServer.AddTool(tools.CocktailSearchTool, server.ToolHandlerFunc(tools.NewCocktailSearchToolHandler(aiSearchClient).Handle))
 
 	// Simple formating and cleaning tools (no authentication required)
-	mcpServer.AddTool(tools.CleanMarkdownTool, server.ToolHandlerFunc(tools.NewCleanMarkdownToolHandler().Handle))
-	mcpServer.AddTool(tools.RemoveEmojisTool, server.ToolHandlerFunc(tools.NewRemoveEmojisToolHandler().Handle))
-	mcpServer.AddTool(tools.RemoveHTMLTagsTool, server.ToolHandlerFunc(tools.NewRemoveHTMLTagsToolHandler().Handle))
-	mcpServer.AddTool(tools.RemoveSpecialJSONCharactersTool, server.ToolHandlerFunc(tools.NewRemoveSpecialJSONCharactersToolHandler().Handle))
+	mcpServer.AddTool(tools.ConvertToPlainTextTool, server.ToolHandlerFunc(tools.NewConvertToPlainTextToolHandler().Handle))
 
 	// Authentication tools
 	mcpServer.AddTool(tools.AuthLoginTool, server.ToolHandlerFunc(tools.NewAuthLoginToolHandler(authManager).Handle))
