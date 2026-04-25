@@ -80,7 +80,7 @@ The server exposes the following MCP tools:
 - Returns: Text confirmation of submitted rating
 
 ### HTTP Endpoints
-- `GET /healthz` – Health check
+- `GET /health` – Health check
 - `GET /version` – Version info
 - `GET|POST /mcp` – Streamable MCP endpoint over HTTP
 
@@ -151,7 +151,7 @@ cocktails.mcp/
 
   # Auth0 (required for user-authenticated features)
   AUTH0_DOMAIN=your-tenant.us.auth0.com
-  AUTH0_CLIENT_ID=your_public_client_id
+  AUTH0_NATIVE_CLIENT_ID=your_public_client_id
   AUTH0_AUDIENCE=https://cezzis-cocktails-api
   AUTH0_SCOPES="openid offline_access profile email read:owned-account write:owned-account"
 
@@ -199,7 +199,7 @@ Token handling:
 
 Required settings:
 - `AUTH0_DOMAIN` – e.g., `your-tenant.us.auth0.com`
-- `AUTH0_CLIENT_ID` – public SPA/native client ID configured in Auth0
+- `AUTH0_NATIVE_CLIENT_ID` – public SPA/native client ID configured in Auth0
 - Optional: `AUTH0_AUDIENCE` if the API expects a specific audience
 - Optional: `AUTH0_SCOPES` (default: `openid profile email offline_access`)
 

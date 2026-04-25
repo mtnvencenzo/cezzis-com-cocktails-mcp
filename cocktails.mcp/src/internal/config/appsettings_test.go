@@ -27,8 +27,8 @@ func Test_appsettings_retreives_correct_env_file_settings(t *testing.T) {
 	if appSettings.Auth0Domain != expectedAuth0Domain {
 		t.Errorf("Expected Auth0Domain to be %s, got %s", expectedAuth0Domain, appSettings.Auth0Domain)
 	}
-	if appSettings.Auth0ClientID != expectedAuth0ClientID {
-		t.Errorf("Expected Auth0ClientID to be %s, got %s", expectedAuth0ClientID, appSettings.Auth0ClientID)
+	if appSettings.Auth0NativeClientID != expectedAuth0ClientID {
+		t.Errorf("Expected Auth0NativeClientID to be %s, got %s", expectedAuth0ClientID, appSettings.Auth0NativeClientID)
 	}
 
 	if appSettings.CocktailsAPISubscriptionKey != expectedCocktailsAPISubscriptionKey {
@@ -46,7 +46,7 @@ func Test_appsettings_produces_correct_jwks_url(t *testing.T) {
 	appSettings := config.GetAppSettings()
 	jwks := appSettings.GetAuth0JWKSURI()
 
-	// asert
+	// assert
 	if jwks != expectedJWKS {
 		t.Errorf("Expected GetAuth0JWKSURI() to be %s, got %s", expectedJWKS, jwks)
 	}

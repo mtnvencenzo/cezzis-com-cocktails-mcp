@@ -1,3 +1,15 @@
+module "apim_cocktails_mcp_cors_policy" {
+  source = "git::ssh://git@github.com/mtnvencenzo/Terraform-Modules.git//modules/apim-cors-policy-fragment"
+  providers = {
+    azurerm = azurerm
+  }
+  environment        = var.environment
+  domain             = var.domain
+  name_discriminator = "mcp"
+  apim_instance_id   = data.azurerm_api_management.apim_shared.id
+  allowed_origins    = var.allowed_origins
+}
+
 module "apim_cocktails_mcp" {
   source = "git::ssh://git@github.com/mtnvencenzo/Terraform-Modules.git//modules/apim-api"
   providers = {
@@ -53,10 +65,10 @@ module "apim_cocktails_mcp" {
     {
       display_name        = "Get Health Status"
       method              = "GET"
-      url_template        = "/healthz"
+      url_template        = "/health"
       description         = "Get health"
       success_status_code = 200
-      policy_xml_content  = local.apim_anonomous_operation_policy
+      policy_xml_content  = local.apim_anonymous_operation_policy
     },
     {
       display_name        = "Get Version"
@@ -64,7 +76,7 @@ module "apim_cocktails_mcp" {
       url_template        = "/version"
       description         = "Get version"
       success_status_code = 200
-      policy_xml_content  = local.apim_anonomous_operation_policy
+      policy_xml_content  = local.apim_anonymous_operation_policy
     },
     {
       display_name        = "POST MCP"
@@ -72,7 +84,7 @@ module "apim_cocktails_mcp" {
       url_template        = "/mcp"
       description         = "POST MCP"
       success_status_code = 200
-      policy_xml_content  = local.apim_anonomous_operation_policy
+      policy_xml_content  = local.apim_anonymous_operation_policy
     },
     {
       display_name        = "GET MCP"
@@ -80,7 +92,23 @@ module "apim_cocktails_mcp" {
       url_template        = "/mcp"
       description         = "GET MCP"
       success_status_code = 200
-      policy_xml_content  = local.apim_anonomous_operation_policy
+      policy_xml_content  = local.apim_anonymous_operation_policy
+    },
+    {
+      display_name        = "OPTIONS MCP"
+      method              = "OPTIONS"
+      url_template        = "/mcp"
+      description         = "OPTIONS MCP"
+      success_status_code = 200
+      policy_xml_content  = local.apim_anonymous_operation_policy
+    },
+    {
+      display_name        = "DELETE MCP"
+      method              = "DELETE"
+      url_template        = "/mcp"
+      description         = "DELETE MCP"
+      success_status_code = 200
+      policy_xml_content  = local.apim_anonymous_operation_policy
     }
   ]
 }

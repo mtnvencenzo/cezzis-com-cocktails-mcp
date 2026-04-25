@@ -39,13 +39,13 @@ spec:
                 name: cezzis-com-cocktails-mcp-shared-secrets
           startupProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: 7999
             periodSeconds: 3
             failureThreshold: 40
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: 7999
             initialDelaySeconds: 5
             periodSeconds: 15
@@ -53,7 +53,7 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: 7999
             initialDelaySeconds: 10
             periodSeconds: 15

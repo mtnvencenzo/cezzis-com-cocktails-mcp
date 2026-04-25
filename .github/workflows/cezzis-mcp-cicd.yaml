@@ -36,13 +36,13 @@ jobs:
           fetch-depth: 0
       
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v4.2.0
+        uses: gittools/actions/gitversion/setup@v4.5.0
         with:
           versionSpec: "6.x"
 
       - name: Use GitVersion
         id: gitVersion
-        uses: gittools/actions/gitversion/execute@v4.2.0
+        uses: gittools/actions/gitversion/execute@v4.5.0
         with:
           configFilePath: ./GitVersion.yml
 
@@ -97,7 +97,7 @@ jobs:
       contents: read
       pull-requests: write
     with:
-      lint_only: true # disabled for now until re-deployed to an environment
+      lint_only: false
       working_directory: .iac/terraform
       environment_name: prd
       allow_deploy: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
@@ -136,7 +136,7 @@ jobs:
         uses: mtnvencenzo/workflows/.github/actions/api-call@main
         with:
           enabled: true
-          url: https://api.cezzis.com/prd/cocktails/mcp/v1/healthz
+          url: https://api.cezzis.com/prd/cocktails/mcp/v1/health
           statusCode: 200
           authHeader: X-Key
           method: GET

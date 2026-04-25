@@ -1,7 +1,3 @@
-# ----------------------------------------
-# Backend apim host key
-# ----------------------------------------
-
 resource "random_password" "cocktails_mcp_apimhostkey" {
   length  = 32
   special = true
@@ -14,11 +10,6 @@ resource "azurerm_key_vault_secret" "cocktails_mcp_apimhostkey" {
   key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
 }
 
-
-
-# ----------------------------------------
-# Subscription Cezzis.com apim primary key
-# ----------------------------------------
 resource "random_password" "cocktails_mcp_cezzis_com_subscription_keys" {
   count   = 2
   length  = 24
@@ -33,10 +24,6 @@ resource "azurerm_key_vault_secret" "cocktails_mcp_cezzis_com_subscription_prima
   tags         = local.tags
 }
 
-
-# ----------------------------------------
-# Subscription Devops apim primary key
-# ----------------------------------------
 resource "random_password" "cocktails_mcp_devops_subscription_keys" {
   count   = 2
   length  = 24
@@ -51,9 +38,6 @@ resource "azurerm_key_vault_secret" "cocktails_mcp_devops_subscription_primary_k
   tags         = local.tags
 }
 
-# ----------------------------------------
-# Misc secret for local development
-# ----------------------------------------
 resource "random_password" "cocktails_mcp_localusage_subscription_keys" {
   count   = 2
   length  = 24

@@ -63,26 +63,25 @@ variable "image_tag" {
   type = string
 }
 
-# Auth0 Configuration Variables
+variable "app_url" {
+  type        = string
+  description = "The public URL of the application (e.g. https://www.cezzis.com)"
+}
+
 variable "auth0_domain" {
-  type        = string
-  description = "Auth0 domain (e.g., your-domain.auth0.com)"
+  type = string
 }
 
-variable "auth0_audience" {
-  type        = string
-  description = "Auth0 API identifier/audience"
+variable "auth0_accounts_api_audience" {
+  type = string
 }
 
-variable "auth0_naive_client_id" {
-  type        = string
-  description = "Auth0 frontend/SPA client ID for Swagger/Scalar UI"
+variable "auth0_native_client_id" {
+  type = string
 }
 
 variable "auth0_scopes" {
-  type        = string
-  description = "Auth0 scopes for the application"
-  default     = "openid offline_access profile email read:owned-account write:owned-account"
+  type = string
 }
 
 variable "port" {
@@ -95,17 +94,75 @@ variable "port" {
   }
 }
 
-variable "cocktails_cosmosdb_database_name" {
-  type    = string
-  default = "shared-db"
+variable "postgres_db" {
+  type = string
 }
 
-variable "cosmosdb_reader_role_id" {
-  type    = string
-  default = "3eb65bfe-1406-b164-d00d-92c1eb506153"
+variable "postgres_port" {
+  type        = string
+  description = "The port for the PostgreSQL database"
+  validation {
+    condition     = can(regex("^\\d{1,5}$", var.postgres_port)) && tonumber(var.postgres_port) > 0 && tonumber(var.postgres_port) <= 65535
+    error_message = "The PostgreSQL port must be a valid integer between 1 and 65535."
+  }
 }
 
-variable "cosmosdb_contributor_role_id" {
-  type    = string
-  default = "87b63e98-de0d-b47b-9736-691d9009a19a"
+variable "postgres_user" {
+  type = string
+}
+
+variable "allowed_origins" {
+  type    = list(string)
+  default = []
+}
+
+variable "init_delay_seconds" {
+  type        = number
+  description = "Number of seconds to delay before starting the application, allowing dependent services to become healthy"
+  default     = 30
+}
+
+variable "init_job_enabled" {
+  type        = bool
+  description = "Whether to enable the init job that delays the application start"
+  default     = true
+}
+
+variable "log_level" {
+  type        = string
+  description = "The log level for the application (e.g. 'debug', 'info', 'warn', 'error')"
+  default     = "info"
+}
+
+variable "otlp_insecure" {
+  type        = bool
+  description = "Whether to allow insecure connections to the OTLP endpoint"
+  default     = false
+}
+
+variable "otlp_log_enabled" {
+  type        = bool
+  description = "Whether to enable OTLP logging"
+  default     = true
+}
+
+variable "otlp_metrics_enabled" {
+  type        = bool
+  description = "Whether to enable OTLP metrics"
+  default     = false
+}
+
+variable "otlp_trace_enabled" {
+  type        = bool
+  description = "Whether to enable OTLP tracing"
+  default     = true
+}
+
+variable "exposed_port" {
+  type        = string
+  description = "The port to expose for the container app"
+  validation {
+    condition     = can(regex("^\\d{1,5}$", var.exposed_port)) && tonumber(var.exposed_port) > 0 && tonumber(var.exposed_port) <= 65535
+    error_message = "The exposed port must be a valid integer between 1 and 65535."
+  }
 }
