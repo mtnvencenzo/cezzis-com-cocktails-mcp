@@ -14,7 +14,7 @@ module "aca_cocktails_mcp_availability_test" {
   location                = data.azurerm_application_insights.appi.location
   application_insights_id = data.azurerm_application_insights.appi.id
   description             = "Availability test for the cocktails MCP"
-  http_url                = "${var.app_url}/${var.environment}/${var.domain}/mcp/v1/health"
+  http_url                = "${var.app_url}/${var.environment}/${var.domain}/mcp/v1/health/ping"
 
   create_alert = false
 

@@ -50,15 +50,19 @@ func NewMCPHTTPServer(addr string, mcpServer *server.MCPServer, version string) 
 
 // Start initializes and runs the HTTP server.
 // It sets up the following endpoints:
-//   - /health: Health check endpoint
-//   - /version: Server version information
-//   - /mcp: MCP protocol endpoint with request logging
+//   - /mcp/v1/health/ping: Health check endpoint
+//   - /mcp/v1/health/version: Server version information
+//   - /mcp/v1/health/readiness: Readiness check endpoint
+//   - /mcp/v1/health/liveness: Liveness check endpoint
+//   - /mcp/v1/mcp: MCP protocol endpoint with request logging
 //
 // Returns an error if the server fails to start or encounters an error while running.
 func (s *MCPHTTPServer) Start() error {
 	// Register health and version endpoints
-	http.HandleFunc("/health", s.healthCheckHandler())
-	http.HandleFunc("/version", s.versionHandler())
+	http.HandleFunc("/mcp/v1/health/ping", s.pingHandler())
+	http.HandleFunc("/mcp/v1/health/readiness", s.readinessHandler())
+	http.HandleFunc("/mcp/v1/health/liveness", s.livenessHandler())
+	http.HandleFunc("/mcp/v1/health/version", s.versionHandler())
 
 	// Use the official streamable HTTP server for MCP
 	streamableHTTP := server.NewStreamableHTTPServer(s.mcpServer)
@@ -76,7 +80,7 @@ func (s *MCPHTTPServer) Start() error {
 		}),
 	}
 
-	http.Handle("/mcp", otelhttp.NewHandler(tracingMiddleware, "mcp", opts...))
+	http.Handle("/mcp/v1/mcp", otelhttp.NewHandler(tracingMiddleware, "mcp", opts...))
 
 	telemetry.Logger.Info().
 		Str("port", s.addr).
@@ -86,11 +90,27 @@ func (s *MCPHTTPServer) Start() error {
 	return http.ListenAndServe(s.addr, nil)
 }
 
-func (s *MCPHTTPServer) healthCheckHandler() http.HandlerFunc {
+func (s *MCPHTTPServer) pingHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
+	}
+}
+
+func (s *MCPHTTPServer) readinessHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status": "ready"}`))
+	}
+}
+
+func (s *MCPHTTPServer) livenessHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status": "alive"}`))
 	}
 }
 
