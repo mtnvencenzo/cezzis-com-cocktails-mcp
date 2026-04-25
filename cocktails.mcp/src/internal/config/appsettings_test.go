@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"cezzis.com/cezzis-mcp-server/internal/config"
 	"cezzis.com/cezzis-mcp-server/internal/testutils"
 )
@@ -58,7 +60,7 @@ func Test_appsettings_escapes_postgres_userinfo(t *testing.T) {
 		PostgresHost:     "psqlfs-vec-eus2-glo-shared-001.postgres.database.azure.com",
 		PostgresPort:     5432,
 		PostgresDBName:   "cezzis-cocktailsmcp-db-loc",
-		PostgresUser:     "admin",
+		PostgresUser:     "admin@psqlfs-vec-eus2-glo-shared-001",
 		PostgresPassword: "pa:ss@wo/rd?x#y%z",
 	}
 
@@ -96,5 +98,9 @@ func Test_appsettings_escapes_postgres_userinfo(t *testing.T) {
 	}
 	if adminPassword, _ := adminURL.User.Password(); adminPassword != settings.PostgresPassword {
 		t.Errorf("expected admin password %q, got %q", settings.PostgresPassword, adminPassword)
+	}
+
+	if _, err := pgxpool.ParseConfig(connString); err != nil {
+		t.Fatalf("expected PostgresConnString() to produce a pgx-valid connection string, got error: %v", err)
 	}
 }

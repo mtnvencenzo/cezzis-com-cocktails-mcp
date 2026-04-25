@@ -57,7 +57,7 @@ func NewMCPHTTPServer(addr string, mcpServer *server.MCPServer, version string) 
 // Returns an error if the server fails to start or encounters an error while running.
 func (s *MCPHTTPServer) Start() error {
 	// Register health and version endpoints
-	http.HandleFunc("health", s.healthCheckHandler())
+	http.HandleFunc("/health", s.healthCheckHandler())
 	http.HandleFunc("/version", s.versionHandler())
 
 	// Use the official streamable HTTP server for MCP
