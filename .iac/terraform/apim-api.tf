@@ -55,6 +55,11 @@ module "apim_cocktails_mcp" {
       name          = "${title(var.environment)} Cezzis.Com LocalUsage ${title(var.domain)} Mcp Subscription"
       primary_key   = random_password.cocktails_mcp_localusage_subscription_keys[0].result
       secondary_key = random_password.cocktails_mcp_localusage_subscription_keys[1].result
+    },
+    {
+      name          = "${title(var.environment)} Cezzis.Com OnPrem ${title(var.domain)} Mcp Subscription"
+      primary_key   = random_password.cocktails_mcp_cezzis_com_subscription_keys_onprem[0].result
+      secondary_key = random_password.cocktails_mcp_cezzis_com_subscription_keys_onprem[1].result
     }
   ]
 
