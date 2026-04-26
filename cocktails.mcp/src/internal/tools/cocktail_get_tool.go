@@ -98,8 +98,13 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		defer cancel()
 	}
 
+	resolveIngredients := true
+	measurementSystem := interface{}("imperial") // or "metric"
+
 	rs, callErr := handler.client.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
-		XKey: &config.GetAppSettings().CocktailsAPISubscriptionKey,
+		ResolveIngredients: &resolveIngredients,
+		MeasurementSystem:  &measurementSystem,
+		XKey:               &config.GetAppSettings().CocktailsAPISubscriptionKey,
 	}, cocktailsapi.RequestEditor())
 
 	if callErr != nil {
