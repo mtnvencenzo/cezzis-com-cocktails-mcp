@@ -147,27 +147,22 @@ module "aca_cocktails_mcp" {
   secrets = [
     {
       name                  = "cocktails-apim-subscription-key"
-      key_vault_secret_name = "cocktails-api-cezzis-com-subscription-primary-key"
+      key_vault_secret_name = "cocktails-api-mcp-subscription-primary-key"
       key_vault_key         = "cocktails"
     },
     {
       name                  = "accounts-apim-subscription-key"
-      key_vault_secret_name = "accounts-api-cezzis-com-subscription-primary-key"
+      key_vault_secret_name = "accounts-api-mcp-subscription-primary-key"
       key_vault_key         = "cocktails"
     },
     {
       name                  = "aisearch-apim-subscription-key"
-      key_vault_secret_name = "aisearch-api-cezzis-com-subscription-primary-key"
+      key_vault_secret_name = "aisearch-api-mcp-subscription-primary-key"
       key_vault_key         = "cocktails"
     },
     {
       name                  = "apim-host-key"
       key_vault_secret_name = azurerm_key_vault_secret.cocktails_mcp_apimhostkey.name
-      key_vault_key         = "cocktails"
-    },
-    {
-      name                  = "antiforgery-signing-secret"
-      key_vault_secret_name = data.azurerm_key_vault_secret.antiforgery_signing_secret.name
       key_vault_key         = "cocktails"
     },
     {

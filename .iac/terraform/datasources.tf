@@ -38,11 +38,6 @@ data "azurerm_key_vault" "global_keyvault" {
   resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
 }
 
-data "azurerm_key_vault_secret" "antiforgery_signing_secret" {
-  name         = "antiforgery-signing-secret"
-  key_vault_id = data.azurerm_key_vault.cocktails_keyvault.id
-}
-
 data "azurerm_api_management_api" "cocktails_api_version_v1" {
   name                = "${var.environment}-cocktails-api-v1"
   api_management_name = data.azurerm_api_management.apim_shared.name
