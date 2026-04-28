@@ -15,6 +15,7 @@ package tools
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 
@@ -95,7 +96,10 @@ func (handler ConvertToPlainTextToolHandler) Handle(ctx context.Context, request
 	}
 
 	// Clean the content by removing special JSON characters
-	plainTextContent = cleanSpecialJSONCharacters(plainTextContent, ctx)
+	plainTextContent, err = cleanSpecialJSONCharacters(plainTextContent, ctx)
+	if err != nil {
+		return mcp.NewToolResultError(err.Error()), err
+	}
 
 	// Clean the content by removing emojis
 	plainTextContent = cleanEmojis(plainTextContent, ctx)
@@ -107,13 +111,27 @@ func cleanMarkdown(content string, ctx context.Context) (string, error) {
 	telemetry.Logger.Info().Ctx(ctx).Msg("Cleaning markdown syntax from content")
 
 	extractor := markdown.NewExtractor()
-	cleaned, err := extractor.PlainText(content)
+	trimmed := strings.TrimSpace(content)
+	cleaned, err := extractor.PlainText(trimmed)
+
 	if err != nil {
 		return "", err
 	}
 	if cleaned == nil {
 		return "", nil
 	}
+
+	if strings.HasPrefix(*cleaned, "```") {
+		lines := strings.Split(*cleaned, "\n")
+		if len(lines) > 0 && strings.HasPrefix(lines[0], "```") {
+			lines = lines[1:]
+		}
+		if len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) == "```" {
+			lines = lines[:len(lines)-1]
+		}
+		*cleaned = strings.TrimSpace(strings.Join(lines, "\n"))
+	}
+
 	return *cleaned, nil
 }
 
@@ -137,10 +155,16 @@ func cleanHTML(content string, ctx context.Context) (string, error) {
 	return *cleaned, nil
 }
 
-func cleanSpecialJSONCharacters(content string, ctx context.Context) string {
+func cleanSpecialJSONCharacters(content string, ctx context.Context) (string, error) {
 	telemetry.Logger.Info().Ctx(ctx).Msg("Cleaning special JSON characters from content")
 
-	r := strings.NewReplacer("\"", "", "'", "", "\\", "")
-	cleanedText := r.Replace(content)
-	return cleanedText
+	b, err := json.Marshal(content)
+	if err != nil {
+		return "", err
+	}
+	// Remove the surrounding quotes
+	if len(b) >= 2 {
+		return string(b[1 : len(b)-1]), nil
+	}
+	return "", nil
 }
