@@ -255,31 +255,8 @@ Configure VS Code `User/mcp.json` (Copilot MCP servers):
 ```
 Start the server locally with `--http :8080` and Copilot Chat can call its tools over HTTP.
 
-## 📦 Build & Deployment
-
-- Build: `make compile` (outputs `./cocktails.mcp/dist/linux/cezzis-cocktails`)
-- Container: `make docker-build` (builds image for ACA)
-- Infra: Terraform under `/terraform` for ACA, APIM, Key Vault, etc.
-- CI/CD: GitHub Workflows build, test, and publish artifacts/images
-
-## 🔍 Code Quality
-
-- `golangci-lint` for static analysis
-- `gofmt` and imports tooling enforced via Make targets
-- Unit tests with coverage reports
-
-## 🔒 Security Features
-
-- API subscription key required for upstream API access
-- Secrets sourced from env files locally and Azure Key Vault in cloud
-- HTTP/HTTPS transport for MCP endpoint
-- Validated tool inputs and structured error handling
 
 
-## 📈 Monitoring
-
-- Telemetry (logs, traces, metrics) is collected using OpenTelemetry and exported via the OTLP protocol over HTTP/protobuf. This enables integration with Azure Monitor and other observability platforms that support OTLP over HTTP.
-- Health checks exposed in HTTP mode for probes
 
 ## 🤖 What is MCP?
 
@@ -300,15 +277,6 @@ kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cockta
 # image updater
 kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/image-updater.yaml
 ```
-
-
-
-## 🌐 Community & Support
-
-- 🤝 Contributing Guide – see [CONTRIBUTING.md](.github/CONTRIBUTING.md)
-- 🤗 Code of Conduct – see [CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md)
-- 🆘 Support Guide – see [SUPPORT.md](.github/SUPPORT.md)
-- 🔒 Security Policy – see [SECURITY.md](.github/SECURITY.md)
 
 ## 📄 License
 
