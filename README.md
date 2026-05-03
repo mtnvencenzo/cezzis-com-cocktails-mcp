@@ -12,265 +12,150 @@
 [![Project](https://img.shields.io/badge/project-Cezzis.com%20Cocktails-181717?logo=github&logoColor=white)](https://github.com/users/mtnvencenzo/projects/2)
 [![Website](https://img.shields.io/badge/website-cezzis.com-2ea44f?logo=google-chrome&logoColor=white)](https://www.cezzis.com)
 
-An MCP (Model Context Protocol) server that gives AI agents secure, first‑class access to Cezzis.com cocktail data. It provides high‑level tools for searching cocktails, retrieving detailed recipes and metadata, authenticating users, and submitting ratings. The server runs over HTTP only and exposes a streamable MCP endpoint.
+This repository contains the Go-based MCP server for Cezzis.com cocktails. It exposes a streamable HTTP MCP interface that lets MCP clients search cocktail data, retrieve cocktail details, authenticate against Auth0, and submit user ratings through the Cezzis platform APIs.
 
-## 🧩 Cezzis.com Project Ecosystem
 
-This server works alongside several sibling repositories:
+## Overview
 
-- **cocktails-mcp** (this repo) – Model Context Protocol services that expose cocktail data to AI agents
-- [**cocktails-api**](https://github.com/mtnvencenzo/cezzis-com-cocktails-api) – ASP.NET Core backend and REST API consumed by the site and integrations
-- [**cocktails-web**](https://github.com/mtnvencenzo/cezzis-com-cocktails-web) – React SPA for the public experience
-- [**cocktails-common**](https://github.com/mtnvencenzo/cezzis-com-cocktails-common) – Shared libraries and utilities reused across frontends, APIs, and tooling
-- [**cocktails-images**](https://github.com/mtnvencenzo/cezzis-com-cocktails-images) *(private)* – Source of curated cocktail imagery and CDN assets
-- [**cocktails-shared-infra**](https://github.com/mtnvencenzo/cezzis-com-cocktails-shared-infra) – Terraform compositions specific to the cocktails platform
-- [**shared-infrastructure**](https://github.com/mtnvencenzo/shared-infrastructure) – Global Terraform 
-modules that underpin multiple Cezzis.com workloads
+The server is an integration layer, not the source of cocktail data. It registers MCP tools, forwards requests to the upstream Cocktails, AI Search, and Accounts APIs, stores authentication tokens in PostgreSQL per MCP session, and emits telemetry through OpenTelemetry.
+
+
+Primary capabilities:
+
+- Search cocktails by free text.
+- Retrieve full cocktail details by cocktail ID.
+- Start and manage Auth0 device-flow authentication.
+- Submit authenticated cocktail ratings.
+- Expose health and MCP HTTP endpoints for local and deployed environments.
+
+## Production Environment
 
 ![Complete Diagram](./.assets/cezzis-com-mcp-interactions.drawio.svg)
 
+## Tech Stack
 
-## ☁️ Cloud-Native Footprint (Azure)
+- Go 1.25.1
+- Model Context Protocol over streamable HTTP via `mark3labs/mcp-go`
+- OpenAPI-generated API clients for upstream Cezzis services
+- Auth0 device authorization flow
+- PostgreSQL for MCP session token storage
+- OpenTelemetry and zerolog for observability
+- Kubernetes manifests for local deployed environments under `.iac/k8s`
+- Terraform for production Azure infrastructure under `.iac/terraform`
 
-Infrastructure is provisioned with Terraform (`/terraform`) and deployed into Azure using shared modules:
-
-- **Azure Container Apps** – Hosts the MCP service (HTTP mode) with HTTPS ingress
-- **Azure API Management** – Optional façade when exposing HTTP endpoints; routes and policies managed via Terraform
-- **Azure Container Registry** – Stores container images published from CI/CD
-- **Azure Key Vault** – Holds secrets (Cezzis API subscription keys)
-- **Azure Monitor** – Telemetry collection (logs/traces) via OpenTelemetry and OTLP exporter over HTTP/protobuf
-- **Shared Infrastructure Modules** – Sourced from the reusable Terraform modules repo for consistency
-
-## 📚 MCP Tools
-
-The server exposes the following MCP tools:
-
-### search_cocktails
-- Purpose: Search cocktails by natural language query
-- Parameters:
-  - `freeText` (string, required): Search terms (name, ingredients, style)
-- Returns: Array of cocktails with IDs, titles, images, and summaries
-
-### get_cocktail
-- Purpose: Retrieve full details for a specific cocktail
-- Parameters:
-  - `cocktailId` (string, required): ID from search results
-- Returns: Full recipe with ingredients, instructions, images, ratings, and notes
-
-### auth_login
-- Purpose: Initiate login using Auth0 Device Authorization flow
-- Parameters: none
-- Returns: Verification URL and user code to complete in your browser
-
-### auth_status
-- Purpose: Check if you’re authenticated
-- Parameters: none
-- Returns: Text status
-
-### auth_logout
-- Purpose: Log out and clear stored tokens
-- Parameters: none
-- Returns: Text confirmation
-
-### cocktail_rate
-- Purpose: Rate a cocktail (requires authentication)
-- Parameters:
-  - `cocktailId` (string, required)
-  - `stars` (string, required, 1–5)
-- Returns: Text confirmation of submitted rating
-
-### HTTP Endpoints
-- `GET /health` – Health check
-- `GET /version` – Version info
-- `GET|POST /mcp` – Streamable MCP endpoint over HTTP
-
-
-## 🛠️ Technology Stack
-
-### Core
-- Language: Go 1.25+
-- Protocol: Model Context Protocol over HTTP (streamable)
-- Server: Lightweight MCP server with tool registry and health/version endpoints
-- Logging: zerolog (structured JSON logs)
-
-
-### Integrations
-- **Cezzis.com Cocktails API**: Upstream data source (requires subscription key)
-- **Azure AI Search**: Powers semantic/lucene queries in the upstream API
-- **Azure CosmosDB**: Used for secure token storage and account-related data (see `internal/repos/cosmos_token_repository.go`).
-- **Auth0**: Used for OAuth 2.1 / OIDC authentication and secure token management (see `internal/auth/`).
-- **Telemetry**: All telemetry (logs, traces, metrics) is sent via OpenTelemetry using OTLP exporters over HTTP/protobuf.
-
-
-### Authentication & Security
-- API Access: `COCKTAILS_API_XKEY` subscription key injected via env/Key Vault
-- Auth0 OAuth 2.1 / OIDC: End‑user authentication for personalized features (e.g., ratings). Auth0 is used for device code login, token issuance, and secure refresh flows. See `internal/auth/oauth_manager.go` and `internal/auth/token_storage.go` for implementation details.
-- CosmosDB: Used for secure storage of user tokens and account data. See `internal/repos/cosmos_token_repository.go`.
-- Secrets: Managed via environment files locally and Azure Key Vault in cloud
-- Transport: HTTP/HTTPS for MCP endpoint
-
-## 🏗️ Project Structure
+## Repo Structure
 
 ```text
-cocktails.mcp/
-├── src/
-│   ├── cmd/                    # Application entry point
-│   ├── internal/
-│   │   ├── api/               # Generated API client code
-│   │   ├── config/            # Configuration management
-│   │   ├── logging/           # Structured logging helpers
-│   │   ├── middleware/        # HTTP middleware (HTTP mode)
-│   │   ├── server/            # MCP server and protocol wiring
-│   │   ├── testutils/         # Testing utilities
-│   │   └── tools/             # MCP tool implementations
-│   ├── .env                   # Environment configuration (local)
-│   └── go.mod                 # Go module definition
-├── dist/                      # Build outputs
-└── terraform/                 # Azure resources (ACA, APIM, Key Vault, etc.)
+.
+├── .iac/
+│   ├── argocd/      # Argo CD manifests for cluster sync
+│   ├── k8s/         # Local Kubernetes deployment manifests
+│   └── terraform/   # Production Azure infrastructure
+├── .vscode/         # IDE launch configuration
+├── cocktails.mcp/
+│   ├── http-client.env.json
+│   └── src/
+│       ├── cmd/         # Application entry point
+│       └── internal/
+│           ├── api/     # Generated API clients
+│           ├── auth/    # Auth0 flow and token handling
+│           ├── db/      # PostgreSQL connection and setup
+│           ├── mcpserver/
+│           ├── middleware/
+│           ├── repos/
+│           ├── telemetry/
+│           └── tools/   # MCP tool definitions and handlers
+├── Dockerfile
+├── makefile
+└── mcp.http
 ```
 
-## 🚀 Development Setup
+## HTTP Endpoints
 
-1) Prerequisites
-   - Go 1.25.1 or newer
-   - Make (build automation)
-   - Optional: Docker (container builds), Azure CLI / Terraform (infrastructure)
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/mcp/v1/health/ping` | Basic health check returning `{"status": "ok"}` |
+| GET | `/mcp/v1/health/readiness` | Readiness probe returning `{"status": "ready"}` |
+| GET | `/mcp/v1/health/liveness` | Liveness probe returning `{"status": "alive"}` |
+| GET | `/mcp/v1/health/version` | Build version response |
+| GET | `/mcp/v1/mcp` | MCP probe endpoint returning `{"status":"ok", "sse":false}` |
+| POST | `/mcp/v1/mcp` | Streamable HTTP MCP endpoint used by MCP clients |
 
-2) Install Dependencies
-   ```bash
-   make tidy
-   ```
+Tool execution requests rely on the `Mcp-Session-Id` header so the server can associate requests with an MCP session.
 
-3) Environment Setup
-  Create a `.env` file in `./cocktails.mcp/src/`:
+## MCP Tools
 
-  ```env
-  # Required: Cezzis.com API Configuration
-  COCKTAILS_API_HOST=https://api.cezzis.com/prd/cocktails
-  COCKTAILS_API_XKEY=your_api_subscription_key_here
+| Tool | Description |
+| --- | --- |
+| `search_cocktails` | Searches cocktail data using the upstream AI Search API |
+| `get_cocktail` | Returns detailed cocktail data for a specific cocktail ID |
+| `convert_to_plaintext` | Converts markdown or HTML-rich content into plain text |
+| `authentication_login_flow` | Starts the Auth0 device login flow |
+| `auth_status` | Returns the authentication state for the current MCP session |
+| `authentication_logout_flow` | Clears tokens for the current MCP session |
+| `cocktail_rate` | Submits a cocktail rating for an authenticated user |
 
-  # Auth0 (required for user-authenticated features)
-  AUTH0_DOMAIN=your-tenant.us.auth0.com
-  AUTH0_NATIVE_CLIENT_ID=your_public_client_id
-  AUTH0_AUDIENCE=https://cezzis-cocktails-api
-  AUTH0_SCOPES="openid offline_access profile email read:owned-account write:owned-account"
+## Quick Start
 
+### Prerequisites
 
-  # Optional: OpenTelemetry/OTLP (telemetry)
-  OTEL_EXPORTER_OTLP_ENDPOINT=https://your-otlp-endpoint
-  OTEL_EXPORTER_OTLP_HEADERS=key1=value1,key2=value2
+- Go 1.25.1+
+- PostgreSQL
+- Valid values for the upstream API hosts and subscription keys
+- Auth0 settings if you want to use authenticated tools
 
-  # Optional: Logging
-  LOG_LEVEL=info
-  ENV=loc
-  ```
+### 1. Configure environment
 
-   Supported environment files: `.env`, `.env.local`, `.env.test`.
+Create a `.env` file in `cocktails.mcp/src` with the values your environment needs:
 
-4) Run locally (HTTP)
-  ```bash
-  # Build binary
-  make compile
+```env
+PORT=7999
+ENV=loc
 
-  # Run HTTP server (choose a port)
-  ./cocktails.mcp/dist/linux/cezzis-cocktails --http :8080
-  ```
+COCKTAILS_API_HOST=https://your-host/cocktails
+COCKTAILS_API_XKEY=replace-me
 
-5) Testing
-   ```bash
-   make test
-   ```
-   Generates coverage artifacts (`coverage.out`, `cobertura.xml`).
+ACCOUNTS_API_HOST=https://your-host/accounts
+ACCOUNTS_API_XKEY=replace-me
 
+AISEARCH_API_HOST=https://your-host/search
+AISEARCH_API_XKEY=replace-me
 
-## 🔐 OAuth and Authentication
+AUTH0_DOMAIN=your-tenant.us.auth0.com
+AUTH0_NATIVE_CLIENT_ID=replace-me
+AUTH0_ACCOUNTS_API_AUDIENCE=https://api.cezzis.com/accounts
+AUTH0_SCOPES=openid offline_access profile email read:owned-account write:owned-account
 
-This server uses Auth0 for end‑user authentication to enable personalized features (e.g., ratings).
+CEZZIS_BASE_URL=https://www.cezzis.com
 
-Flow (HTTP): Device Authorization Grant
-- The `auth_login` tool returns a verification URL and user code.
-- Visit the URL, enter the code, and complete login.
-- The server polls Auth0 and stores tokens securely once available.
-
-Token handling:
-- Access and refresh tokens are stored encrypted under `~/.cezzis/.cezzis_tokens.enc`.
-- Tokens are automatically refreshed using the refresh token when near expiry.
-- Logout clears stored tokens.
-
-Required settings:
-- `AUTH0_DOMAIN` – e.g., `your-tenant.us.auth0.com`
-- `AUTH0_NATIVE_CLIENT_ID` – public SPA/native client ID configured in Auth0
-- Optional: `AUTH0_AUDIENCE` if the API expects a specific audience
-- Optional: `AUTH0_SCOPES` (default: `openid profile email offline_access`)
-
-Auth tools available to MCP clients:
-- `auth_login` – Initiates device code login and returns instructions.
-- `auth_status` – Returns whether you’re currently authenticated.
-- `auth_logout` – Clears stored tokens.
-
-## �💻 MCP Client Setup
-
-
-### Claude Desktop
-Configure `~/.config/Claude/claude_desktop_config.json` for HTTP MCP:
-
-```json
-{
-  "mcpServers": {
-    "cezzis-cocktails": {
-      "url": "http://localhost:3001/mcp",
-      "type": "http"
-    }
-  }
-}
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=cezzis_cocktails_mcp
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=replace-me
+POSTGRES_USE_TLS=false
 ```
 
-### Cursor
-Configure `~/.cursor/mcp.json` or via Settings UI for HTTP MCP:
+### 2. Build and run
 
-```json
-{
-  "mcpServers": {
-    "cezzis-cocktails": {
-      "url": "http://localhost:3001/mcp",
-      "type": "http"
-    }
-  }
-}
+```bash
+make compile
+./cocktails.mcp/dist/linux/cezzis-cocktails
 ```
 
-### GitHub Copilot (HTTP MCP)
-Configure VS Code `User/mcp.json` (Copilot MCP servers):
+The server listens on the configured `PORT`. By default that is `7999`.
 
-```json
-{
-  "servers": {
-    "cezzis-mcp": {
-      "url": "http://localhost:3001/mcp",
-      "type": "http"
-    }
-  },
-  "inputs": []
-}
-```
-Start the server locally with `--http :8080` and Copilot Chat can call its tools over HTTP.
+### 3. Run from VS Code
 
+For IDE-based debugging, use the launch configuration in `.vscode/launch.json`. It runs the Go application from `cocktails.mcp/src/cmd` with local environment loading enabled.
 
+### 4. Optional local Kubernetes deployment
 
+The manifests in `.iac/k8s` are for a local deployed environment. They define the Deployment, Service, Ingress, ConfigMap, and ExternalSecret wiring used when running the app in a local cluster.
 
-## 🤖 What is MCP?
+To sync that setup through Argo CD:
 
-The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open standard that enables AI assistants to securely connect with external data sources and tools. Using MCP here allows agents to:
-
-- Ask for cocktails in natural language
-- Get contextual recommendations based on ingredients and styles
-- Retrieve rich recipe data with measurements and techniques
-- Integrate seamlessly across MCP‑compatible tools and IDEs
-
-
-### Deploy cezzis-com-cocktails-mcp
-
-``` shell
+```shell
 # app
 kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/cezzis-com-cocktails-mcp.yaml
 
@@ -278,6 +163,10 @@ kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cockta
 kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/image-updater.yaml
 ```
 
-## 📄 License
+## Production Notes
+
+Production infrastructure for this application is defined in `.iac/terraform`. In production, the MCP app is hosted in Azure Container Apps, sits behind Azure API Management, and is reached externally through Azure Front Door.
+
+## License
 
 This project is proprietary software. All rights reserved. See [LICENSE](LICENSE) for details.
