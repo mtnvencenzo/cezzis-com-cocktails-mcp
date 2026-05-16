@@ -142,7 +142,10 @@ jobs:
           expected_tag: ${{ github.sha }}
           url: https://www.cezzis.com/prd/cocktails/mcp/v1/health/version
           property_name: version
+          auth_header: X-Key
           timeout_seconds: 180
+        env:
+          AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}
 
       - name: Warmup api
         uses: mtnvencenzo/workflows/.github/actions/api-call@main

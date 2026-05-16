@@ -10,7 +10,7 @@
         },
         "prod-apim": {
           "host": "https://www.cezzis.com/prd/cocktails",
-          "xKey": "-- INSERT PROD API KEY HERE --"
+          "xKey": "21075g+k(-k6)vs}%a-_m#bo"
         },
         "prod-k8s": {
           "host": "http://cezzis-cocktails-mcp.127.0.0.1.sslip.io"
