@@ -21,6 +21,12 @@ const (
 	Oauth2Scopes = "oauth2.Scopes"
 )
 
+// Defines values for GetCocktailParamsMeasurementSystem.
+const (
+	Imperial GetCocktailParamsMeasurementSystem = "imperial"
+	Metric   GetCocktailParamsMeasurementSystem = "metric"
+)
+
 // CocktailImageModel defines model for CocktailImageModel.
 type CocktailImageModel struct {
 	// Height The height of the image
@@ -267,8 +273,38 @@ type IngredientModel struct {
 // IngredientRequirementTypeModel Whether or not this ingredient is required ('Required' or 'Optional')
 type IngredientRequirementTypeModel = interface{}
 
+// IngredientRs defines model for IngredientRs.
+type IngredientRs struct {
+	// Item The ingredient model
+	Item InventoryIngredientModel `json:"item"`
+}
+
 // IngredientTypeModel defines model for IngredientTypeModel.
 type IngredientTypeModel = interface{}
+
+// IngredientVariationModel defines model for IngredientVariationModel.
+type IngredientVariationModel struct {
+	// Applications The applications this ingredient variation can be used as
+	Applications []IngredientApplicationModel `json:"applications"`
+
+	// Id The ingredient variation identifier
+	Id string `json:"id"`
+
+	// Name The ingredient variation name
+	Name string `json:"name"`
+}
+
+// IngredientsRs defines model for IngredientsRs.
+type IngredientsRs struct {
+	// Items The paged ingredient list
+	Items []InventoryIngredientModel2 `json:"items"`
+
+	// Skip The number of items skipped from the start of the ingredient collection
+	Skip int32 `json:"skip"`
+
+	// Take The number of items requested from the ingredient collection
+	Take int32 `json:"take"`
+}
 
 // InstructionStepModel defines model for InstructionStepModel.
 type InstructionStepModel struct {
@@ -277,6 +313,60 @@ type InstructionStepModel struct {
 
 	// Order The order of the instruction step in which it should be performed
 	Order int32 `json:"order"`
+}
+
+// InventoryIngredientModel The ingredient model
+type InventoryIngredientModel struct {
+	// Applications The ingredient applications
+	Applications []IngredientApplicationModel `json:"applications"`
+
+	// Id The ingredient identifier
+	Id string `json:"id"`
+
+	// Name The ingredient name
+	Name string `json:"name"`
+
+	// ParentId The parent ingredient identifier
+	ParentId string `json:"parentId"`
+
+	// PublishedOn The date and time this ingredient was published
+	PublishedOn time.Time `json:"publishedOn"`
+
+	// ShelfDisplay The ingredient shelf display name
+	ShelfDisplay string `json:"shelfDisplay"`
+
+	// Types The ingredient top-level types
+	Types []IngredientTypeModel `json:"types"`
+
+	// Variations The ingredient variations
+	Variations []IngredientVariationModel `json:"variations"`
+}
+
+// InventoryIngredientModel2 defines model for InventoryIngredientModel2.
+type InventoryIngredientModel2 struct {
+	// Applications The ingredient applications
+	Applications []IngredientApplicationModel `json:"applications"`
+
+	// Id The ingredient identifier
+	Id string `json:"id"`
+
+	// Name The ingredient name
+	Name string `json:"name"`
+
+	// ParentId The parent ingredient identifier
+	ParentId string `json:"parentId"`
+
+	// PublishedOn The date and time this ingredient was published
+	PublishedOn time.Time `json:"publishedOn"`
+
+	// ShelfDisplay The ingredient shelf display name
+	ShelfDisplay string `json:"shelfDisplay"`
+
+	// Types The ingredient top-level types
+	Types []IngredientTypeModel `json:"types"`
+
+	// Variations The ingredient variations
+	Variations []IngredientVariationModel `json:"variations"`
 }
 
 // LegalDocumentRs defines model for LegalDocumentRs.
@@ -306,11 +396,38 @@ type PublishCocktailsRq struct {
 	CocktailIds []string `json:"cocktailIds"`
 }
 
+// PublishIngredientsRq defines model for PublishIngredientsRq.
+type PublishIngredientsRq struct {
+	// IngredientIds A list of ingredient IDs to publish. Empty means publish all ingredients
+	IngredientIds []string `json:"ingredientIds"`
+}
+
 // UofMTypeModel The unit of measure when using this ingredient in a cocktail recipe
 type UofMTypeModel = interface{}
 
 // PublishCocktailsParams defines parameters for PublishCocktails.
 type PublishCocktailsParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// PublishIngredientsParams defines parameters for PublishIngredients.
+type PublishIngredientsParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// GetIngredientsParams defines parameters for GetIngredients.
+type GetIngredientsParams struct {
+	// Skip The number of ingredients to skip
+	Skip *int32 `form:"skip,omitempty" json:"skip,omitempty"`
+
+	// Take The number of ingredients to return. Maximum value is 50
+	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
+
+	// Fi Filters ingredients by top-level type. Use repeatable fi query values such as fi=spirit&fi=liqueur
+	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
+
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -321,17 +438,26 @@ type GetCocktailIngredientFiltersParams struct {
 	XKey *string `json:"X-Key,omitempty"`
 }
 
+// GetIngredientParams defines parameters for GetIngredient.
+type GetIngredientParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
 // GetCocktailParams defines parameters for GetCocktail.
 type GetCocktailParams struct {
 	// ResolveIngredients Whether to resolve the ingredients display values in the content
 	ResolveIngredients *bool `form:"resolveIngredients,omitempty" json:"resolveIngredients,omitempty"`
 
-	// MeasurementSystem The measurement system for ingredient display values (imperial or metric)
-	MeasurementSystem *interface{} `form:"measurementSystem,omitempty" json:"measurementSystem,omitempty"`
+	// MeasurementSystem The measurement system for ingredient display values (imperial or metric).
+	MeasurementSystem *GetCocktailParamsMeasurementSystem `form:"measurementSystem,omitempty" json:"measurementSystem,omitempty"`
 
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
+
+// GetCocktailParamsMeasurementSystem defines parameters for GetCocktail.
+type GetCocktailParamsMeasurementSystem string
 
 // GetPrivacyPolicyParams defines parameters for GetPrivacyPolicy.
 type GetPrivacyPolicyParams struct {
@@ -347,6 +473,9 @@ type GetTermsOfServiceParams struct {
 
 // PublishCocktailsApplicationJSONXAPIVersion10RequestBody defines body for PublishCocktails for application/json; x-api-version=1.0 ContentType.
 type PublishCocktailsApplicationJSONXAPIVersion10RequestBody = PublishCocktailsRq
+
+// PublishIngredientsApplicationJSONXAPIVersion10RequestBody defines body for PublishIngredients for application/json; x-api-version=1.0 ContentType.
+type PublishIngredientsApplicationJSONXAPIVersion10RequestBody = PublishIngredientsRq
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -426,8 +555,19 @@ type ClientInterface interface {
 
 	PublishCocktailsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PublishIngredientsWithBody request with any body
+	PublishIngredientsWithBody(ctx context.Context, params *PublishIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PublishIngredientsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetIngredients request
+	GetIngredients(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetCocktailIngredientFilters request
 	GetCocktailIngredientFilters(ctx context.Context, params *GetCocktailIngredientFiltersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetIngredient request
+	GetIngredient(ctx context.Context, id string, params *GetIngredientParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetCocktail request
 	GetCocktail(ctx context.Context, id string, params *GetCocktailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -463,8 +603,56 @@ func (c *Client) PublishCocktailsWithApplicationJSONXAPIVersion10Body(ctx contex
 	return c.Client.Do(req)
 }
 
+func (c *Client) PublishIngredientsWithBody(ctx context.Context, params *PublishIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPublishIngredientsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PublishIngredientsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPublishIngredientsRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetIngredients(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetIngredientsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetCocktailIngredientFilters(ctx context.Context, params *GetCocktailIngredientFiltersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCocktailIngredientFiltersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetIngredient(ctx context.Context, id string, params *GetIngredientParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetIngredientRequest(c.Server, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -566,6 +754,157 @@ func NewPublishCocktailsRequestWithBody(server string, params *PublishCocktailsP
 	return req, nil
 }
 
+// NewPublishIngredientsRequestWithApplicationJSONXAPIVersion10Body calls the generic PublishIngredients builder with application/json; x-api-version=1.0 body
+func NewPublishIngredientsRequestWithApplicationJSONXAPIVersion10Body(server string, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPublishIngredientsRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
+}
+
+// NewPublishIngredientsRequestWithBody generates requests for PublishIngredients with any type of body
+func NewPublishIngredientsRequestWithBody(server string, params *PublishIngredientsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/cocktails/admin/pub/ingredients")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetIngredientsRequest generates requests for GetIngredients
+func NewGetIngredientsRequest(server string, params *GetIngredientsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/cocktails/ingredients")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Skip != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "skip", runtime.ParamLocationQuery, *params.Skip); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Take != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "take", runtime.ParamLocationQuery, *params.Take); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Fi != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "fi", runtime.ParamLocationQuery, *params.Fi); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
 // NewGetCocktailIngredientFiltersRequest generates requests for GetCocktailIngredientFilters
 func NewGetCocktailIngredientFiltersRequest(server string, params *GetCocktailIngredientFiltersParams) (*http.Request, error) {
 	var err error
@@ -576,6 +915,55 @@ func NewGetCocktailIngredientFiltersRequest(server string, params *GetCocktailIn
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/cocktails/ingredients/filters")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetIngredientRequest generates requests for GetIngredient
+func NewGetIngredientRequest(server string, id string, params *GetIngredientParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/cocktails/ingredients/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -827,8 +1215,19 @@ type ClientWithResponsesInterface interface {
 
 	PublishCocktailsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *PublishCocktailsParams, body PublishCocktailsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*PublishCocktailsResponse, error)
 
+	// PublishIngredientsWithBodyWithResponse request with any body
+	PublishIngredientsWithBodyWithResponse(ctx context.Context, params *PublishIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PublishIngredientsResponse, error)
+
+	PublishIngredientsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*PublishIngredientsResponse, error)
+
+	// GetIngredientsWithResponse request
+	GetIngredientsWithResponse(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*GetIngredientsResponse, error)
+
 	// GetCocktailIngredientFiltersWithResponse request
 	GetCocktailIngredientFiltersWithResponse(ctx context.Context, params *GetCocktailIngredientFiltersParams, reqEditors ...RequestEditorFn) (*GetCocktailIngredientFiltersResponse, error)
+
+	// GetIngredientWithResponse request
+	GetIngredientWithResponse(ctx context.Context, id string, params *GetIngredientParams, reqEditors ...RequestEditorFn) (*GetIngredientResponse, error)
 
 	// GetCocktailWithResponse request
 	GetCocktailWithResponse(ctx context.Context, id string, params *GetCocktailParams, reqEditors ...RequestEditorFn) (*GetCocktailResponse, error)
@@ -862,6 +1261,51 @@ func (r PublishCocktailsResponse) StatusCode() int {
 	return 0
 }
 
+type PublishIngredientsResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PublishIngredientsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PublishIngredientsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetIngredientsResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *IngredientsRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetIngredientsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetIngredientsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetCocktailIngredientFiltersResponse struct {
 	Body                                []byte
 	HTTPResponse                        *http.Response
@@ -879,6 +1323,29 @@ func (r GetCocktailIngredientFiltersResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetCocktailIngredientFiltersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetIngredientResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *IngredientRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetIngredientResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetIngredientResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -971,6 +1438,32 @@ func (c *ClientWithResponses) PublishCocktailsWithApplicationJSONXAPIVersion10Bo
 	return ParsePublishCocktailsResponse(rsp)
 }
 
+// PublishIngredientsWithBodyWithResponse request with arbitrary body returning *PublishIngredientsResponse
+func (c *ClientWithResponses) PublishIngredientsWithBodyWithResponse(ctx context.Context, params *PublishIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PublishIngredientsResponse, error) {
+	rsp, err := c.PublishIngredientsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePublishIngredientsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PublishIngredientsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*PublishIngredientsResponse, error) {
+	rsp, err := c.PublishIngredientsWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePublishIngredientsResponse(rsp)
+}
+
+// GetIngredientsWithResponse request returning *GetIngredientsResponse
+func (c *ClientWithResponses) GetIngredientsWithResponse(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*GetIngredientsResponse, error) {
+	rsp, err := c.GetIngredients(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetIngredientsResponse(rsp)
+}
+
 // GetCocktailIngredientFiltersWithResponse request returning *GetCocktailIngredientFiltersResponse
 func (c *ClientWithResponses) GetCocktailIngredientFiltersWithResponse(ctx context.Context, params *GetCocktailIngredientFiltersParams, reqEditors ...RequestEditorFn) (*GetCocktailIngredientFiltersResponse, error) {
 	rsp, err := c.GetCocktailIngredientFilters(ctx, params, reqEditors...)
@@ -978,6 +1471,15 @@ func (c *ClientWithResponses) GetCocktailIngredientFiltersWithResponse(ctx conte
 		return nil, err
 	}
 	return ParseGetCocktailIngredientFiltersResponse(rsp)
+}
+
+// GetIngredientWithResponse request returning *GetIngredientResponse
+func (c *ClientWithResponses) GetIngredientWithResponse(ctx context.Context, id string, params *GetIngredientParams, reqEditors ...RequestEditorFn) (*GetIngredientResponse, error) {
+	rsp, err := c.GetIngredient(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetIngredientResponse(rsp)
 }
 
 // GetCocktailWithResponse request returning *GetCocktailResponse
@@ -1033,6 +1535,65 @@ func ParsePublishCocktailsResponse(rsp *http.Response) (*PublishCocktailsRespons
 	return response, nil
 }
 
+// ParsePublishIngredientsResponse parses an HTTP response from a PublishIngredientsWithResponse call
+func ParsePublishIngredientsResponse(rsp *http.Response) (*PublishIngredientsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PublishIngredientsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetIngredientsResponse parses an HTTP response from a GetIngredientsWithResponse call
+func ParseGetIngredientsResponse(rsp *http.Response) (*GetIngredientsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetIngredientsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IngredientsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetCocktailIngredientFiltersResponse parses an HTTP response from a GetCocktailIngredientFiltersWithResponse call
 func ParseGetCocktailIngredientFiltersResponse(rsp *http.Response) (*GetCocktailIngredientFiltersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -1049,6 +1610,39 @@ func ParseGetCocktailIngredientFiltersResponse(rsp *http.Response) (*GetCocktail
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest CocktailIngredientFiltersRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetIngredientResponse parses an HTTP response from a GetIngredientWithResponse call
+func ParseGetIngredientResponse(rsp *http.Response) (*GetIngredientResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetIngredientResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IngredientRs
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

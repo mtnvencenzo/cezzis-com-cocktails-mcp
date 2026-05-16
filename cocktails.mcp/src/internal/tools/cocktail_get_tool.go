@@ -99,7 +99,7 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 	}
 
 	resolveIngredients := true
-	measurementSystem := interface{}("imperial") // or "metric"
+	measurementSystem := cocktailsapi.Imperial
 
 	rs, callErr := handler.client.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
 		ResolveIngredients: &resolveIngredients,
