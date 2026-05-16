@@ -36,7 +36,6 @@ Accept: application/json
 // ------------------------------------------------------------
 // Initialize Request
 // ------------------------------------------------------------
-
 POST {{host}}/mcp/v1/mcp
 X-Key: {{xKey}}
 Accept: application/json
