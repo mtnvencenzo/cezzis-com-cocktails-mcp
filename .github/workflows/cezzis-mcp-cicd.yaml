@@ -114,10 +114,22 @@ jobs:
       arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
       terraform_module_repo_access_key_secret: ${{ secrets.TERRAFORM_MODULE_REPO_ACCESS_KEY_SECRET }}
 
+  docker_purge:
+    name: Purge ACR images
+    needs: [docker, gitVersion, terraform_deploy_prd]
+    uses: mtnvencenzo/workflows/.github/workflows/docker-purge.yaml@main
+    with:
+      enable_purge: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+      acr_registry_login_server: 'acrveceusgloshared001.azurecr.io'
+      acr_image_repository: 'cocktailsmcp'
+
+    secrets:
+      acr_registry_login_username: ${{ secrets.ACR_REGISTRY_USERNAME }}
+      acr_registry_login_password: ${{ secrets.ACR_REGISTRY_PASSWORD }}
+
   verify_prd:
     name: Verify prd
-    # if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
-    if: ${{ 'disabled' == 'yes' }} # disabled for now until re-deployed to an environment
+    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -128,7 +140,7 @@ jobs:
         with:
           expected_release_version: ${{ needs.gitVersion.outputs.semVer }}
           expected_tag: ${{ github.sha }}
-          url: https://api.cezzis.com/prd/cocktails/mcp/v1/version
+          url: https://www.cezzis.com/prd/cocktails/mcp/v1/health/version
           property_name: version
           timeout_seconds: 180
 
@@ -136,7 +148,7 @@ jobs:
         uses: mtnvencenzo/workflows/.github/actions/api-call@main
         with:
           enabled: true
-          url: https://api.cezzis.com/prd/cocktails/mcp/v1/health
+          url: https://www.cezzis.com/prd/cocktails/mcp/v1/health/ping
           statusCode: 200
           authHeader: X-Key
           method: GET
