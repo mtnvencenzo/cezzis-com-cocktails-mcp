@@ -156,6 +156,39 @@ type AccountPreferencesModel struct {
 	ShowRecentSearches *bool `json:"showRecentSearches,omitempty"`
 }
 
+// BarModel Full bar detail model.
+type BarModel struct {
+	// CreatedOn When the bar was created
+	CreatedOn time.Time `json:"createdOn"`
+
+	// Description The bar description
+	Description *string `json:"description"`
+
+	// Id The bar ID
+	Id string `json:"id"`
+
+	// Name The bar name
+	Name string `json:"name"`
+
+	// Order Display order among user's bars
+	Order int `json:"order"`
+
+	// UpdatedOn When the bar was last updated
+	UpdatedOn time.Time `json:"updatedOn"`
+}
+
+// BarRs The response containing a single bar.
+type BarRs struct {
+	// Item Full bar detail model.
+	Item BarModel `json:"item"`
+}
+
+// BarsRs The response containing a list of bars.
+type BarsRs struct {
+	// Items The list of bars
+	Items *[]BarModel `json:"items,omitempty"`
+}
+
 // BodyPostV1AccountsOwnedProfileImage defines model for Body_postV1AccountsOwnedProfileImage.
 type BodyPostV1AccountsOwnedProfileImage struct {
 	// File The profile image file to upload
@@ -258,6 +291,15 @@ type CocktailListsRs struct {
 // CocktailUpdatedNotificationModel Notification frequency for cocktail updates.
 type CocktailUpdatedNotificationModel string
 
+// CreateBarRq Request model for creating a new bar.
+type CreateBarRq struct {
+	// Description The bar description
+	Description *string `json:"description"`
+
+	// Name The bar name
+	Name string `json:"name"`
+}
+
 // CreateCocktailListRq The request to create a cocktail list.
 type CreateCocktailListRq struct {
 	// CocktailIds Ordered list of cocktail IDs
@@ -328,6 +370,12 @@ type RateCocktailRs struct {
 
 	// Ratings The cocktail ratings
 	Ratings []AccountCocktailRatingsModel `json:"ratings"`
+}
+
+// ReorderBarsRq The request to reorder bars. The bar_ids array defines the new order.
+type ReorderBarsRq struct {
+	// BarIds Ordered array of bar IDs defining the new order
+	BarIds []string `json:"barIds"`
 }
 
 // ReorderCocktailListItemsRq The request to reorder items within a cocktail list.
@@ -402,6 +450,15 @@ type UpdateAccountOwnedProfileRq struct {
 	PrimaryAddress *AccountAddressModel `json:"primaryAddress"`
 }
 
+// UpdateBarRq Request model for updating an existing bar.
+type UpdateBarRq struct {
+	// Description The bar description
+	Description *string `json:"description"`
+
+	// Name The bar name
+	Name string `json:"name"`
+}
+
 // UpdateCocktailListRq The request to update a cocktail list.
 type UpdateCocktailListRq struct {
 	// CocktailIds Updated ordered list of cocktail IDs
@@ -440,6 +497,42 @@ type PostV1AccountsOwnedProfileParams struct {
 
 // PutV1AccountsOwnedProfileParams defines parameters for PutV1AccountsOwnedProfile.
 type PutV1AccountsOwnedProfileParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// GetV1AccountsOwnedProfileBarsParams defines parameters for GetV1AccountsOwnedProfileBars.
+type GetV1AccountsOwnedProfileBarsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PostV1AccountsOwnedProfileBarsParams defines parameters for PostV1AccountsOwnedProfileBars.
+type PostV1AccountsOwnedProfileBarsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PutV1AccountsOwnedProfileBarsOrderParams defines parameters for PutV1AccountsOwnedProfileBarsOrder.
+type PutV1AccountsOwnedProfileBarsOrderParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// DeleteV1AccountsOwnedProfileBarByIdParams defines parameters for DeleteV1AccountsOwnedProfileBarById.
+type DeleteV1AccountsOwnedProfileBarByIdParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// GetV1AccountsOwnedProfileBarByIdParams defines parameters for GetV1AccountsOwnedProfileBarById.
+type GetV1AccountsOwnedProfileBarByIdParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PutV1AccountsOwnedProfileBarByIdParams defines parameters for PutV1AccountsOwnedProfileBarById.
+type PutV1AccountsOwnedProfileBarByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
 }
@@ -567,6 +660,15 @@ type PutV1AccountsOwnedProfileUsernameParams struct {
 // PutV1AccountsOwnedProfileJSONRequestBody defines body for PutV1AccountsOwnedProfile for application/json ContentType.
 type PutV1AccountsOwnedProfileJSONRequestBody = UpdateAccountOwnedProfileRq
 
+// PostV1AccountsOwnedProfileBarsJSONRequestBody defines body for PostV1AccountsOwnedProfileBars for application/json ContentType.
+type PostV1AccountsOwnedProfileBarsJSONRequestBody = CreateBarRq
+
+// PutV1AccountsOwnedProfileBarsOrderJSONRequestBody defines body for PutV1AccountsOwnedProfileBarsOrder for application/json ContentType.
+type PutV1AccountsOwnedProfileBarsOrderJSONRequestBody = ReorderBarsRq
+
+// PutV1AccountsOwnedProfileBarByIdJSONRequestBody defines body for PutV1AccountsOwnedProfileBarById for application/json ContentType.
+type PutV1AccountsOwnedProfileBarByIdJSONRequestBody = UpdateBarRq
+
 // PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody defines body for PutV1AccountsOwnedProfileCocktailsFavorites for application/json ContentType.
 type PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody = ManageFavoriteCocktailsRq
 
@@ -693,6 +795,30 @@ type ClientInterface interface {
 
 	PutV1AccountsOwnedProfile(ctx context.Context, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetV1AccountsOwnedProfileBars request
+	GetV1AccountsOwnedProfileBars(ctx context.Context, params *GetV1AccountsOwnedProfileBarsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AccountsOwnedProfileBarsWithBody request with any body
+	PostV1AccountsOwnedProfileBarsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostV1AccountsOwnedProfileBars(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, body PostV1AccountsOwnedProfileBarsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountsOwnedProfileBarsOrderWithBody request with any body
+	PutV1AccountsOwnedProfileBarsOrderWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutV1AccountsOwnedProfileBarsOrder(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, body PutV1AccountsOwnedProfileBarsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteV1AccountsOwnedProfileBarById request
+	DeleteV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1AccountsOwnedProfileBarById request
+	GetV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *GetV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountsOwnedProfileBarByIdWithBody request with any body
+	PutV1AccountsOwnedProfileBarByIdWithBody(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PutV1AccountsOwnedProfileCocktailsFavoritesWithBody request with any body
 	PutV1AccountsOwnedProfileCocktailsFavoritesWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -818,6 +944,114 @@ func (c *Client) PutV1AccountsOwnedProfileWithBody(ctx context.Context, params *
 
 func (c *Client) PutV1AccountsOwnedProfile(ctx context.Context, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutV1AccountsOwnedProfileRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV1AccountsOwnedProfileBars(ctx context.Context, params *GetV1AccountsOwnedProfileBarsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsOwnedProfileBarsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1AccountsOwnedProfileBarsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileBarsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1AccountsOwnedProfileBars(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, body PostV1AccountsOwnedProfileBarsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileBarsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1AccountsOwnedProfileBarsOrderWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileBarsOrderRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1AccountsOwnedProfileBarsOrder(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, body PutV1AccountsOwnedProfileBarsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileBarsOrderRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AccountsOwnedProfileBarByIdRequest(c.Server, id, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *GetV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsOwnedProfileBarByIdRequest(c.Server, id, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1AccountsOwnedProfileBarByIdWithBody(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileBarByIdRequestWithBody(c.Server, id, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileBarByIdRequest(c.Server, id, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1325,6 +1559,306 @@ func NewPutV1AccountsOwnedProfileRequestWithBody(server string, params *PutV1Acc
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetV1AccountsOwnedProfileBarsRequest generates requests for GetV1AccountsOwnedProfileBars
+func NewGetV1AccountsOwnedProfileBarsRequest(server string, params *GetV1AccountsOwnedProfileBarsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPostV1AccountsOwnedProfileBarsRequest calls the generic PostV1AccountsOwnedProfileBars builder with application/json body
+func NewPostV1AccountsOwnedProfileBarsRequest(server string, params *PostV1AccountsOwnedProfileBarsParams, body PostV1AccountsOwnedProfileBarsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AccountsOwnedProfileBarsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostV1AccountsOwnedProfileBarsRequestWithBody generates requests for PostV1AccountsOwnedProfileBars with any type of body
+func NewPostV1AccountsOwnedProfileBarsRequestWithBody(server string, params *PostV1AccountsOwnedProfileBarsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPutV1AccountsOwnedProfileBarsOrderRequest calls the generic PutV1AccountsOwnedProfileBarsOrder builder with application/json body
+func NewPutV1AccountsOwnedProfileBarsOrderRequest(server string, params *PutV1AccountsOwnedProfileBarsOrderParams, body PutV1AccountsOwnedProfileBarsOrderJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV1AccountsOwnedProfileBarsOrderRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPutV1AccountsOwnedProfileBarsOrderRequestWithBody generates requests for PutV1AccountsOwnedProfileBarsOrder with any type of body
+func NewPutV1AccountsOwnedProfileBarsOrderRequestWithBody(server string, params *PutV1AccountsOwnedProfileBarsOrderParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars/order")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteV1AccountsOwnedProfileBarByIdRequest generates requests for DeleteV1AccountsOwnedProfileBarById
+func NewDeleteV1AccountsOwnedProfileBarByIdRequest(server string, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetV1AccountsOwnedProfileBarByIdRequest generates requests for GetV1AccountsOwnedProfileBarById
+func NewGetV1AccountsOwnedProfileBarByIdRequest(server string, id string, params *GetV1AccountsOwnedProfileBarByIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPutV1AccountsOwnedProfileBarByIdRequest calls the generic PutV1AccountsOwnedProfileBarById builder with application/json body
+func NewPutV1AccountsOwnedProfileBarByIdRequest(server string, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV1AccountsOwnedProfileBarByIdRequestWithBody(server, id, params, "application/json", bodyReader)
+}
+
+// NewPutV1AccountsOwnedProfileBarByIdRequestWithBody generates requests for PutV1AccountsOwnedProfileBarById with any type of body
+func NewPutV1AccountsOwnedProfileBarByIdRequestWithBody(server string, id string, params *PutV1AccountsOwnedProfileBarByIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2417,6 +2951,30 @@ type ClientWithResponsesInterface interface {
 
 	PutV1AccountsOwnedProfileWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileParams, body PutV1AccountsOwnedProfileJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileResponse, error)
 
+	// GetV1AccountsOwnedProfileBarsWithResponse request
+	GetV1AccountsOwnedProfileBarsWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileBarsParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileBarsResponse, error)
+
+	// PostV1AccountsOwnedProfileBarsWithBodyWithResponse request with any body
+	PostV1AccountsOwnedProfileBarsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileBarsResponse, error)
+
+	PostV1AccountsOwnedProfileBarsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, body PostV1AccountsOwnedProfileBarsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileBarsResponse, error)
+
+	// PutV1AccountsOwnedProfileBarsOrderWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileBarsOrderWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarsOrderResponse, error)
+
+	PutV1AccountsOwnedProfileBarsOrderWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, body PutV1AccountsOwnedProfileBarsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarsOrderResponse, error)
+
+	// DeleteV1AccountsOwnedProfileBarByIdWithResponse request
+	DeleteV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileBarByIdResponse, error)
+
+	// GetV1AccountsOwnedProfileBarByIdWithResponse request
+	GetV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *GetV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileBarByIdResponse, error)
+
+	// PutV1AccountsOwnedProfileBarByIdWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileBarByIdWithBodyWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarByIdResponse, error)
+
+	PutV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarByIdResponse, error)
+
 	// PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse request with any body
 	PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error)
 
@@ -2571,6 +3129,154 @@ func (r PutV1AccountsOwnedProfileResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutV1AccountsOwnedProfileResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetV1AccountsOwnedProfileBarsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BarsRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountsOwnedProfileBarsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountsOwnedProfileBarsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostV1AccountsOwnedProfileBarsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *interface{}
+	JSON201                       *BarRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AccountsOwnedProfileBarsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AccountsOwnedProfileBarsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutV1AccountsOwnedProfileBarsOrderResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BarsRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1AccountsOwnedProfileBarsOrderResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1AccountsOwnedProfileBarsOrderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteV1AccountsOwnedProfileBarByIdResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *interface{}
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AccountsOwnedProfileBarByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AccountsOwnedProfileBarByIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetV1AccountsOwnedProfileBarByIdResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BarRs
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountsOwnedProfileBarByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountsOwnedProfileBarByIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutV1AccountsOwnedProfileBarByIdResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BarRs
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1AccountsOwnedProfileBarByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1AccountsOwnedProfileBarByIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3107,6 +3813,84 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileWithResponse(ctx context.
 	return ParsePutV1AccountsOwnedProfileResponse(rsp)
 }
 
+// GetV1AccountsOwnedProfileBarsWithResponse request returning *GetV1AccountsOwnedProfileBarsResponse
+func (c *ClientWithResponses) GetV1AccountsOwnedProfileBarsWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileBarsParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileBarsResponse, error) {
+	rsp, err := c.GetV1AccountsOwnedProfileBars(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountsOwnedProfileBarsResponse(rsp)
+}
+
+// PostV1AccountsOwnedProfileBarsWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileBarsResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileBarsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileBarsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileBarsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsOwnedProfileBarsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileBarsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileBarsParams, body PostV1AccountsOwnedProfileBarsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileBarsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileBars(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsOwnedProfileBarsResponse(rsp)
+}
+
+// PutV1AccountsOwnedProfileBarsOrderWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileBarsOrderResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarsOrderWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarsOrderResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileBarsOrderWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileBarsOrderResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarsOrderWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, body PutV1AccountsOwnedProfileBarsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarsOrderResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileBarsOrder(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileBarsOrderResponse(rsp)
+}
+
+// DeleteV1AccountsOwnedProfileBarByIdWithResponse request returning *DeleteV1AccountsOwnedProfileBarByIdResponse
+func (c *ClientWithResponses) DeleteV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileBarByIdResponse, error) {
+	rsp, err := c.DeleteV1AccountsOwnedProfileBarById(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AccountsOwnedProfileBarByIdResponse(rsp)
+}
+
+// GetV1AccountsOwnedProfileBarByIdWithResponse request returning *GetV1AccountsOwnedProfileBarByIdResponse
+func (c *ClientWithResponses) GetV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *GetV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileBarByIdResponse, error) {
+	rsp, err := c.GetV1AccountsOwnedProfileBarById(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountsOwnedProfileBarByIdResponse(rsp)
+}
+
+// PutV1AccountsOwnedProfileBarByIdWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileBarByIdResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarByIdWithBodyWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarByIdResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileBarByIdWithBody(ctx, id, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileBarByIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarByIdResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileBarById(ctx, id, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileBarByIdResponse(rsp)
+}
+
 // PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileCocktailsFavoritesResponse
 func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error) {
 	rsp, err := c.PutV1AccountsOwnedProfileCocktailsFavoritesWithBody(ctx, params, contentType, body, reqEditors...)
@@ -3512,6 +4296,274 @@ func ParsePutV1AccountsOwnedProfileResponse(rsp *http.Response) (*PutV1AccountsO
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AccountsOwnedProfileBarsResponse parses an HTTP response from a GetV1AccountsOwnedProfileBarsWithResponse call
+func ParseGetV1AccountsOwnedProfileBarsResponse(rsp *http.Response) (*GetV1AccountsOwnedProfileBarsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountsOwnedProfileBarsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BarsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AccountsOwnedProfileBarsResponse parses an HTTP response from a PostV1AccountsOwnedProfileBarsWithResponse call
+func ParsePostV1AccountsOwnedProfileBarsResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileBarsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AccountsOwnedProfileBarsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest BarRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV1AccountsOwnedProfileBarsOrderResponse parses an HTTP response from a PutV1AccountsOwnedProfileBarsOrderWithResponse call
+func ParsePutV1AccountsOwnedProfileBarsOrderResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileBarsOrderResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1AccountsOwnedProfileBarsOrderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BarsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteV1AccountsOwnedProfileBarByIdResponse parses an HTTP response from a DeleteV1AccountsOwnedProfileBarByIdWithResponse call
+func ParseDeleteV1AccountsOwnedProfileBarByIdResponse(rsp *http.Response) (*DeleteV1AccountsOwnedProfileBarByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AccountsOwnedProfileBarByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AccountsOwnedProfileBarByIdResponse parses an HTTP response from a GetV1AccountsOwnedProfileBarByIdWithResponse call
+func ParseGetV1AccountsOwnedProfileBarByIdResponse(rsp *http.Response) (*GetV1AccountsOwnedProfileBarByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountsOwnedProfileBarByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BarRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV1AccountsOwnedProfileBarByIdResponse parses an HTTP response from a PutV1AccountsOwnedProfileBarByIdWithResponse call
+func ParsePutV1AccountsOwnedProfileBarByIdResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileBarByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1AccountsOwnedProfileBarByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BarRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	}
 
