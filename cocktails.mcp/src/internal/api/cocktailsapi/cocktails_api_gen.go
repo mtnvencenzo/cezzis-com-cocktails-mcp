@@ -27,6 +27,93 @@ const (
 	Metric   GetCocktailParamsMeasurementSystem = "metric"
 )
 
+// CocktailCollectionListModel defines model for CocktailCollectionListModel.
+type CocktailCollectionListModel struct {
+	// Description The cocktail collection description
+	Description string `json:"description"`
+
+	// Holiday The holiday rule for a holiday collection
+	Holiday NullableOfCollectionHolidayTypeModel `json:"holiday"`
+
+	// Id The cocktail collection identifier
+	Id string `json:"id"`
+
+	// ImageUrl The collection image URL
+	ImageUrl string `json:"imageUrl"`
+
+	// Intro The collection intro text for the landing page
+	Intro string `json:"intro"`
+
+	// Order The display order of the collection
+	Order int32 `json:"order"`
+
+	// RelatedCollectionIds The related collection identifiers
+	RelatedCollectionIds []string `json:"relatedCollectionIds"`
+
+	// Season The season rule for a seasonal collection
+	Season NullableOfCollectionSeasonTypeModel `json:"season"`
+
+	// ShortTitle The short collection title for compact displays
+	ShortTitle string `json:"shortTitle"`
+
+	// Title The cocktail collection title
+	Title string `json:"title"`
+
+	// Visibility The collection visibility type
+	Visibility CollectionVisibilityTypeModel `json:"visibility"`
+}
+
+// CocktailCollectionModel The cocktail collection model
+type CocktailCollectionModel struct {
+	// CocktailIds The cocktail identifiers in the collection
+	CocktailIds []string `json:"cocktailIds"`
+
+	// Description The cocktail collection description
+	Description string `json:"description"`
+
+	// Holiday The holiday rule for a holiday collection
+	Holiday NullableOfCollectionHolidayTypeModel `json:"holiday"`
+
+	// Id The cocktail collection identifier
+	Id string `json:"id"`
+
+	// ImageUrl The collection image URL
+	ImageUrl string `json:"imageUrl"`
+
+	// Intro The collection intro text for the landing page
+	Intro string `json:"intro"`
+
+	// Order The display order of the collection
+	Order int32 `json:"order"`
+
+	// RelatedCollectionIds The related collection identifiers
+	RelatedCollectionIds []string `json:"relatedCollectionIds"`
+
+	// Season The season rule for a seasonal collection
+	Season NullableOfCollectionSeasonTypeModel `json:"season"`
+
+	// ShortTitle The short collection title for compact displays
+	ShortTitle string `json:"shortTitle"`
+
+	// Title The cocktail collection title
+	Title string `json:"title"`
+
+	// Visibility The collection visibility type
+	Visibility CollectionVisibilityTypeModel `json:"visibility"`
+}
+
+// CocktailCollectionRs defines model for CocktailCollectionRs.
+type CocktailCollectionRs struct {
+	// Item The cocktail collection model
+	Item CocktailCollectionModel `json:"item"`
+}
+
+// CocktailCollectionsRs defines model for CocktailCollectionsRs.
+type CocktailCollectionsRs struct {
+	// Items The visible cocktail collections
+	Items []CocktailCollectionListModel `json:"items"`
+}
+
 // CocktailImageModel defines model for CocktailImageModel.
 type CocktailImageModel struct {
 	// Height The height of the image
@@ -53,44 +140,44 @@ type CocktailImageModel2 struct {
 
 // CocktailIngredientFiltersRs defines model for CocktailIngredientFiltersRs.
 type CocktailIngredientFiltersRs struct {
-	// BeerWineChampagne The cocktail ingredient filters for searching against beers, wines and champagnes
-	BeerWineChampagne []interface{} `json:"beerWineChampagne"`
+	// AromaticsTeaAndCoffee The cocktail ingredient filters for searching against aromatics, tea, and coffee
+	AromaticsTeaAndCoffee []interface{} `json:"aromaticsTeaAndCoffee"`
 
 	// Bitters The cocktail ingredient filters for searching against bitters
 	Bitters []interface{} `json:"bitters"`
 
-	// Dilutions The cocktail ingredient filters for searching against dilutions
-	Dilutions []interface{} `json:"dilutions"`
+	// DairyAndEggs The cocktail ingredient filters for searching against dairy and eggs
+	DairyAndEggs []interface{} `json:"dairyAndEggs"`
 
 	// Eras The cocktail ingredient filters for searching against eras when cocktails were established
 	Eras []interface{} `json:"eras"`
 
-	// Fruits The cocktail ingredient filters for searching against friuts
-	Fruits []interface{} `json:"fruits"`
+	// FruitsAndCitrus The cocktail ingredient filters for searching against fruits and citrus
+	FruitsAndCitrus []interface{} `json:"fruitsAndCitrus"`
 
-	// Glassware The cocktail ingredient filters for searching against recommended glassware
-	Glassware []IngredientFilterModel `json:"glassware"`
+	// JuicesAndPurees The cocktail ingredient filters for searching against juices and purees
+	JuicesAndPurees []interface{} `json:"juicesAndPurees"`
 
-	// HerbsAndFlowers The cocktail ingredient filters for searching against herbs and flowers
-	HerbsAndFlowers []interface{} `json:"herbsAndFlowers"`
+	// LiqueursAperitifsAndAmari The cocktail ingredient filters for searching against liqueurs, aperitifs, and amari
+	LiqueursAperitifsAndAmari []interface{} `json:"liqueursAperitifsAndAmari"`
 
-	// Juices The cocktail ingredient filters for searching against juices
-	Juices []interface{} `json:"juices"`
+	// MixersSodaAndWater The cocktail ingredient filters for searching against mixers, soda, and water
+	MixersSodaAndWater []interface{} `json:"mixersSodaAndWater"`
 
-	// Liqueurs The cocktail ingredient filters for searching against liqueurs
-	Liqueurs []interface{} `json:"liqueurs"`
-
-	// Proteins The cocktail ingredient filters for searching against proteins
-	Proteins []interface{} `json:"proteins"`
+	// SavoryBrinyAndHeat The cocktail ingredient filters for searching against savory, briny, and heat ingredients
+	SavoryBrinyAndHeat []interface{} `json:"savoryBrinyAndHeat"`
 
 	// Spirits The cocktail ingredient filters for searching against spirits
-	Spirits []interface{} `json:"spirits"`
+	Spirits []IngredientFilterModel `json:"spirits"`
 
-	// SyrupsAndSauces The cocktail ingredient filters for searching against syrups and sauces
-	SyrupsAndSauces []interface{} `json:"syrupsAndSauces"`
+	// SweetenersAndSyrups The cocktail ingredient filters for searching against sweeteners and syrups
+	SweetenersAndSyrups []interface{} `json:"sweetenersAndSyrups"`
 
-	// Vegetables The cocktail ingredient filters for searching against vegetables
-	Vegetables []interface{} `json:"vegetables"`
+	// VegetablesAndSavoryProduce The cocktail ingredient filters for searching against vegetables and savory produce
+	VegetablesAndSavoryProduce []interface{} `json:"vegetablesAndSavoryProduce"`
+
+	// WineBeerAndSake The cocktail ingredient filters for searching against wine, beer, and sake ingredients
+	WineBeerAndSake []interface{} `json:"wineBeerAndSake"`
 }
 
 // CocktailKeywordsModel The keywords associated with the cocktail recipe
@@ -116,7 +203,7 @@ type CocktailKeywordsModel struct {
 	// KeywordsSeason Season keywords
 	KeywordsSeason []string `json:"keywordsSeason"`
 
-	// KeywordsSpiritSubtype Spirit subtype keywords
+	// KeywordsSpiritSubtype Spirits subtype keywords
 	KeywordsSpiritSubtype []string `json:"keywordsSpiritSubtype"`
 
 	// KeywordsStrength Strength keyword
@@ -131,6 +218,9 @@ type CocktailKeywordsModel struct {
 
 // CocktailModel The cocktail recipe model
 type CocktailModel struct {
+	// Collections A list of collections that this cocktail recipe belongs to
+	Collections []string `json:"collections"`
+
 	// Content The complete descriptive cocktail recipe including ingredients, directions and historical information in markdown format
 	Content string `json:"content"`
 
@@ -222,6 +312,9 @@ type CocktailRs struct {
 	Item CocktailModel `json:"item"`
 }
 
+// CollectionVisibilityTypeModel The collection visibility type
+type CollectionVisibilityTypeModel = interface{}
+
 // DocumentFormat The format that the document content is in
 type DocumentFormat = interface{}
 
@@ -260,8 +353,11 @@ type IngredientModel struct {
 	// Suggestions Suggestion when using this ingredient
 	Suggestions string `json:"suggestions"`
 
-	// Types The ingredient types that this ingredient is in relation to the cocktail recipe
-	Types []IngredientTypeModel `json:"types"`
+	// TaxonomyFilterType The ingredient filter group used for cocktail search filters
+	TaxonomyFilterType TaxonomyFilterTypeModel `json:"taxonomyFilterType"`
+
+	// Types The ordered ingredient taxonomy from broad to specific
+	Types []string `json:"types"`
 
 	// Units The number of units to use in relation to the UoM (unit of measure) in the cocktail recipe
 	Units float32 `json:"units"`
@@ -278,9 +374,6 @@ type IngredientRs struct {
 	// Item The ingredient model
 	Item InventoryIngredientModel `json:"item"`
 }
-
-// IngredientTypeModel defines model for IngredientTypeModel.
-type IngredientTypeModel = interface{}
 
 // IngredientVariationModel defines model for IngredientVariationModel.
 type IngredientVariationModel struct {
@@ -335,8 +428,11 @@ type InventoryIngredientModel struct {
 	// ShelfDisplay The ingredient shelf display name
 	ShelfDisplay string `json:"shelfDisplay"`
 
-	// Types The ingredient top-level types
-	Types []IngredientTypeModel `json:"types"`
+	// TaxonomyFilterType The ingredient filter group used for cocktail search filters
+	TaxonomyFilterType TaxonomyFilterTypeModel `json:"taxonomyFilterType"`
+
+	// Types The ordered ingredient taxonomy from broad to specific
+	Types []string `json:"types"`
 
 	// Variations The ingredient variations
 	Variations []IngredientVariationModel `json:"variations"`
@@ -362,8 +458,11 @@ type InventoryIngredientModel2 struct {
 	// ShelfDisplay The ingredient shelf display name
 	ShelfDisplay string `json:"shelfDisplay"`
 
-	// Types The ingredient top-level types
-	Types []IngredientTypeModel `json:"types"`
+	// TaxonomyFilterType The ingredient filter group used for cocktail search filters
+	TaxonomyFilterType TaxonomyFilterTypeModel `json:"taxonomyFilterType"`
+
+	// Types The ordered ingredient taxonomy from broad to specific
+	Types []string `json:"types"`
 
 	// Variations The ingredient variations
 	Variations []IngredientVariationModel `json:"variations"`
@@ -377,6 +476,12 @@ type LegalDocumentRs struct {
 	// Format The format that the document content is in
 	Format DocumentFormat `json:"format"`
 }
+
+// NullableOfCollectionHolidayTypeModel The holiday rule for a holiday collection
+type NullableOfCollectionHolidayTypeModel = interface{}
+
+// NullableOfCollectionSeasonTypeModel The season rule for a seasonal collection
+type NullableOfCollectionSeasonTypeModel = interface{}
 
 // PreparationTypeModel Any preparation that should be made with this ingredient
 type PreparationTypeModel = interface{}
@@ -402,6 +507,9 @@ type PublishIngredientsRq struct {
 	IngredientIds []string `json:"ingredientIds"`
 }
 
+// TaxonomyFilterTypeModel The ingredient filter group used for cocktail search filters
+type TaxonomyFilterTypeModel = interface{}
+
 // UofMTypeModel The unit of measure when using this ingredient in a cocktail recipe
 type UofMTypeModel = interface{}
 
@@ -417,6 +525,18 @@ type PublishIngredientsParams struct {
 	XKey *string `json:"X-Key,omitempty"`
 }
 
+// GetCocktailCollectionsParams defines parameters for GetCocktailCollections.
+type GetCocktailCollectionsParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// GetCocktailCollectionParams defines parameters for GetCocktailCollection.
+type GetCocktailCollectionParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
 // GetIngredientsParams defines parameters for GetIngredients.
 type GetIngredientsParams struct {
 	// Skip The number of ingredients to skip
@@ -425,7 +545,7 @@ type GetIngredientsParams struct {
 	// Take The number of ingredients to return. Maximum value is 50
 	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
 
-	// Fi Filters ingredients by top-level type. Use repeatable fi query values such as fi=spirit&fi=liqueur
+	// Fi Filters ingredients by taxonomy node. Use repeatable fi query values such as fi=spirits&fi=whiskey
 	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
 
 	// XKey Subscription key
@@ -560,6 +680,12 @@ type ClientInterface interface {
 
 	PublishIngredientsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetCocktailCollections request
+	GetCocktailCollections(ctx context.Context, params *GetCocktailCollectionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCocktailCollection request
+	GetCocktailCollection(ctx context.Context, id string, params *GetCocktailCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetIngredients request
 	GetIngredients(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -617,6 +743,30 @@ func (c *Client) PublishIngredientsWithBody(ctx context.Context, params *Publish
 
 func (c *Client) PublishIngredientsWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPublishIngredientsRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCocktailCollections(ctx context.Context, params *GetCocktailCollectionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCocktailCollectionsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCocktailCollection(ctx context.Context, id string, params *GetCocktailCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCocktailCollectionRequest(c.Server, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -790,6 +940,97 @@ func NewPublishIngredientsRequestWithBody(server string, params *PublishIngredie
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetCocktailCollectionsRequest generates requests for GetCocktailCollections
+func NewGetCocktailCollectionsRequest(server string, params *GetCocktailCollectionsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/cocktails/collections")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetCocktailCollectionRequest generates requests for GetCocktailCollection
+func NewGetCocktailCollectionRequest(server string, id string, params *GetCocktailCollectionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/cocktails/collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params != nil {
 
@@ -1220,6 +1461,12 @@ type ClientWithResponsesInterface interface {
 
 	PublishIngredientsWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *PublishIngredientsParams, body PublishIngredientsApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*PublishIngredientsResponse, error)
 
+	// GetCocktailCollectionsWithResponse request
+	GetCocktailCollectionsWithResponse(ctx context.Context, params *GetCocktailCollectionsParams, reqEditors ...RequestEditorFn) (*GetCocktailCollectionsResponse, error)
+
+	// GetCocktailCollectionWithResponse request
+	GetCocktailCollectionWithResponse(ctx context.Context, id string, params *GetCocktailCollectionParams, reqEditors ...RequestEditorFn) (*GetCocktailCollectionResponse, error)
+
 	// GetIngredientsWithResponse request
 	GetIngredientsWithResponse(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*GetIngredientsResponse, error)
 
@@ -1277,6 +1524,52 @@ func (r PublishIngredientsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PublishIngredientsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCocktailCollectionsResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *CocktailCollectionsRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCocktailCollectionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCocktailCollectionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCocktailCollectionResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *CocktailCollectionRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCocktailCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCocktailCollectionResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1455,6 +1748,24 @@ func (c *ClientWithResponses) PublishIngredientsWithApplicationJSONXAPIVersion10
 	return ParsePublishIngredientsResponse(rsp)
 }
 
+// GetCocktailCollectionsWithResponse request returning *GetCocktailCollectionsResponse
+func (c *ClientWithResponses) GetCocktailCollectionsWithResponse(ctx context.Context, params *GetCocktailCollectionsParams, reqEditors ...RequestEditorFn) (*GetCocktailCollectionsResponse, error) {
+	rsp, err := c.GetCocktailCollections(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCocktailCollectionsResponse(rsp)
+}
+
+// GetCocktailCollectionWithResponse request returning *GetCocktailCollectionResponse
+func (c *ClientWithResponses) GetCocktailCollectionWithResponse(ctx context.Context, id string, params *GetCocktailCollectionParams, reqEditors ...RequestEditorFn) (*GetCocktailCollectionResponse, error) {
+	rsp, err := c.GetCocktailCollection(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCocktailCollectionResponse(rsp)
+}
+
 // GetIngredientsWithResponse request returning *GetIngredientsResponse
 func (c *ClientWithResponses) GetIngredientsWithResponse(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*GetIngredientsResponse, error) {
 	rsp, err := c.GetIngredients(ctx, params, reqEditors...)
@@ -1549,6 +1860,72 @@ func ParsePublishIngredientsResponse(rsp *http.Response) (*PublishIngredientsRes
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCocktailCollectionsResponse parses an HTTP response from a GetCocktailCollectionsWithResponse call
+func ParseGetCocktailCollectionsResponse(rsp *http.Response) (*GetCocktailCollectionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCocktailCollectionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailCollectionsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCocktailCollectionResponse parses an HTTP response from a GetCocktailCollectionWithResponse call
+func ParseGetCocktailCollectionResponse(rsp *http.Response) (*GetCocktailCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCocktailCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailCollectionRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ProblemDetails
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
