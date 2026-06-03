@@ -162,6 +162,9 @@ type CocktailSearchIngredientModel struct {
 	// Display Display string for the ingredient
 	Display string `json:"display"`
 
+	// Id Unique identifier for the ingredient
+	Id string `json:"id"`
+
 	// Name Name of the ingredient
 	Name string `json:"name"`
 

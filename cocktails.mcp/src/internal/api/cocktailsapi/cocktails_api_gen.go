@@ -331,6 +331,12 @@ type IngredientFilterModel struct {
 
 	// Name The display name of the filter
 	Name string `json:"name"`
+
+	// ParentId The parent ingredient
+	ParentId string `json:"parentId"`
+
+	// Used Whether the ingredient is used directly in a cocktail recipe. Null implies used.
+	Used *bool `json:"used"`
 }
 
 // IngredientModel defines model for IngredientModel.
@@ -340,6 +346,9 @@ type IngredientModel struct {
 
 	// Display Gets the complete display value for the ingredient including units and measurments
 	Display string `json:"display"`
+
+	// Id The cocktail ingredient unique identifier
+	Id string `json:"id"`
 
 	// Name The name of the ingredient
 	Name string `json:"name"`
