@@ -119,17 +119,8 @@ type CocktailImageModel struct {
 	// Height The height of the image
 	Height int32 `json:"height"`
 
-	// Uri The uri of the image
-	Uri string `json:"uri"`
-
-	// Width The width of the image
-	Width int32 `json:"width"`
-}
-
-// CocktailImageModel2 defines model for CocktailImageModel2.
-type CocktailImageModel2 struct {
-	// Height The height of the image
-	Height int32 `json:"height"`
+	// Type The type of image variant
+	Type string `json:"type"`
 
 	// Uri The uri of the image
 	Uri string `json:"uri"`
@@ -236,6 +227,9 @@ type CocktailModel struct {
 	// Id The cocktail recipe unique identifier
 	Id string `json:"id"`
 
+	// Images A list of images for the cocktail recipe
+	Images []CocktailImageModel `json:"images"`
+
 	// Ingredients The list of ingredients that make up the cocktail recipe
 	Ingredients []IngredientModel `json:"ingredients"`
 
@@ -248,9 +242,6 @@ type CocktailModel struct {
 	// Keywords The keywords associated with the cocktail recipe
 	Keywords CocktailKeywordsModel `json:"keywords"`
 
-	// MainImages A list of primary images for the cocktail recipe
-	MainImages []CocktailImageModel `json:"mainImages"`
-
 	// ModifiedOn The date this cocktail recipe was last modified on Cezzis.Com
 	ModifiedOn time.Time `json:"modifiedOn"`
 
@@ -262,9 +253,6 @@ type CocktailModel struct {
 
 	// Rating A ratings for this cocktail
 	Rating CocktailRatingModel `json:"rating"`
-
-	// SearchTiles A list of secondary, smaller sized images for the cocktail recipe
-	SearchTiles []CocktailImageModel2 `json:"searchTiles"`
 
 	// SearchableTitles A list of titles that are queried against when issuing cocktail recipe search queries
 	SearchableTitles []string `json:"searchableTitles"`
