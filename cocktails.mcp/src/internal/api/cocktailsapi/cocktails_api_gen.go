@@ -254,6 +254,9 @@ type CocktailModel struct {
 	// Rating A ratings for this cocktail
 	Rating CocktailRatingModel `json:"rating"`
 
+	// RecipeCuisine The regional or national cuisine the cocktail recipe is associated with, aligned with schema.org Recipe.recipeCuisine. Empty when the origin cannot be determined.
+	RecipeCuisine string `json:"recipeCuisine"`
+
 	// SearchableTitles A list of titles that are queried against when issuing cocktail recipe search queries
 	SearchableTitles []string `json:"searchableTitles"`
 
