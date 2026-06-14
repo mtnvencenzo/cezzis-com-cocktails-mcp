@@ -9,4 +9,4 @@ resources:
 images:
   - name: acrveceusgloshared001.azurecr.io/cocktailsmcp
     newName: acrveceusgloshared001.azurecr.io/cocktailsmcp
-    newTag: 0.1.119
+    newTag: 0.1.120
