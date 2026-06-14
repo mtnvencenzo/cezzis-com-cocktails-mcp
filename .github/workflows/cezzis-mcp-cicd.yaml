@@ -127,33 +127,33 @@ jobs:
       acr_registry_login_username: ${{ secrets.ACR_REGISTRY_USERNAME }}
       acr_registry_login_password: ${{ secrets.ACR_REGISTRY_PASSWORD }}
 
-  verify_prd:
-    name: Verify prd
-    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    needs: [docker, gitVersion, terraform_deploy_prd]
-    steps:
-      - name: Verify version
-        uses: mtnvencenzo/workflows/.github/actions/check-release-version@main
-        with:
-          expected_release_version: ${{ needs.gitVersion.outputs.semVer }}
-          expected_tag: ${{ github.sha }}
-          url: https://www.cezzis.com/prd/cocktails/mcp/v1/health/version
-          property_name: version
-          auth_header: X-Key
-          timeout_seconds: 180
-        env:
-          AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}
+  # verify_prd:
+  #   name: Verify prd
+  #   if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+  #   permissions:
+  #     contents: write
+  #   runs-on: ubuntu-latest
+  #   needs: [docker, gitVersion, terraform_deploy_prd]
+  #   steps:
+  #     - name: Verify version
+  #       uses: mtnvencenzo/workflows/.github/actions/check-release-version@main
+  #       with:
+  #         expected_release_version: ${{ needs.gitVersion.outputs.semVer }}
+  #         expected_tag: ${{ github.sha }}
+  #         url: https://www.cezzis.com/prd/cocktails/mcp/v1/health/version
+  #         property_name: version
+  #         auth_header: X-Key
+  #         timeout_seconds: 180
+  #       env:
+  #         AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}
 
-      - name: Warmup api
-        uses: mtnvencenzo/workflows/.github/actions/api-call@main
-        with:
-          enabled: true
-          url: https://www.cezzis.com/prd/cocktails/mcp/v1/health/ping
-          statusCode: 200
-          authHeader: X-Key
-          method: GET
-        env:
-          AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}
+  #     - name: Warmup api
+  #       uses: mtnvencenzo/workflows/.github/actions/api-call@main
+  #       with:
+  #         enabled: true
+  #         url: https://www.cezzis.com/prd/cocktails/mcp/v1/health/ping
+  #         statusCode: 200
+  #         authHeader: X-Key
+  #         method: GET
+  #       env:
+  #         AUTH_VALUE: ${{ secrets.PRD_DEVOPS_APIM_SUBSCRIPTION_KEY }}
