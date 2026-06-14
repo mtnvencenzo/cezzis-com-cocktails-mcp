@@ -1,5 +1,5 @@
 environment      = "prd"
-postgres_db      = "cezzis-cocktailsmcp-db-loc"
+postgres_db      = "cezzis-cocktailsmcp-db-prd"
 postgres_port    = "5432"
 postgres_use_tls = true
 allowed_origins = [
