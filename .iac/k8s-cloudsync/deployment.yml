@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cezzis-com-cocktails-mcp-cloudsync
+  namespace: cezzis
+  labels:
+    app: cezzis-com-cocktails-mcp-cloudsync
+    app.kubernetes.io/part-of: cezzis
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "400"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: cezzis-com-cocktails-mcp-cloudsync
+  template:
+    metadata:
+      labels:
+        app: cezzis-com-cocktails-mcp-cloudsync
+        app.kubernetes.io/part-of: cezzis
+        app.kubernetes.io/managed-by: argocd
+      annotations: {}
+    spec:
+      imagePullSecrets:
+        - name: acr-pull-secret
+      containers:
+        - name: cezzis-com-cocktails-mcp-cloudsync
+          image: acrveceusgloshared001.azurecr.io/cocktailsmcp
+          ports:
+            - containerPort: 7999
+              name: http
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: cezzis-com-cocktails-mcp-cloudsync-config
+            - secretRef:
+                name: cezzis-com-cocktails-mcp-cloudsync-shared-secrets
+          startupProbe:
+            httpGet:
+              path: /mcp/v1/health/liveness
+              port: 7999
+            periodSeconds: 3
+            failureThreshold: 40
+          readinessProbe:
+            httpGet:
+              path: /mcp/v1/health/readiness
+              port: 7999
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /mcp/v1/health/liveness
+              port: 7999
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

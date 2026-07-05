@@ -219,6 +219,10 @@ func assertInitJobSettings(settings *config.AppSettings) {
 }
 
 func assertOtlpSettings(settings *config.AppSettings) {
+	if settings.OTLPServiceName == "" {
+		telemetry.Logger.Warn().Msg("Warning: OTLP_SERVICE_NAME is not set; telemetry will not be exported")
+	}
+
 	if settings.OTLPEndpoint == "" {
 		telemetry.Logger.Warn().Msg("Warning: OTLP_ENDPOINT is not set; telemetry will not be exported")
 	}

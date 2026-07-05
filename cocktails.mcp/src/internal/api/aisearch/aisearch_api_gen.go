@@ -94,6 +94,15 @@ const (
 	CocktailSearchUofMTypeModelTopoff     CocktailSearchUofMTypeModel = "topoff"
 )
 
+// Defines values for IngredientCoverageFilter.
+const (
+	All          IngredientCoverageFilter = "all"
+	Exact        IngredientCoverageFilter = "exact"
+	Missing1     IngredientCoverageFilter = "missing_1"
+	Missing2     IngredientCoverageFilter = "missing_2"
+	Missing3Plus IngredientCoverageFilter = "missing_3_plus"
+)
+
 // CocktailDescriptionChunk Model representing a chunk of cocktail description text, categorized for embedding and vector search.
 type CocktailDescriptionChunk struct {
 	// Category Category of the description chunk
@@ -114,6 +123,9 @@ type CocktailEmbeddingModel struct {
 	// Id Unique identifier for the cocktail
 	Id string `json:"id"`
 
+	// Images Search tiles associated with the cocktail
+	Images []CocktailSearchImageModel `json:"images"`
+
 	// Ingredients List of ingredients in the cocktail
 	Ingredients []CocktailSearchIngredientModel `json:"ingredients"`
 
@@ -125,9 +137,6 @@ type CocktailEmbeddingModel struct {
 
 	// Rating Rating of the cocktail
 	Rating float32 `json:"rating"`
-
-	// SearchTiles Search tiles associated with the cocktail
-	SearchTiles []string `json:"searchTiles"`
 
 	// Serves Number of servings
 	Serves int `json:"serves"`
@@ -148,8 +157,65 @@ type CocktailEmbeddingRq struct {
 	ContentChunks []CocktailDescriptionChunk `json:"contentChunks"`
 }
 
+// CocktailIngredientMatchSearchModel Cocktail search model enriched with ingredient match metadata.
+type CocktailIngredientMatchSearchModel struct {
+	// DescriptiveTitle Descriptive title of the cocktail
+	DescriptiveTitle string `json:"descriptiveTitle"`
+
+	// Glassware List of glassware types used for the cocktail
+	Glassware []CocktailSearchGlasswareTypeModel `json:"glassware"`
+
+	// Id Unique identifier for the cocktail
+	Id string `json:"id"`
+
+	// Images Search tiles associated with the cocktail
+	Images []CocktailSearchImageModel `json:"images"`
+
+	// Ingredients List of ingredients in the cocktail
+	Ingredients []CocktailSearchIngredientModel `json:"ingredients"`
+
+	// IsIba Indicates if the cocktail is an IBA official cocktail
+	IsIba bool `json:"isIba"`
+
+	// MissingGarnishmentCount The number of garnishment ingredients that were not present in the supplied ingredient list
+	MissingGarnishmentCount int `json:"missingGarnishmentCount"`
+
+	// PrepTimeMinutes Preparation time in minutes
+	PrepTimeMinutes int `json:"prepTimeMinutes"`
+
+	// Rating Rating of the cocktail
+	Rating float32 `json:"rating"`
+
+	// SearchStatistics Model representing the search statistics for a cocktail search operation, including score metrics and hit details.
+	SearchStatistics *CocktailSearchStatistics `json:"searchStatistics,omitempty"`
+
+	// Serves Number of servings
+	Serves int `json:"serves"`
+
+	// Title Title of the cocktail
+	Title string `json:"title"`
+
+	// UnmatchedIngredientCount The number of cocktail ingredients that were not present in the supplied ingredient list
+	UnmatchedIngredientCount int `json:"unmatchedIngredientCount"`
+}
+
 // CocktailSearchGlasswareTypeModel The types of glassware used for serving cocktails.
 type CocktailSearchGlasswareTypeModel string
+
+// CocktailSearchImageModel Model representing an image used in a cocktail, including its name, unit of measure, requirement type, preparation, and suggestions.
+type CocktailSearchImageModel struct {
+	// Height Height of the image in pixels
+	Height int `json:"height"`
+
+	// Type Type of the image
+	Type string `json:"type"`
+
+	// Uri URI of the image
+	Uri string `json:"uri"`
+
+	// Width Width of the image in pixels
+	Width int `json:"width"`
+}
 
 // CocktailSearchIngredientApplicationTypeModel The application types for cocktail ingredients.
 type CocktailSearchIngredientApplicationTypeModel string
@@ -237,6 +303,9 @@ type CocktailSearchModel struct {
 	// Id Unique identifier for the cocktail
 	Id string `json:"id"`
 
+	// Images Images associated with the cocktail
+	Images []CocktailSearchImageModel `json:"images"`
+
 	// Ingredients List of ingredients in the cocktail
 	Ingredients []CocktailSearchIngredientModel `json:"ingredients"`
 
@@ -251,9 +320,6 @@ type CocktailSearchModel struct {
 
 	// SearchStatistics Model representing the search statistics for a cocktail search operation, including score metrics and hit details.
 	SearchStatistics *CocktailSearchStatistics `json:"searchStatistics,omitempty"`
-
-	// SearchTiles Search tiles associated with the cocktail
-	SearchTiles []string `json:"searchTiles"`
 
 	// Serves Number of servings
 	Serves int `json:"serves"`
@@ -298,6 +364,12 @@ type CocktailVectorSearchResult struct {
 	Score float32 `json:"score"`
 }
 
+// CocktailsIngredientMatchSearchRs Response model for ingredient-overlap cocktail search results.
+type CocktailsIngredientMatchSearchRs struct {
+	// Items List of cocktails returned from ingredient-overlap search
+	Items []CocktailIngredientMatchSearchModel `json:"items"`
+}
+
 // CocktailsRelationsRs Model representing the response structure for a cocktail relations operation, containing a list of related cocktails.
 type CocktailsRelationsRs struct {
 	// Items List of related cocktails returned from the search
@@ -309,6 +381,9 @@ type CocktailsSearchRs struct {
 	// Items List of cocktails returned from the search
 	Items []CocktailSearchModel `json:"items"`
 }
+
+// IngredientCoverageFilter defines model for IngredientCoverageFilter.
+type IngredientCoverageFilter string
 
 // ProblemDetails RFC 7807 compliant problem details model.
 //
@@ -339,6 +414,30 @@ type ProblemDetails struct {
 
 // PutV1CocktailsEmbeddingsParams defines parameters for PutV1CocktailsEmbeddings.
 type PutV1CocktailsEmbeddingsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// GetV1CocktailsIngredientMatchSearchParams defines parameters for GetV1CocktailsIngredientMatchSearch.
+type GetV1CocktailsIngredientMatchSearchParams struct {
+	// MinimumMatchCount The minimum number of supplied ingredients that must match a cocktail unless all cocktail ingredients are matched
+	MinimumMatchCount *int `form:"minimum_match_count,omitempty" json:"minimum_match_count,omitempty"`
+
+	// Skip The number of cocktail recipes to skip from the paged response
+	Skip *int `form:"skip,omitempty" json:"skip,omitempty"`
+
+	// Take The number of cocktail recipes to take for pagination
+	Take *int `form:"take,omitempty" json:"take,omitempty"`
+
+	// Fi An optional list of ingredient identifiers used to match cocktails by ingredient overlap
+	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
+
+	// Mif Optional coverage filters. Repeat mif for combinations. Allowed: all, exact, missing_1, missing_2, missing_3_plus.
+	Mif *[]IngredientCoverageFilter `form:"mif,omitempty" json:"mif,omitempty"`
+
+	// IgnoreMissingGarnishments When true, missing garnishments are not counted as missing ingredients for filtering purposes. The unmatched ingredient count and missingGarnishmentCount in the response still reflect the actual missing garnishments.
+	IgnoreMissingGarnishments *bool `form:"ignore_missing_garnishments,omitempty" json:"ignore_missing_garnishments,omitempty"`
+
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
 }
@@ -475,6 +574,9 @@ type ClientInterface interface {
 
 	PutV1CocktailsEmbeddings(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, body PutV1CocktailsEmbeddingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetV1CocktailsIngredientMatchSearch request
+	GetV1CocktailsIngredientMatchSearch(ctx context.Context, params *GetV1CocktailsIngredientMatchSearchParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetV1CocktailsRelated request
 	GetV1CocktailsRelated(ctx context.Context, cocktailId string, params *GetV1CocktailsRelatedParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -499,6 +601,18 @@ func (c *Client) PutV1CocktailsEmbeddingsWithBody(ctx context.Context, params *P
 
 func (c *Client) PutV1CocktailsEmbeddings(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, body PutV1CocktailsEmbeddingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutV1CocktailsEmbeddingsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV1CocktailsIngredientMatchSearch(ctx context.Context, params *GetV1CocktailsIngredientMatchSearchParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1CocktailsIngredientMatchSearchRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -581,6 +695,148 @@ func NewPutV1CocktailsEmbeddingsRequestWithBody(server string, params *PutV1Cock
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetV1CocktailsIngredientMatchSearchRequest generates requests for GetV1CocktailsIngredientMatchSearch
+func NewGetV1CocktailsIngredientMatchSearchRequest(server string, params *GetV1CocktailsIngredientMatchSearchParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/search/ingredient-match")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.MinimumMatchCount != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "minimum_match_count", runtime.ParamLocationQuery, *params.MinimumMatchCount); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Skip != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "skip", runtime.ParamLocationQuery, *params.Skip); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Take != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "take", runtime.ParamLocationQuery, *params.Take); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Fi != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "fi", runtime.ParamLocationQuery, *params.Fi); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Mif != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mif", runtime.ParamLocationQuery, *params.Mif); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IgnoreMissingGarnishments != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "ignore_missing_garnishments", runtime.ParamLocationQuery, *params.IgnoreMissingGarnishments); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params != nil {
 
@@ -967,6 +1223,9 @@ type ClientWithResponsesInterface interface {
 
 	PutV1CocktailsEmbeddingsWithResponse(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, body PutV1CocktailsEmbeddingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1CocktailsEmbeddingsResponse, error)
 
+	// GetV1CocktailsIngredientMatchSearchWithResponse request
+	GetV1CocktailsIngredientMatchSearchWithResponse(ctx context.Context, params *GetV1CocktailsIngredientMatchSearchParams, reqEditors ...RequestEditorFn) (*GetV1CocktailsIngredientMatchSearchResponse, error)
+
 	// GetV1CocktailsRelatedWithResponse request
 	GetV1CocktailsRelatedWithResponse(ctx context.Context, cocktailId string, params *GetV1CocktailsRelatedParams, reqEditors ...RequestEditorFn) (*GetV1CocktailsRelatedResponse, error)
 
@@ -994,6 +1253,30 @@ func (r PutV1CocktailsEmbeddingsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutV1CocktailsEmbeddingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetV1CocktailsIngredientMatchSearchResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CocktailsIngredientMatchSearchRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1CocktailsIngredientMatchSearchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1CocktailsIngredientMatchSearchResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1089,6 +1372,15 @@ func (c *ClientWithResponses) PutV1CocktailsEmbeddingsWithResponse(ctx context.C
 	return ParsePutV1CocktailsEmbeddingsResponse(rsp)
 }
 
+// GetV1CocktailsIngredientMatchSearchWithResponse request returning *GetV1CocktailsIngredientMatchSearchResponse
+func (c *ClientWithResponses) GetV1CocktailsIngredientMatchSearchWithResponse(ctx context.Context, params *GetV1CocktailsIngredientMatchSearchParams, reqEditors ...RequestEditorFn) (*GetV1CocktailsIngredientMatchSearchResponse, error) {
+	rsp, err := c.GetV1CocktailsIngredientMatchSearch(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1CocktailsIngredientMatchSearchResponse(rsp)
+}
+
 // GetV1CocktailsRelatedWithResponse request returning *GetV1CocktailsRelatedResponse
 func (c *ClientWithResponses) GetV1CocktailsRelatedWithResponse(ctx context.Context, cocktailId string, params *GetV1CocktailsRelatedParams, reqEditors ...RequestEditorFn) (*GetV1CocktailsRelatedResponse, error) {
 	rsp, err := c.GetV1CocktailsRelated(ctx, cocktailId, params, reqEditors...)
@@ -1143,6 +1435,46 @@ func ParsePutV1CocktailsEmbeddingsResponse(rsp *http.Response) (*PutV1CocktailsE
 			return nil, err
 		}
 		response.ApplicationproblemJSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1CocktailsIngredientMatchSearchResponse parses an HTTP response from a GetV1CocktailsIngredientMatchSearchWithResponse call
+func ParseGetV1CocktailsIngredientMatchSearchResponse(rsp *http.Response) (*GetV1CocktailsIngredientMatchSearchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1CocktailsIngredientMatchSearchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailsIngredientMatchSearchRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	}
 

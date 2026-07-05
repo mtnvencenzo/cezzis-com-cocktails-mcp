@@ -18,10 +18,24 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for BillingProviderTypeModel.
+const (
+	Internal BillingProviderTypeModel = "internal"
+	Stripe   BillingProviderTypeModel = "stripe"
+)
+
 // Defines values for CocktailFavoritingActionModel.
 const (
 	Add    CocktailFavoritingActionModel = "add"
 	Remove CocktailFavoritingActionModel = "remove"
+)
+
+// Defines values for CocktailReactionModel.
+const (
+	Like  CocktailReactionModel = "like"
+	Love  CocktailReactionModel = "love"
+	Tipsy CocktailReactionModel = "tipsy"
+	Yum   CocktailReactionModel = "yum"
 )
 
 // Defines values for CocktailUpdatedNotificationModel.
@@ -30,10 +44,35 @@ const (
 	Never  CocktailUpdatedNotificationModel = "never"
 )
 
+// Defines values for LegalDocumentFormatModel.
+const (
+	Markdown LegalDocumentFormatModel = "markdown"
+)
+
+// Defines values for LegalDocumentType.
+const (
+	LegalDocumentTypePrivacyPolicy  LegalDocumentType = "privacy-policy"
+	LegalDocumentTypeTermsOfService LegalDocumentType = "terms-of-service"
+)
+
+// Defines values for LegalDocumentTypeModel.
+const (
+	LegalDocumentTypeModelPrivacyPolicy  LegalDocumentTypeModel = "privacy-policy"
+	LegalDocumentTypeModelTermsOfService LegalDocumentTypeModel = "terms-of-service"
+)
+
 // Defines values for MeasurementSystemModel.
 const (
 	Imperial MeasurementSystemModel = "imperial"
 	Metric   MeasurementSystemModel = "metric"
+)
+
+// Defines values for SubscriptionTierTypeModel.
+const (
+	Enterprise SubscriptionTierTypeModel = "enterprise"
+	Free       SubscriptionTierTypeModel = "free"
+	Pro        SubscriptionTierTypeModel = "pro"
+	Venue      SubscriptionTierTypeModel = "venue"
 )
 
 // AccountAddressModel An owned account profile address.
@@ -102,10 +141,104 @@ type AccountCocktailRatingsRs struct {
 	Ratings []AccountCocktailRatingsModel `json:"ratings"`
 }
 
+// AccountCocktailReactionModel A cocktail reference with the account's current reaction.
+type AccountCocktailReactionModel struct {
+	// CocktailId The cocktail identifier
+	CocktailId string `json:"cocktailId"`
+
+	// CreatedOn The time the account first reacted to the cocktail
+	CreatedOn time.Time `json:"createdOn"`
+
+	// Reaction A user's emoji-backed reaction to a cocktail.
+	//
+	// Only one reaction may be active for a given account and cocktail at a time.
+	// The string value is what is persisted and forwarded on the message bus so
+	// downstream consumers (such as the cocktails API) can aggregate reaction totals.
+	Reaction CocktailReactionModel `json:"reaction"`
+
+	// UpdatedOn The time the account most recently changed its reaction to the cocktail
+	UpdatedOn time.Time `json:"updatedOn"`
+}
+
+// AccountCocktailReactionRs The upserted cocktail reaction associated with an account.
+type AccountCocktailReactionRs struct {
+	// Reaction A cocktail reference with the account's current reaction.
+	Reaction AccountCocktailReactionModel `json:"reaction"`
+}
+
+// AccountCocktailReactionsRs The cocktail reactions associated with an account.
+type AccountCocktailReactionsRs struct {
+	// Reactions The cocktail reactions
+	Reactions []AccountCocktailReactionModel `json:"reactions"`
+}
+
+// AccountEntitlementsModel Effective account capabilities used for UI and server-side enforcement.
+type AccountEntitlementsModel struct {
+	// AdsEnabled Whether ads are enabled for the account
+	AdsEnabled bool `json:"adsEnabled"`
+
+	// AdvancedFilters Whether advanced cocktail filters are enabled
+	AdvancedFilters bool `json:"advancedFilters"`
+
+	// Analytics Whether analytics features are enabled
+	Analytics bool `json:"analytics"`
+
+	// BarExport Whether CSV bar export/import is enabled
+	BarExport bool `json:"barExport"`
+
+	// BatchScaling Whether batch recipe scaling is enabled
+	BatchScaling bool `json:"batchScaling"`
+
+	// CustomizeBarInfo Whether bar name/description customization is enabled
+	CustomizeBarInfo *bool `json:"customizeBarInfo,omitempty"`
+
+	// MaxBarIngredients Maximum ingredient rows allowed across an account's bars
+	MaxBarIngredients int `json:"maxBarIngredients"`
+
+	// MaxBars Maximum number of bars the account can create
+	MaxBars int `json:"maxBars"`
+
+	// MaxCocktailMatches Maximum cocktail matches shown in AI search
+	MaxCocktailMatches int `json:"maxCocktailMatches"`
+
+	// MaxCollaborators Maximum collaborators allowed on account bars
+	MaxCollaborators int `json:"maxCollaborators"`
+
+	// MaxFavorites Maximum number of favorited cocktails
+	MaxFavorites int `json:"maxFavorites"`
+
+	// MaxLists Maximum number of cocktail lists
+	MaxLists int `json:"maxLists"`
+
+	// MaxLocations Maximum professional venues/locations the account can operate
+	MaxLocations int `json:"maxLocations"`
+
+	// MaxShareLinks Maximum public share links allowed
+	MaxShareLinks int `json:"maxShareLinks"`
+
+	// TeamRoles Whether team role management (manager vs staff) is enabled
+	TeamRoles bool `json:"teamRoles"`
+}
+
+// AccountLegalAgreementsModel Aggregate legal-agreement status across all required documents.
+type AccountLegalAgreementsModel struct {
+	// Documents Per-document acceptance status for the account
+	Documents *[]LegalAgreementDocumentStatusModel `json:"documents,omitempty"`
+
+	// IsCurrent Whether the account has agreed to the current version of every required document
+	IsCurrent bool `json:"isCurrent"`
+}
+
 // AccountNotificationSettingsModel The owned account profile notification settings.
 type AccountNotificationSettingsModel struct {
 	// OnNewCocktailAdditions Notification frequency for cocktail updates.
 	OnNewCocktailAdditions CocktailUpdatedNotificationModel `json:"onNewCocktailAdditions"`
+}
+
+// AccountOwnedProfileIdRs The owned account profile id response.
+type AccountOwnedProfileIdRs struct {
+	// Id The internal account identifier
+	Id string `json:"id"`
 }
 
 // AccountOwnedProfileRs The owned account profile response.
@@ -119,6 +252,9 @@ type AccountOwnedProfileRs struct {
 	// Email The email address for the account
 	Email string `json:"email"`
 
+	// Entitlements Effective account capabilities used for UI and server-side enforcement.
+	Entitlements AccountEntitlementsModel `json:"entitlements"`
+
 	// FamilyName The family name on the account
 	FamilyName *string `json:"familyName"`
 
@@ -127,6 +263,9 @@ type AccountOwnedProfileRs struct {
 
 	// GivenName The given name on the account
 	GivenName *string `json:"givenName"`
+
+	// LegalAgreement The account's legal-agreement status relative to the currently published documents
+	LegalAgreement *AccountLegalAgreementsModel `json:"legalAgreement"`
 
 	// LoginEmail The login email address for the account
 	LoginEmail string `json:"loginEmail"`
@@ -143,6 +282,9 @@ type AccountOwnedProfileRs struct {
 	// SubjectId The federated subject identifier for the account
 	SubjectId string `json:"subjectId"`
 
+	// Subscriptions Subscription snapshot history for the account
+	Subscriptions *[]AccountSubscriptionModel `json:"subscriptions,omitempty"`
+
 	// Username The username for the account
 	Username *string `json:"username"`
 }
@@ -156,8 +298,66 @@ type AccountPreferencesModel struct {
 	ShowRecentSearches *bool `json:"showRecentSearches,omitempty"`
 }
 
-// BarModel Full bar detail model.
-type BarModel struct {
+// AccountSubscriptionModel Subscription snapshot metadata for an account.
+type AccountSubscriptionModel struct {
+	// ChangedOn The UTC timestamp when this subscription snapshot became effective
+	ChangedOn *time.Time `json:"changedOn"`
+
+	// EndsOn The UTC timestamp when this subscription interval ends
+	EndsOn *time.Time `json:"endsOn"`
+
+	// Provider The billing provider currently managing the subscription
+	Provider *string `json:"provider"`
+
+	// ProviderCustomerId The provider-specific customer identifier
+	ProviderCustomerId *string `json:"providerCustomerId"`
+
+	// ProviderStatus The provider lifecycle status for this subscription snapshot
+	ProviderStatus *string `json:"providerStatus"`
+
+	// ProviderSubscriptionId The provider-specific subscription identifier
+	ProviderSubscriptionId *string `json:"providerSubscriptionId"`
+
+	// StartsOn The UTC timestamp when this subscription interval starts
+	StartsOn *time.Time `json:"startsOn"`
+
+	// Tier The supported account subscription tiers.
+	Tier *SubscriptionTierTypeModel `json:"tier,omitempty"`
+}
+
+// BarIngredientLimitStatusModel Per-bar ingredient entitlement status returned after an upsert.
+//
+// Communicates whether the account's ingredient allowance for the bar was reached so the
+// UI can notify the user. When the limit is reached, ingredients beyond the allowance are
+// skipped rather than failing the request.
+type BarIngredientLimitStatusModel struct {
+	// CurrentCount The bar's ingredient row count after the upsert
+	CurrentCount int `json:"currentCount"`
+
+	// LimitReached Whether one or more ingredients were skipped due to the bar limit
+	LimitReached bool `json:"limitReached"`
+
+	// MaxBarIngredients Maximum ingredient rows allowed per bar (-1 means unlimited)
+	MaxBarIngredients int `json:"maxBarIngredients"`
+
+	// SkippedIngredientIds Ingredient IDs that were not added because the bar limit was reached
+	SkippedIngredientIds *[]string `json:"skippedIngredientIds,omitempty"`
+}
+
+// BarIngredientModel Bar ingredient inventory entry.
+type BarIngredientModel struct {
+	// InStock Whether the ingredient is currently in stock
+	InStock bool `json:"inStock"`
+
+	// IngredientId Global ingredient ID
+	IngredientId string `json:"ingredientId"`
+
+	// Name Ingredient display name
+	Name *string `json:"name"`
+}
+
+// BarListItemModel Full bar detail model.
+type BarListItemModel struct {
 	// CreatedOn When the bar was created
 	CreatedOn time.Time `json:"createdOn"`
 
@@ -177,8 +377,35 @@ type BarModel struct {
 	UpdatedOn time.Time `json:"updatedOn"`
 }
 
+// BarModel Full bar detail model.
+type BarModel struct {
+	// CreatedOn When the bar was created
+	CreatedOn time.Time `json:"createdOn"`
+
+	// Description The bar description
+	Description *string `json:"description"`
+
+	// Id The bar ID
+	Id string `json:"id"`
+
+	// Ingredients The ingredient inventory list
+	Ingredients *[]BarIngredientModel `json:"ingredients,omitempty"`
+
+	// Name The bar name
+	Name string `json:"name"`
+
+	// Order Display order among user's bars
+	Order int `json:"order"`
+
+	// UpdatedOn When the bar was last updated
+	UpdatedOn time.Time `json:"updatedOn"`
+}
+
 // BarRs The response containing a single bar.
 type BarRs struct {
+	// IngredientLimitStatus Ingredient entitlement status, populated when an ingredient upsert hits the bar limit
+	IngredientLimitStatus *BarIngredientLimitStatusModel `json:"ingredientLimitStatus"`
+
 	// Item Full bar detail model.
 	Item BarModel `json:"item"`
 }
@@ -186,8 +413,11 @@ type BarRs struct {
 // BarsRs The response containing a list of bars.
 type BarsRs struct {
 	// Items The list of bars
-	Items *[]BarModel `json:"items,omitempty"`
+	Items *[]BarListItemModel `json:"items,omitempty"`
 }
+
+// BillingProviderTypeModel defines model for BillingProviderTypeModel.
+type BillingProviderTypeModel string
 
 // BodyPostV1AccountsOwnedProfileImage defines model for Body_postV1AccountsOwnedProfileImage.
 type BodyPostV1AccountsOwnedProfileImage struct {
@@ -288,6 +518,13 @@ type CocktailListsRs struct {
 	Items *[]CocktailListSummaryModel `json:"items,omitempty"`
 }
 
+// CocktailReactionModel A user's emoji-backed reaction to a cocktail.
+//
+// Only one reaction may be active for a given account and cocktail at a time.
+// The string value is what is persisted and forwarded on the message bus so
+// downstream consumers (such as the cocktails API) can aggregate reaction totals.
+type CocktailReactionModel string
+
 // CocktailUpdatedNotificationModel Notification frequency for cocktail updates.
 type CocktailUpdatedNotificationModel string
 
@@ -300,6 +537,55 @@ type CreateBarRq struct {
 	Name string `json:"name"`
 }
 
+// CreateCheckoutSessionRq defines model for CreateCheckoutSessionRq.
+type CreateCheckoutSessionRq struct {
+	// AccountId The account id for the subscription
+	AccountId string `json:"accountId"`
+
+	// CancelUrl The URL to redirect to if the checkout is canceled
+	CancelUrl string `json:"cancelUrl"`
+
+	// CorrelationId The correlation id for the request
+	CorrelationId string `json:"correlationId"`
+
+	// Interval The subscription interval for the account
+	Interval string `json:"interval"`
+
+	// Region The region for the billing provider
+	Region string `json:"region"`
+
+	// SuccessUrl The URL to redirect to after a successful checkout
+	SuccessUrl string `json:"successUrl"`
+
+	// Tier The supported account subscription tiers.
+	Tier SubscriptionTierTypeModel `json:"tier"`
+}
+
+// CreateCheckoutSessionRs defines model for CreateCheckoutSessionRs.
+type CreateCheckoutSessionRs struct {
+	// CheckoutUrl The checkout URL for the billing provider
+	CheckoutUrl string `json:"checkoutUrl"`
+
+	// Interval The subscription interval for the account
+	Interval string `json:"interval"`
+
+	// IsTrial Indicates if the subscription is a trial
+	IsTrial  *bool                    `json:"isTrial,omitempty"`
+	Provider BillingProviderTypeModel `json:"provider"`
+
+	// ProviderCustomerId The customer ID for the billing provider
+	ProviderCustomerId string `json:"providerCustomerId"`
+
+	// ProviderSubscriptionId The subscription ID for the billing provider
+	ProviderSubscriptionId string `json:"providerSubscriptionId"`
+
+	// SessionReference The session reference for the checkout session
+	SessionReference string `json:"sessionReference"`
+
+	// Tier The subscription tier for the account
+	Tier string `json:"tier"`
+}
+
 // CreateCocktailListRq The request to create a cocktail list.
 type CreateCocktailListRq struct {
 	// CocktailIds Ordered list of cocktail IDs
@@ -310,6 +596,84 @@ type CreateCocktailListRq struct {
 
 	// SearchTerm The search term if creating from a search
 	SearchTerm *string `json:"searchTerm"`
+}
+
+// LegalAgreementDocumentStatusModel Acceptance status for a single required legal document.
+type LegalAgreementDocumentStatusModel struct {
+	// Agreed Whether the account has agreed to the currently required version
+	Agreed bool `json:"agreed"`
+
+	// AgreedVersion The most recent version the account agreed to, if any
+	AgreedVersion *string `json:"agreedVersion"`
+
+	// DocumentType The supported legal document types exposed by the API.
+	DocumentType LegalDocumentTypeModel `json:"documentType"`
+
+	// EffectiveDate The effective date of the currently published document version
+	EffectiveDate openapi_types.Date `json:"effectiveDate"`
+
+	// RequiredHash The content hash of the currently published document version
+	RequiredHash string `json:"requiredHash"`
+
+	// RequiredVersion The currently published version the account must have agreed to
+	RequiredVersion string `json:"requiredVersion"`
+}
+
+// LegalDocumentFormatModel The supported formats a legal document's contents can be expressed in.
+type LegalDocumentFormatModel string
+
+// LegalDocumentRs Response model carrying a legal document's full contents and version metadata.
+type LegalDocumentRs struct {
+	// ContentHash A sha256 hex digest of the document content for tamper-evident agreement records
+	ContentHash string `json:"contentHash"`
+
+	// Document The full document content
+	Document string `json:"document"`
+
+	// DocumentFormat The supported formats a legal document's contents can be expressed in.
+	DocumentFormat *LegalDocumentFormatModel `json:"documentFormat,omitempty"`
+
+	// DocumentType The supported legal document types exposed by the API.
+	DocumentType LegalDocumentTypeModel `json:"documentType"`
+
+	// EffectiveDate The date the published version became effective
+	EffectiveDate openapi_types.Date `json:"effectiveDate"`
+
+	// Version The published version of the document
+	Version string `json:"version"`
+}
+
+// LegalDocumentType The supported legal document types.
+//
+// The values are stable url-friendly slugs that double as the path segment used
+// to request a document (e.g. “/legal/documents/terms-of-service“).
+type LegalDocumentType string
+
+// LegalDocumentTypeModel The supported legal document types exposed by the API.
+type LegalDocumentTypeModel string
+
+// LegalDocumentVersionModel Version metadata for a single legal document, without its full contents.
+//
+// Intended for cheap version checks (e.g. determining whether a user must
+// re-agree) without transferring the entire document body.
+type LegalDocumentVersionModel struct {
+	// ContentHash A sha256 hex digest of the document content for tamper-evident agreement records
+	ContentHash string `json:"contentHash"`
+
+	// DocumentType The supported legal document types exposed by the API.
+	DocumentType LegalDocumentTypeModel `json:"documentType"`
+
+	// EffectiveDate The date the published version became effective
+	EffectiveDate openapi_types.Date `json:"effectiveDate"`
+
+	// Version The published version of the document
+	Version string `json:"version"`
+}
+
+// LegalDocumentVersionsRs Response model carrying version metadata for all legal documents.
+type LegalDocumentVersionsRs struct {
+	// Items Version metadata for each published legal document
+	Items *[]LegalDocumentVersionModel `json:"items,omitempty"`
 }
 
 // ManageFavoriteCocktailsRq The request to manage an owned account's favorite cocktails.
@@ -372,6 +736,24 @@ type RateCocktailRs struct {
 	Ratings []AccountCocktailRatingsModel `json:"ratings"`
 }
 
+// RecordLegalAgreementItemRq A single legal document the account is agreeing to.
+type RecordLegalAgreementItemRq struct {
+	// DocumentType The supported legal document types exposed by the API.
+	DocumentType LegalDocumentTypeModel `json:"documentType"`
+
+	// Url The url of the document the account viewed when agreeing
+	Url *string `json:"url"`
+
+	// Version The published document version the account is agreeing to
+	Version string `json:"version"`
+}
+
+// RecordLegalAgreementsRq Request to record one or more legal-document agreements for the account.
+type RecordLegalAgreementsRq struct {
+	// Agreements The legal documents and versions the account is agreeing to
+	Agreements []RecordLegalAgreementItemRq `json:"agreements"`
+}
+
 // ReorderBarsRq The request to reorder bars. The bar_ids array defines the new order.
 type ReorderBarsRq struct {
 	// BarIds Ordered array of bar IDs defining the new order
@@ -418,6 +800,57 @@ type ShareCocktailRq struct {
 
 	// RecipientEmail The recipient's email address
 	RecipientEmail openapi_types.Email `json:"recipientEmail"`
+}
+
+// SubscriptionTierCatalogItemModel The data-driven pricing metadata for a subscription tier.
+type SubscriptionTierCatalogItemModel struct {
+	// AnnualPrice Optional annual price value
+	AnnualPrice *float32 `json:"annualPrice"`
+
+	// Badge Optional badge text shown for the tier
+	Badge *string `json:"badge"`
+
+	// BadgeColor Optional badge color token
+	BadgeColor *string `json:"badgeColor"`
+
+	// Description The longer marketing description for the tier
+	Description *string `json:"description"`
+
+	// DisplayName The label shown for this tier
+	DisplayName string `json:"displayName"`
+
+	// Features Feature bullet list shown in pricing cards
+	Features *[]string `json:"features,omitempty"`
+
+	// Id The supported account subscription tiers.
+	Id *SubscriptionTierTypeModel `json:"id,omitempty"`
+
+	// IsAvailable Whether this tier can currently be selected or signed up for
+	IsAvailable *bool `json:"isAvailable,omitempty"`
+
+	// IsHighlighted Whether this tier should be visually emphasized
+	IsHighlighted *bool `json:"isHighlighted,omitempty"`
+
+	// IsTrial Whether this tier is offered as a no-payment trial
+	IsTrial *bool `json:"isTrial,omitempty"`
+
+	// MonthlyPrice The monthly price value
+	MonthlyPrice float32 `json:"monthlyPrice"`
+
+	// ShortDescription A short chip-style descriptor shown near the tier title
+	ShortDescription *string `json:"shortDescription"`
+
+	// SortOrder Sort order for pricing display
+	SortOrder *int `json:"sortOrder,omitempty"`
+}
+
+// SubscriptionTierTypeModel The supported account subscription tiers.
+type SubscriptionTierTypeModel string
+
+// SubscriptionTiersRs Response model for pricing subscription tier catalog.
+type SubscriptionTiersRs struct {
+	// Items Subscription tiers available for pricing display
+	Items *[]SubscriptionTierCatalogItemModel `json:"items,omitempty"`
 }
 
 // UpdateAccountOwnedNotificationSettingsRq The account owned profile notification settings.
@@ -483,6 +916,34 @@ type UploadProfileImageRs struct {
 	ImageUri string `json:"imageUri"`
 }
 
+// UpsertBarIngredientModel Single bar ingredient inventory upsert item.
+type UpsertBarIngredientModel struct {
+	// InStock Whether the ingredient is currently in stock
+	InStock bool `json:"inStock"`
+
+	// IngredientId The global ingredient ID
+	IngredientId string `json:"ingredientId"`
+}
+
+// UpsertBarIngredientsRq Upsert bar ingredient inventory request.
+type UpsertBarIngredientsRq struct {
+	// Ingredients The list of bar ingredient inventory entries to upsert
+	Ingredients []UpsertBarIngredientModel `json:"ingredients"`
+}
+
+// UpsertCocktailReactionRq A cocktail reference with the user's reaction to upsert.
+type UpsertCocktailReactionRq struct {
+	// CocktailId The cocktail identifier
+	CocktailId string `json:"cocktailId"`
+
+	// Reaction A user's emoji-backed reaction to a cocktail.
+	//
+	// Only one reaction may be active for a given account and cocktail at a time.
+	// The string value is what is persisted and forwarded on the message bus so
+	// downstream consumers (such as the cocktails API) can aggregate reaction totals.
+	Reaction CocktailReactionModel `json:"reaction"`
+}
+
 // GetV1AccountsOwnedProfileParams defines parameters for GetV1AccountsOwnedProfile.
 type GetV1AccountsOwnedProfileParams struct {
 	// XKey The API gateway subscription key
@@ -519,6 +980,18 @@ type PutV1AccountsOwnedProfileBarsOrderParams struct {
 	XKey string `json:"X-Key"`
 }
 
+// PutV1AccountsOwnedProfileBarIngredientsParams defines parameters for PutV1AccountsOwnedProfileBarIngredients.
+type PutV1AccountsOwnedProfileBarIngredientsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// DeleteV1AccountsOwnedProfileBarIngredientByIdParams defines parameters for DeleteV1AccountsOwnedProfileBarIngredientById.
+type DeleteV1AccountsOwnedProfileBarIngredientByIdParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
 // DeleteV1AccountsOwnedProfileBarByIdParams defines parameters for DeleteV1AccountsOwnedProfileBarById.
 type DeleteV1AccountsOwnedProfileBarByIdParams struct {
 	// XKey The API gateway subscription key
@@ -533,6 +1006,18 @@ type GetV1AccountsOwnedProfileBarByIdParams struct {
 
 // PutV1AccountsOwnedProfileBarByIdParams defines parameters for PutV1AccountsOwnedProfileBarById.
 type PutV1AccountsOwnedProfileBarByIdParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PostV1AccountsCheckoutSessionsParams defines parameters for PostV1AccountsCheckoutSessions.
+type PostV1AccountsCheckoutSessionsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// GetV1AccountsSubscriptionTiersParams defines parameters for GetV1AccountsSubscriptionTiers.
+type GetV1AccountsSubscriptionTiersParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
 }
@@ -603,6 +1088,18 @@ type PostV1AccountsOwnedProfileCocktailsRatingsParams struct {
 	XKey string `json:"X-Key"`
 }
 
+// GetV1AccountsOwnedProfileCocktailsReactionsParams defines parameters for GetV1AccountsOwnedProfileCocktailsReactions.
+type GetV1AccountsOwnedProfileCocktailsReactionsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PutV1AccountsOwnedProfileCocktailsReactionsParams defines parameters for PutV1AccountsOwnedProfileCocktailsReactions.
+type PutV1AccountsOwnedProfileCocktailsReactionsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
 // PostV1AccountsOwnedProfileCocktailsSharesParams defines parameters for PostV1AccountsOwnedProfileCocktailsShares.
 type PostV1AccountsOwnedProfileCocktailsSharesParams struct {
 	// XKey The API gateway subscription key
@@ -615,8 +1112,20 @@ type PutV1AccountsOwnedProfileEmailParams struct {
 	XKey string `json:"X-Key"`
 }
 
+// GetV1AccountsOwnedProfileIdParams defines parameters for GetV1AccountsOwnedProfileId.
+type GetV1AccountsOwnedProfileIdParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
 // PostV1AccountsOwnedProfileImageParams defines parameters for PostV1AccountsOwnedProfileImage.
 type PostV1AccountsOwnedProfileImageParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// PostV1AccountsOwnedProfileLegalAgreementsParams defines parameters for PostV1AccountsOwnedProfileLegalAgreements.
+type PostV1AccountsOwnedProfileLegalAgreementsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
 }
@@ -657,6 +1166,18 @@ type PutV1AccountsOwnedProfileUsernameParams struct {
 	XKey string `json:"X-Key"`
 }
 
+// GetV1LegalDocumentVersionsParams defines parameters for GetV1LegalDocumentVersions.
+type GetV1LegalDocumentVersionsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
+// GetV1LegalDocumentParams defines parameters for GetV1LegalDocument.
+type GetV1LegalDocumentParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+}
+
 // PutV1AccountsOwnedProfileJSONRequestBody defines body for PutV1AccountsOwnedProfile for application/json ContentType.
 type PutV1AccountsOwnedProfileJSONRequestBody = UpdateAccountOwnedProfileRq
 
@@ -666,8 +1187,14 @@ type PostV1AccountsOwnedProfileBarsJSONRequestBody = CreateBarRq
 // PutV1AccountsOwnedProfileBarsOrderJSONRequestBody defines body for PutV1AccountsOwnedProfileBarsOrder for application/json ContentType.
 type PutV1AccountsOwnedProfileBarsOrderJSONRequestBody = ReorderBarsRq
 
+// PutV1AccountsOwnedProfileBarIngredientsJSONRequestBody defines body for PutV1AccountsOwnedProfileBarIngredients for application/json ContentType.
+type PutV1AccountsOwnedProfileBarIngredientsJSONRequestBody = UpsertBarIngredientsRq
+
 // PutV1AccountsOwnedProfileBarByIdJSONRequestBody defines body for PutV1AccountsOwnedProfileBarById for application/json ContentType.
 type PutV1AccountsOwnedProfileBarByIdJSONRequestBody = UpdateBarRq
+
+// PostV1AccountsCheckoutSessionsJSONRequestBody defines body for PostV1AccountsCheckoutSessions for application/json ContentType.
+type PostV1AccountsCheckoutSessionsJSONRequestBody = CreateCheckoutSessionRq
 
 // PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody defines body for PutV1AccountsOwnedProfileCocktailsFavorites for application/json ContentType.
 type PutV1AccountsOwnedProfileCocktailsFavoritesJSONRequestBody = ManageFavoriteCocktailsRq
@@ -687,6 +1214,9 @@ type PutV1AccountsOwnedProfileCocktailsListItemsOrderJSONRequestBody = ReorderCo
 // PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody defines body for PostV1AccountsOwnedProfileCocktailsRatings for application/json ContentType.
 type PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody = RateCocktailRq
 
+// PutV1AccountsOwnedProfileCocktailsReactionsJSONRequestBody defines body for PutV1AccountsOwnedProfileCocktailsReactions for application/json ContentType.
+type PutV1AccountsOwnedProfileCocktailsReactionsJSONRequestBody = UpsertCocktailReactionRq
+
 // PostV1AccountsOwnedProfileCocktailsSharesJSONRequestBody defines body for PostV1AccountsOwnedProfileCocktailsShares for application/json ContentType.
 type PostV1AccountsOwnedProfileCocktailsSharesJSONRequestBody = ShareCocktailRq
 
@@ -695,6 +1225,9 @@ type PutV1AccountsOwnedProfileEmailJSONRequestBody = ChangeAccountOwnedEmailRq
 
 // PostV1AccountsOwnedProfileImageMultipartRequestBody defines body for PostV1AccountsOwnedProfileImage for multipart/form-data ContentType.
 type PostV1AccountsOwnedProfileImageMultipartRequestBody = BodyPostV1AccountsOwnedProfileImage
+
+// PostV1AccountsOwnedProfileLegalAgreementsJSONRequestBody defines body for PostV1AccountsOwnedProfileLegalAgreements for application/json ContentType.
+type PostV1AccountsOwnedProfileLegalAgreementsJSONRequestBody = RecordLegalAgreementsRq
 
 // PutV1AccountsOwnedProfileNotificationsJSONRequestBody defines body for PutV1AccountsOwnedProfileNotifications for application/json ContentType.
 type PutV1AccountsOwnedProfileNotificationsJSONRequestBody = UpdateAccountOwnedNotificationSettingsRq
@@ -808,6 +1341,14 @@ type ClientInterface interface {
 
 	PutV1AccountsOwnedProfileBarsOrder(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, body PutV1AccountsOwnedProfileBarsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PutV1AccountsOwnedProfileBarIngredientsWithBody request with any body
+	PutV1AccountsOwnedProfileBarIngredientsWithBody(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutV1AccountsOwnedProfileBarIngredients(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, body PutV1AccountsOwnedProfileBarIngredientsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteV1AccountsOwnedProfileBarIngredientById request
+	DeleteV1AccountsOwnedProfileBarIngredientById(ctx context.Context, barId string, ingredientId string, params *DeleteV1AccountsOwnedProfileBarIngredientByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteV1AccountsOwnedProfileBarById request
 	DeleteV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -818,6 +1359,14 @@ type ClientInterface interface {
 	PutV1AccountsOwnedProfileBarByIdWithBody(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AccountsCheckoutSessionsWithBody request with any body
+	PostV1AccountsCheckoutSessionsWithBody(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostV1AccountsCheckoutSessions(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, body PostV1AccountsCheckoutSessionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1AccountsSubscriptionTiers request
+	GetV1AccountsSubscriptionTiers(ctx context.Context, params *GetV1AccountsSubscriptionTiersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PutV1AccountsOwnedProfileCocktailsFavoritesWithBody request with any body
 	PutV1AccountsOwnedProfileCocktailsFavoritesWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -864,6 +1413,14 @@ type ClientInterface interface {
 
 	PostV1AccountsOwnedProfileCocktailsRatings(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, body PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetV1AccountsOwnedProfileCocktailsReactions request
+	GetV1AccountsOwnedProfileCocktailsReactions(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsReactionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountsOwnedProfileCocktailsReactionsWithBody request with any body
+	PutV1AccountsOwnedProfileCocktailsReactionsWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutV1AccountsOwnedProfileCocktailsReactions(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, body PutV1AccountsOwnedProfileCocktailsReactionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostV1AccountsOwnedProfileCocktailsSharesWithBody request with any body
 	PostV1AccountsOwnedProfileCocktailsSharesWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsSharesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -874,8 +1431,16 @@ type ClientInterface interface {
 
 	PutV1AccountsOwnedProfileEmail(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, body PutV1AccountsOwnedProfileEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetV1AccountsOwnedProfileId request
+	GetV1AccountsOwnedProfileId(ctx context.Context, params *GetV1AccountsOwnedProfileIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostV1AccountsOwnedProfileImageWithBody request with any body
 	PostV1AccountsOwnedProfileImageWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AccountsOwnedProfileLegalAgreementsWithBody request with any body
+	PostV1AccountsOwnedProfileLegalAgreementsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostV1AccountsOwnedProfileLegalAgreements(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, body PostV1AccountsOwnedProfileLegalAgreementsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PutV1AccountsOwnedProfileNotificationsWithBody request with any body
 	PutV1AccountsOwnedProfileNotificationsWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -904,6 +1469,12 @@ type ClientInterface interface {
 	PutV1AccountsOwnedProfileUsernameWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutV1AccountsOwnedProfileUsername(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1LegalDocumentVersions request
+	GetV1LegalDocumentVersions(ctx context.Context, params *GetV1LegalDocumentVersionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1LegalDocument request
+	GetV1LegalDocument(ctx context.Context, documentType LegalDocumentType, params *GetV1LegalDocumentParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetV1AccountsOwnedProfile(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1014,6 +1585,42 @@ func (c *Client) PutV1AccountsOwnedProfileBarsOrder(ctx context.Context, params 
 	return c.Client.Do(req)
 }
 
+func (c *Client) PutV1AccountsOwnedProfileBarIngredientsWithBody(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileBarIngredientsRequestWithBody(c.Server, barId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1AccountsOwnedProfileBarIngredients(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, body PutV1AccountsOwnedProfileBarIngredientsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileBarIngredientsRequest(c.Server, barId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteV1AccountsOwnedProfileBarIngredientById(ctx context.Context, barId string, ingredientId string, params *DeleteV1AccountsOwnedProfileBarIngredientByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AccountsOwnedProfileBarIngredientByIdRequest(c.Server, barId, ingredientId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteV1AccountsOwnedProfileBarByIdRequest(c.Server, id, params)
 	if err != nil {
@@ -1052,6 +1659,42 @@ func (c *Client) PutV1AccountsOwnedProfileBarByIdWithBody(ctx context.Context, i
 
 func (c *Client) PutV1AccountsOwnedProfileBarById(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutV1AccountsOwnedProfileBarByIdRequest(c.Server, id, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1AccountsCheckoutSessionsWithBody(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsCheckoutSessionsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1AccountsCheckoutSessions(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, body PostV1AccountsCheckoutSessionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsCheckoutSessionsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV1AccountsSubscriptionTiers(ctx context.Context, params *GetV1AccountsSubscriptionTiersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsSubscriptionTiersRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1266,6 +1909,42 @@ func (c *Client) PostV1AccountsOwnedProfileCocktailsRatings(ctx context.Context,
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetV1AccountsOwnedProfileCocktailsReactions(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsReactionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsOwnedProfileCocktailsReactionsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1AccountsOwnedProfileCocktailsReactionsWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileCocktailsReactionsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1AccountsOwnedProfileCocktailsReactions(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, body PutV1AccountsOwnedProfileCocktailsReactionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountsOwnedProfileCocktailsReactionsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PostV1AccountsOwnedProfileCocktailsSharesWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsSharesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV1AccountsOwnedProfileCocktailsSharesRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -1314,8 +1993,44 @@ func (c *Client) PutV1AccountsOwnedProfileEmail(ctx context.Context, params *Put
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetV1AccountsOwnedProfileId(ctx context.Context, params *GetV1AccountsOwnedProfileIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsOwnedProfileIdRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PostV1AccountsOwnedProfileImageWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV1AccountsOwnedProfileImageRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1AccountsOwnedProfileLegalAgreementsWithBody(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileLegalAgreementsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1AccountsOwnedProfileLegalAgreements(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, body PostV1AccountsOwnedProfileLegalAgreementsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileLegalAgreementsRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1448,6 +2163,30 @@ func (c *Client) PutV1AccountsOwnedProfileUsernameWithBody(ctx context.Context, 
 
 func (c *Client) PutV1AccountsOwnedProfileUsername(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutV1AccountsOwnedProfileUsernameRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV1LegalDocumentVersions(ctx context.Context, params *GetV1LegalDocumentVersionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1LegalDocumentVersionsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV1LegalDocument(ctx context.Context, documentType LegalDocumentType, params *GetV1LegalDocumentParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1LegalDocumentRequest(c.Server, documentType, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1737,6 +2476,120 @@ func NewPutV1AccountsOwnedProfileBarsOrderRequestWithBody(server string, params 
 	return req, nil
 }
 
+// NewPutV1AccountsOwnedProfileBarIngredientsRequest calls the generic PutV1AccountsOwnedProfileBarIngredients builder with application/json body
+func NewPutV1AccountsOwnedProfileBarIngredientsRequest(server string, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, body PutV1AccountsOwnedProfileBarIngredientsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV1AccountsOwnedProfileBarIngredientsRequestWithBody(server, barId, params, "application/json", bodyReader)
+}
+
+// NewPutV1AccountsOwnedProfileBarIngredientsRequestWithBody generates requests for PutV1AccountsOwnedProfileBarIngredients with any type of body
+func NewPutV1AccountsOwnedProfileBarIngredientsRequestWithBody(server string, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "bar_id", runtime.ParamLocationPath, barId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars/%s/ingredients", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteV1AccountsOwnedProfileBarIngredientByIdRequest generates requests for DeleteV1AccountsOwnedProfileBarIngredientById
+func NewDeleteV1AccountsOwnedProfileBarIngredientByIdRequest(server string, barId string, ingredientId string, params *DeleteV1AccountsOwnedProfileBarIngredientByIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "bar_id", runtime.ParamLocationPath, barId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "ingredient_id", runtime.ParamLocationPath, ingredientId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/bars/%s/ingredients/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewDeleteV1AccountsOwnedProfileBarByIdRequest generates requests for DeleteV1AccountsOwnedProfileBarById
 func NewDeleteV1AccountsOwnedProfileBarByIdRequest(server string, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams) (*http.Request, error) {
 	var err error
@@ -1874,6 +2727,99 @@ func NewPutV1AccountsOwnedProfileBarByIdRequestWithBody(server string, id string
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPostV1AccountsCheckoutSessionsRequest calls the generic PostV1AccountsCheckoutSessions builder with application/json body
+func NewPostV1AccountsCheckoutSessionsRequest(server string, params *PostV1AccountsCheckoutSessionsParams, body PostV1AccountsCheckoutSessionsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AccountsCheckoutSessionsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostV1AccountsCheckoutSessionsRequestWithBody generates requests for PostV1AccountsCheckoutSessions with any type of body
+func NewPostV1AccountsCheckoutSessionsRequestWithBody(server string, params *PostV1AccountsCheckoutSessionsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/billing/checkout-sessions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetV1AccountsSubscriptionTiersRequest generates requests for GetV1AccountsSubscriptionTiers
+func NewGetV1AccountsSubscriptionTiersRequest(server string, params *GetV1AccountsSubscriptionTiersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/billing/subscription-tiers")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params != nil {
 
@@ -2444,6 +3390,99 @@ func NewPostV1AccountsOwnedProfileCocktailsRatingsRequestWithBody(server string,
 	return req, nil
 }
 
+// NewGetV1AccountsOwnedProfileCocktailsReactionsRequest generates requests for GetV1AccountsOwnedProfileCocktailsReactions
+func NewGetV1AccountsOwnedProfileCocktailsReactionsRequest(server string, params *GetV1AccountsOwnedProfileCocktailsReactionsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/reactions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPutV1AccountsOwnedProfileCocktailsReactionsRequest calls the generic PutV1AccountsOwnedProfileCocktailsReactions builder with application/json body
+func NewPutV1AccountsOwnedProfileCocktailsReactionsRequest(server string, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, body PutV1AccountsOwnedProfileCocktailsReactionsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV1AccountsOwnedProfileCocktailsReactionsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPutV1AccountsOwnedProfileCocktailsReactionsRequestWithBody generates requests for PutV1AccountsOwnedProfileCocktailsReactions with any type of body
+func NewPutV1AccountsOwnedProfileCocktailsReactionsRequestWithBody(server string, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/reactions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewPostV1AccountsOwnedProfileCocktailsSharesRequest calls the generic PostV1AccountsOwnedProfileCocktailsShares builder with application/json body
 func NewPostV1AccountsOwnedProfileCocktailsSharesRequest(server string, params *PostV1AccountsOwnedProfileCocktailsSharesParams, body PostV1AccountsOwnedProfileCocktailsSharesJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -2550,6 +3589,46 @@ func NewPutV1AccountsOwnedProfileEmailRequestWithBody(server string, params *Put
 	return req, nil
 }
 
+// NewGetV1AccountsOwnedProfileIdRequest generates requests for GetV1AccountsOwnedProfileId
+func NewGetV1AccountsOwnedProfileIdRequest(server string, params *GetV1AccountsOwnedProfileIdParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/id")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewPostV1AccountsOwnedProfileImageRequestWithBody generates requests for PostV1AccountsOwnedProfileImage with any type of body
 func NewPostV1AccountsOwnedProfileImageRequestWithBody(server string, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
@@ -2560,6 +3639,59 @@ func NewPostV1AccountsOwnedProfileImageRequestWithBody(server string, params *Po
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/image")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPostV1AccountsOwnedProfileLegalAgreementsRequest calls the generic PostV1AccountsOwnedProfileLegalAgreements builder with application/json body
+func NewPostV1AccountsOwnedProfileLegalAgreementsRequest(server string, params *PostV1AccountsOwnedProfileLegalAgreementsParams, body PostV1AccountsOwnedProfileLegalAgreementsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AccountsOwnedProfileLegalAgreementsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostV1AccountsOwnedProfileLegalAgreementsRequestWithBody generates requests for PostV1AccountsOwnedProfileLegalAgreements with any type of body
+func NewPostV1AccountsOwnedProfileLegalAgreementsRequestWithBody(server string, params *PostV1AccountsOwnedProfileLegalAgreementsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/legal-agreements")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2897,6 +4029,93 @@ func NewPutV1AccountsOwnedProfileUsernameRequestWithBody(server string, params *
 	return req, nil
 }
 
+// NewGetV1LegalDocumentVersionsRequest generates requests for GetV1LegalDocumentVersions
+func NewGetV1LegalDocumentVersionsRequest(server string, params *GetV1LegalDocumentVersionsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/legal/documents/versions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetV1LegalDocumentRequest generates requests for GetV1LegalDocument
+func NewGetV1LegalDocumentRequest(server string, documentType LegalDocumentType, params *GetV1LegalDocumentParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "document_type", runtime.ParamLocationPath, documentType)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/legal/documents/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -2964,6 +4183,14 @@ type ClientWithResponsesInterface interface {
 
 	PutV1AccountsOwnedProfileBarsOrderWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileBarsOrderParams, body PutV1AccountsOwnedProfileBarsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarsOrderResponse, error)
 
+	// PutV1AccountsOwnedProfileBarIngredientsWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileBarIngredientsWithBodyWithResponse(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarIngredientsResponse, error)
+
+	PutV1AccountsOwnedProfileBarIngredientsWithResponse(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, body PutV1AccountsOwnedProfileBarIngredientsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarIngredientsResponse, error)
+
+	// DeleteV1AccountsOwnedProfileBarIngredientByIdWithResponse request
+	DeleteV1AccountsOwnedProfileBarIngredientByIdWithResponse(ctx context.Context, barId string, ingredientId string, params *DeleteV1AccountsOwnedProfileBarIngredientByIdParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileBarIngredientByIdResponse, error)
+
 	// DeleteV1AccountsOwnedProfileBarByIdWithResponse request
 	DeleteV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileBarByIdResponse, error)
 
@@ -2974,6 +4201,14 @@ type ClientWithResponsesInterface interface {
 	PutV1AccountsOwnedProfileBarByIdWithBodyWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarByIdResponse, error)
 
 	PutV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileBarByIdParams, body PutV1AccountsOwnedProfileBarByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarByIdResponse, error)
+
+	// PostV1AccountsCheckoutSessionsWithBodyWithResponse request with any body
+	PostV1AccountsCheckoutSessionsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsCheckoutSessionsResponse, error)
+
+	PostV1AccountsCheckoutSessionsWithResponse(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, body PostV1AccountsCheckoutSessionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsCheckoutSessionsResponse, error)
+
+	// GetV1AccountsSubscriptionTiersWithResponse request
+	GetV1AccountsSubscriptionTiersWithResponse(ctx context.Context, params *GetV1AccountsSubscriptionTiersParams, reqEditors ...RequestEditorFn) (*GetV1AccountsSubscriptionTiersResponse, error)
 
 	// PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse request with any body
 	PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsFavoritesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error)
@@ -3020,6 +4255,14 @@ type ClientWithResponsesInterface interface {
 
 	PostV1AccountsOwnedProfileCocktailsRatingsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsRatingsParams, body PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsRatingsResponse, error)
 
+	// GetV1AccountsOwnedProfileCocktailsReactionsWithResponse request
+	GetV1AccountsOwnedProfileCocktailsReactionsWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsReactionsParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileCocktailsReactionsResponse, error)
+
+	// PutV1AccountsOwnedProfileCocktailsReactionsWithBodyWithResponse request with any body
+	PutV1AccountsOwnedProfileCocktailsReactionsWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsReactionsResponse, error)
+
+	PutV1AccountsOwnedProfileCocktailsReactionsWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, body PutV1AccountsOwnedProfileCocktailsReactionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsReactionsResponse, error)
+
 	// PostV1AccountsOwnedProfileCocktailsSharesWithBodyWithResponse request with any body
 	PostV1AccountsOwnedProfileCocktailsSharesWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsSharesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsSharesResponse, error)
 
@@ -3030,8 +4273,16 @@ type ClientWithResponsesInterface interface {
 
 	PutV1AccountsOwnedProfileEmailWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileEmailParams, body PutV1AccountsOwnedProfileEmailJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileEmailResponse, error)
 
+	// GetV1AccountsOwnedProfileIdWithResponse request
+	GetV1AccountsOwnedProfileIdWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileIdParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileIdResponse, error)
+
 	// PostV1AccountsOwnedProfileImageWithBodyWithResponse request with any body
 	PostV1AccountsOwnedProfileImageWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileImageResponse, error)
+
+	// PostV1AccountsOwnedProfileLegalAgreementsWithBodyWithResponse request with any body
+	PostV1AccountsOwnedProfileLegalAgreementsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileLegalAgreementsResponse, error)
+
+	PostV1AccountsOwnedProfileLegalAgreementsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, body PostV1AccountsOwnedProfileLegalAgreementsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileLegalAgreementsResponse, error)
 
 	// PutV1AccountsOwnedProfileNotificationsWithBodyWithResponse request with any body
 	PutV1AccountsOwnedProfileNotificationsWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileNotificationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileNotificationsResponse, error)
@@ -3060,6 +4311,12 @@ type ClientWithResponsesInterface interface {
 	PutV1AccountsOwnedProfileUsernameWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
 
 	PutV1AccountsOwnedProfileUsernameWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
+
+	// GetV1LegalDocumentVersionsWithResponse request
+	GetV1LegalDocumentVersionsWithResponse(ctx context.Context, params *GetV1LegalDocumentVersionsParams, reqEditors ...RequestEditorFn) (*GetV1LegalDocumentVersionsResponse, error)
+
+	// GetV1LegalDocumentWithResponse request
+	GetV1LegalDocumentWithResponse(ctx context.Context, documentType LegalDocumentType, params *GetV1LegalDocumentParams, reqEditors ...RequestEditorFn) (*GetV1LegalDocumentResponse, error)
 }
 
 type GetV1AccountsOwnedProfileResponse struct {
@@ -3164,6 +4421,7 @@ type PostV1AccountsOwnedProfileBarsResponse struct {
 	HTTPResponse                  *http.Response
 	JSON200                       *interface{}
 	JSON201                       *BarRs
+	JSON403                       *ProblemDetails
 	JSONDefault                   *ProblemDetails
 	ApplicationproblemJSONDefault *ProblemDetails
 }
@@ -3202,6 +4460,56 @@ func (r PutV1AccountsOwnedProfileBarsOrderResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutV1AccountsOwnedProfileBarsOrderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutV1AccountsOwnedProfileBarIngredientsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BarRs
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1AccountsOwnedProfileBarIngredientsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1AccountsOwnedProfileBarIngredientsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteV1AccountsOwnedProfileBarIngredientByIdResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *BarRs
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AccountsOwnedProfileBarIngredientByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AccountsOwnedProfileBarIngredientByIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3283,10 +4591,62 @@ func (r PutV1AccountsOwnedProfileBarByIdResponse) StatusCode() int {
 	return 0
 }
 
+type PostV1AccountsCheckoutSessionsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CreateCheckoutSessionRs
+	JSON400                       *ProblemDetails
+	JSON429                       *ProblemDetails
+	JSON502                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AccountsCheckoutSessionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AccountsCheckoutSessionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetV1AccountsSubscriptionTiersResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *SubscriptionTiersRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountsSubscriptionTiersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountsSubscriptionTiersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PutV1AccountsOwnedProfileCocktailsFavoritesResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
 	JSON200                       *AccountOwnedProfileRs
+	JSON403                       *ProblemDetails
 	JSONDefault                   *ProblemDetails
 	ApplicationproblemJSONDefault *ProblemDetails
 }
@@ -3336,6 +4696,7 @@ type PostV1AccountsOwnedProfileCocktailsListsResponse struct {
 	HTTPResponse                  *http.Response
 	JSON200                       *interface{}
 	JSON201                       *CocktailListRs
+	JSON403                       *ProblemDetails
 	JSONDefault                   *ProblemDetails
 	ApplicationproblemJSONDefault *ProblemDetails
 }
@@ -3555,6 +4916,54 @@ func (r PostV1AccountsOwnedProfileCocktailsRatingsResponse) StatusCode() int {
 	return 0
 }
 
+type GetV1AccountsOwnedProfileCocktailsReactionsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *AccountCocktailReactionsRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountsOwnedProfileCocktailsReactionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountsOwnedProfileCocktailsReactionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutV1AccountsOwnedProfileCocktailsReactionsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *AccountCocktailReactionRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1AccountsOwnedProfileCocktailsReactionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1AccountsOwnedProfileCocktailsReactionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostV1AccountsOwnedProfileCocktailsSharesResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -3608,6 +5017,30 @@ func (r PutV1AccountsOwnedProfileEmailResponse) StatusCode() int {
 	return 0
 }
 
+type GetV1AccountsOwnedProfileIdResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *AccountOwnedProfileIdRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountsOwnedProfileIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountsOwnedProfileIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostV1AccountsOwnedProfileImageResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -3627,6 +5060,32 @@ func (r PostV1AccountsOwnedProfileImageResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostV1AccountsOwnedProfileImageResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostV1AccountsOwnedProfileLegalAgreementsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *AccountOwnedProfileRs
+	JSON400                       *ProblemDetails
+	JSON409                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AccountsOwnedProfileLegalAgreementsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AccountsOwnedProfileLegalAgreementsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3778,6 +5237,55 @@ func (r PutV1AccountsOwnedProfileUsernameResponse) StatusCode() int {
 	return 0
 }
 
+type GetV1LegalDocumentVersionsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *LegalDocumentVersionsRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1LegalDocumentVersionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1LegalDocumentVersionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetV1LegalDocumentResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *LegalDocumentRs
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1LegalDocumentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1LegalDocumentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // GetV1AccountsOwnedProfileWithResponse request returning *GetV1AccountsOwnedProfileResponse
 func (c *ClientWithResponses) GetV1AccountsOwnedProfileWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileResponse, error) {
 	rsp, err := c.GetV1AccountsOwnedProfile(ctx, params, reqEditors...)
@@ -3856,6 +5364,32 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarsOrderWithResponse(ctx
 	return ParsePutV1AccountsOwnedProfileBarsOrderResponse(rsp)
 }
 
+// PutV1AccountsOwnedProfileBarIngredientsWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileBarIngredientsResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarIngredientsWithBodyWithResponse(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarIngredientsResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileBarIngredientsWithBody(ctx, barId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileBarIngredientsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarIngredientsWithResponse(ctx context.Context, barId string, params *PutV1AccountsOwnedProfileBarIngredientsParams, body PutV1AccountsOwnedProfileBarIngredientsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileBarIngredientsResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileBarIngredients(ctx, barId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileBarIngredientsResponse(rsp)
+}
+
+// DeleteV1AccountsOwnedProfileBarIngredientByIdWithResponse request returning *DeleteV1AccountsOwnedProfileBarIngredientByIdResponse
+func (c *ClientWithResponses) DeleteV1AccountsOwnedProfileBarIngredientByIdWithResponse(ctx context.Context, barId string, ingredientId string, params *DeleteV1AccountsOwnedProfileBarIngredientByIdParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileBarIngredientByIdResponse, error) {
+	rsp, err := c.DeleteV1AccountsOwnedProfileBarIngredientById(ctx, barId, ingredientId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AccountsOwnedProfileBarIngredientByIdResponse(rsp)
+}
+
 // DeleteV1AccountsOwnedProfileBarByIdWithResponse request returning *DeleteV1AccountsOwnedProfileBarByIdResponse
 func (c *ClientWithResponses) DeleteV1AccountsOwnedProfileBarByIdWithResponse(ctx context.Context, id string, params *DeleteV1AccountsOwnedProfileBarByIdParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileBarByIdResponse, error) {
 	rsp, err := c.DeleteV1AccountsOwnedProfileBarById(ctx, id, params, reqEditors...)
@@ -3889,6 +5423,32 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileBarByIdWithResponse(ctx c
 		return nil, err
 	}
 	return ParsePutV1AccountsOwnedProfileBarByIdResponse(rsp)
+}
+
+// PostV1AccountsCheckoutSessionsWithBodyWithResponse request with arbitrary body returning *PostV1AccountsCheckoutSessionsResponse
+func (c *ClientWithResponses) PostV1AccountsCheckoutSessionsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsCheckoutSessionsResponse, error) {
+	rsp, err := c.PostV1AccountsCheckoutSessionsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsCheckoutSessionsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostV1AccountsCheckoutSessionsWithResponse(ctx context.Context, params *PostV1AccountsCheckoutSessionsParams, body PostV1AccountsCheckoutSessionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsCheckoutSessionsResponse, error) {
+	rsp, err := c.PostV1AccountsCheckoutSessions(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsCheckoutSessionsResponse(rsp)
+}
+
+// GetV1AccountsSubscriptionTiersWithResponse request returning *GetV1AccountsSubscriptionTiersResponse
+func (c *ClientWithResponses) GetV1AccountsSubscriptionTiersWithResponse(ctx context.Context, params *GetV1AccountsSubscriptionTiersParams, reqEditors ...RequestEditorFn) (*GetV1AccountsSubscriptionTiersResponse, error) {
+	rsp, err := c.GetV1AccountsSubscriptionTiers(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountsSubscriptionTiersResponse(rsp)
 }
 
 // PutV1AccountsOwnedProfileCocktailsFavoritesWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileCocktailsFavoritesResponse
@@ -4038,6 +5598,32 @@ func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsRatingsWithResp
 	return ParsePostV1AccountsOwnedProfileCocktailsRatingsResponse(rsp)
 }
 
+// GetV1AccountsOwnedProfileCocktailsReactionsWithResponse request returning *GetV1AccountsOwnedProfileCocktailsReactionsResponse
+func (c *ClientWithResponses) GetV1AccountsOwnedProfileCocktailsReactionsWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsReactionsParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileCocktailsReactionsResponse, error) {
+	rsp, err := c.GetV1AccountsOwnedProfileCocktailsReactions(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountsOwnedProfileCocktailsReactionsResponse(rsp)
+}
+
+// PutV1AccountsOwnedProfileCocktailsReactionsWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileCocktailsReactionsResponse
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsReactionsWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsReactionsResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileCocktailsReactionsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileCocktailsReactionsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsReactionsWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsReactionsParams, body PutV1AccountsOwnedProfileCocktailsReactionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsReactionsResponse, error) {
+	rsp, err := c.PutV1AccountsOwnedProfileCocktailsReactions(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountsOwnedProfileCocktailsReactionsResponse(rsp)
+}
+
 // PostV1AccountsOwnedProfileCocktailsSharesWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileCocktailsSharesResponse
 func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsSharesWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsSharesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsSharesResponse, error) {
 	rsp, err := c.PostV1AccountsOwnedProfileCocktailsSharesWithBody(ctx, params, contentType, body, reqEditors...)
@@ -4072,6 +5658,15 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileEmailWithResponse(ctx con
 	return ParsePutV1AccountsOwnedProfileEmailResponse(rsp)
 }
 
+// GetV1AccountsOwnedProfileIdWithResponse request returning *GetV1AccountsOwnedProfileIdResponse
+func (c *ClientWithResponses) GetV1AccountsOwnedProfileIdWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileIdParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileIdResponse, error) {
+	rsp, err := c.GetV1AccountsOwnedProfileId(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountsOwnedProfileIdResponse(rsp)
+}
+
 // PostV1AccountsOwnedProfileImageWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileImageResponse
 func (c *ClientWithResponses) PostV1AccountsOwnedProfileImageWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileImageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileImageResponse, error) {
 	rsp, err := c.PostV1AccountsOwnedProfileImageWithBody(ctx, params, contentType, body, reqEditors...)
@@ -4079,6 +5674,23 @@ func (c *ClientWithResponses) PostV1AccountsOwnedProfileImageWithBodyWithRespons
 		return nil, err
 	}
 	return ParsePostV1AccountsOwnedProfileImageResponse(rsp)
+}
+
+// PostV1AccountsOwnedProfileLegalAgreementsWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileLegalAgreementsResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileLegalAgreementsWithBodyWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileLegalAgreementsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileLegalAgreementsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsOwnedProfileLegalAgreementsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileLegalAgreementsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileLegalAgreementsParams, body PostV1AccountsOwnedProfileLegalAgreementsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileLegalAgreementsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileLegalAgreements(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsOwnedProfileLegalAgreementsResponse(rsp)
 }
 
 // PutV1AccountsOwnedProfileNotificationsWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileNotificationsResponse
@@ -4173,6 +5785,24 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileUsernameWithResponse(ctx 
 		return nil, err
 	}
 	return ParsePutV1AccountsOwnedProfileUsernameResponse(rsp)
+}
+
+// GetV1LegalDocumentVersionsWithResponse request returning *GetV1LegalDocumentVersionsResponse
+func (c *ClientWithResponses) GetV1LegalDocumentVersionsWithResponse(ctx context.Context, params *GetV1LegalDocumentVersionsParams, reqEditors ...RequestEditorFn) (*GetV1LegalDocumentVersionsResponse, error) {
+	rsp, err := c.GetV1LegalDocumentVersions(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1LegalDocumentVersionsResponse(rsp)
+}
+
+// GetV1LegalDocumentWithResponse request returning *GetV1LegalDocumentResponse
+func (c *ClientWithResponses) GetV1LegalDocumentWithResponse(ctx context.Context, documentType LegalDocumentType, params *GetV1LegalDocumentParams, reqEditors ...RequestEditorFn) (*GetV1LegalDocumentResponse, error) {
+	rsp, err := c.GetV1LegalDocument(ctx, documentType, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1LegalDocumentResponse(rsp)
 }
 
 // ParseGetV1AccountsOwnedProfileResponse parses an HTTP response from a GetV1AccountsOwnedProfileWithResponse call
@@ -4384,6 +6014,13 @@ func ParsePostV1AccountsOwnedProfileBarsResponse(rsp *http.Response) (*PostV1Acc
 		}
 		response.JSON201 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -4423,6 +6060,100 @@ func ParsePutV1AccountsOwnedProfileBarsOrderResponse(rsp *http.Response) (*PutV1
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV1AccountsOwnedProfileBarIngredientsResponse parses an HTTP response from a PutV1AccountsOwnedProfileBarIngredientsWithResponse call
+func ParsePutV1AccountsOwnedProfileBarIngredientsResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileBarIngredientsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1AccountsOwnedProfileBarIngredientsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BarRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteV1AccountsOwnedProfileBarIngredientByIdResponse parses an HTTP response from a DeleteV1AccountsOwnedProfileBarIngredientByIdWithResponse call
+func ParseDeleteV1AccountsOwnedProfileBarIngredientByIdResponse(rsp *http.Response) (*DeleteV1AccountsOwnedProfileBarIngredientByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AccountsOwnedProfileBarIngredientByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BarRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	}
 
@@ -4570,6 +6301,107 @@ func ParsePutV1AccountsOwnedProfileBarByIdResponse(rsp *http.Response) (*PutV1Ac
 	return response, nil
 }
 
+// ParsePostV1AccountsCheckoutSessionsResponse parses an HTTP response from a PostV1AccountsCheckoutSessionsWithResponse call
+func ParsePostV1AccountsCheckoutSessionsResponse(rsp *http.Response) (*PostV1AccountsCheckoutSessionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AccountsCheckoutSessionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CreateCheckoutSessionRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AccountsSubscriptionTiersResponse parses an HTTP response from a GetV1AccountsSubscriptionTiersWithResponse call
+func ParseGetV1AccountsSubscriptionTiersResponse(rsp *http.Response) (*GetV1AccountsSubscriptionTiersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountsSubscriptionTiersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SubscriptionTiersRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePutV1AccountsOwnedProfileCocktailsFavoritesResponse parses an HTTP response from a PutV1AccountsOwnedProfileCocktailsFavoritesWithResponse call
 func ParsePutV1AccountsOwnedProfileCocktailsFavoritesResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileCocktailsFavoritesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -4604,6 +6436,13 @@ func ParsePutV1AccountsOwnedProfileCocktailsFavoritesResponse(rsp *http.Response
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
@@ -4691,6 +6530,13 @@ func ParsePostV1AccountsOwnedProfileCocktailsListsResponse(rsp *http.Response) (
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
@@ -5066,6 +6912,86 @@ func ParsePostV1AccountsOwnedProfileCocktailsRatingsResponse(rsp *http.Response)
 	return response, nil
 }
 
+// ParseGetV1AccountsOwnedProfileCocktailsReactionsResponse parses an HTTP response from a GetV1AccountsOwnedProfileCocktailsReactionsWithResponse call
+func ParseGetV1AccountsOwnedProfileCocktailsReactionsResponse(rsp *http.Response) (*GetV1AccountsOwnedProfileCocktailsReactionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountsOwnedProfileCocktailsReactionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AccountCocktailReactionsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV1AccountsOwnedProfileCocktailsReactionsResponse parses an HTTP response from a PutV1AccountsOwnedProfileCocktailsReactionsWithResponse call
+func ParsePutV1AccountsOwnedProfileCocktailsReactionsResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileCocktailsReactionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1AccountsOwnedProfileCocktailsReactionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AccountCocktailReactionRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostV1AccountsOwnedProfileCocktailsSharesResponse parses an HTTP response from a PostV1AccountsOwnedProfileCocktailsSharesWithResponse call
 func ParsePostV1AccountsOwnedProfileCocktailsSharesResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileCocktailsSharesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -5181,6 +7107,46 @@ func ParsePutV1AccountsOwnedProfileEmailResponse(rsp *http.Response) (*PutV1Acco
 	return response, nil
 }
 
+// ParseGetV1AccountsOwnedProfileIdResponse parses an HTTP response from a GetV1AccountsOwnedProfileIdWithResponse call
+func ParseGetV1AccountsOwnedProfileIdResponse(rsp *http.Response) (*GetV1AccountsOwnedProfileIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountsOwnedProfileIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AccountOwnedProfileIdRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostV1AccountsOwnedProfileImageResponse parses an HTTP response from a PostV1AccountsOwnedProfileImageWithResponse call
 func ParsePostV1AccountsOwnedProfileImageResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileImageResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -5222,6 +7188,60 @@ func ParsePostV1AccountsOwnedProfileImageResponse(rsp *http.Response) (*PostV1Ac
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AccountsOwnedProfileLegalAgreementsResponse parses an HTTP response from a PostV1AccountsOwnedProfileLegalAgreementsWithResponse call
+func ParsePostV1AccountsOwnedProfileLegalAgreementsResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileLegalAgreementsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AccountsOwnedProfileLegalAgreementsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AccountOwnedProfileRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	}
 
@@ -5469,6 +7489,93 @@ func ParsePutV1AccountsOwnedProfileUsernameResponse(rsp *http.Response) (*PutV1A
 			return nil, err
 		}
 		response.JSON409 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1LegalDocumentVersionsResponse parses an HTTP response from a GetV1LegalDocumentVersionsWithResponse call
+func ParseGetV1LegalDocumentVersionsResponse(rsp *http.Response) (*GetV1LegalDocumentVersionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1LegalDocumentVersionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LegalDocumentVersionsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1LegalDocumentResponse parses an HTTP response from a GetV1LegalDocumentWithResponse call
+func ParseGetV1LegalDocumentResponse(rsp *http.Response) (*GetV1LegalDocumentResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1LegalDocumentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LegalDocumentRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	}
 

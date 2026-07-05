@@ -136,6 +136,12 @@ variable "log_level" {
   default     = "info"
 }
 
+variable "otlp_service_name" {
+  type        = string
+  description = "The service name for OTLP"
+  default     = "cocktails-mcp"
+}
+
 variable "otlp_insecure" {
   type        = bool
   description = "Whether to allow insecure connections to the OTLP endpoint"

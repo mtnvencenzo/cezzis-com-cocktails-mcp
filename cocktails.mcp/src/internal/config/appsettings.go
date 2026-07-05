@@ -94,6 +94,10 @@ type AppSettings struct {
 	// InitDelaySeconds is the delay in seconds before the background init job runs.
 	InitDelaySeconds int `env:"INIT_DELAY_SECONDS" envDefault:"30"`
 
+	// OTLPServiceName is the service name for OTLP telemetry data.
+	// Example: "cocktails-mcp"
+	OTLPServiceName string `env:"OTLP_SERVICE_NAME" envDefault:"cocktails-mcp"`
+
 	// OTLPEndpoint is the OTLP collector endpoint to send telemetry data to.
 	// Example: "localhost:4317"
 	OTLPEndpoint string `env:"OTLP_ENDPOINT" envDefault:"localhost:4317"`

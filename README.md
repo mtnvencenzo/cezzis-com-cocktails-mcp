@@ -156,11 +156,17 @@ The manifests in `.iac/k8s` are for a local deployed environment. They define th
 To sync that setup through Argo CD:
 
 ```shell
-# app
-kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/cezzis-com-cocktails-mcp.yaml
+# loc app
+kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/cezzis-com-cocktails-mcp-loc.yaml
 
-# image updater
-kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/image-updater.yaml
+# loc image updater
+kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/image-updater-loc.yaml
+
+# cloudsync app
+kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/cezzis-com-cocktails-mcp-cloudsync.yaml
+
+# cloudsync image updater
+kubectl apply -f https://raw.githubusercontent.com/mtnvencenzo/cezzis-com-cocktails-mcp/refs/heads/main/.iac/argocd/image-updater-cloudsync.yaml
 ```
 
 ## Production Notes

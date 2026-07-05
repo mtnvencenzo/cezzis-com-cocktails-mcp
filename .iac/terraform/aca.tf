@@ -91,6 +91,10 @@
 #       value = var.log_level
 #     },
 #     {
+#       name  = "OTLP_SERVICE_NAME"
+#       value = var.otlp_service_name
+#     },
+#     {
 #       name  = "OTLP_ENDPOINT"
 #       value = "https://${data.azurerm_container_app.otel_collector.ingress[0].fqdn}"
 #     },

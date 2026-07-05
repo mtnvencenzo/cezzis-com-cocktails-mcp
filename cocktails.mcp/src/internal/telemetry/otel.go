@@ -50,9 +50,11 @@ func SetupOTelSDK(ctx context.Context, version string) (func(context.Context) er
 		err = errors.Join(inErr, shutdown(ctx))
 	}
 
+	appSettings := config.GetAppSettings()
+
 	resource := res.NewWithAttributes(
 		semconv.SchemaURL,
-		semconv.ServiceName("cocktails-mcp"),
+		semconv.ServiceName(appSettings.OTLPServiceName),
 		semconv.ServiceNamespace("cezzis"),
 		semconv.ServiceVersion(version),
 		semconv.ServiceInstanceID(environment.GetHostName()),
@@ -64,8 +66,6 @@ func SetupOTelSDK(ctx context.Context, version string) (func(context.Context) er
 	// Set up propagator.
 	prop := newPropagator()
 	otel.SetTextMapPropagator(prop)
-
-	appSettings := config.GetAppSettings()
 
 	// Set up trace provider.
 	if appSettings.OTLPTraceEnabled {

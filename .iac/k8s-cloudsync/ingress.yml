@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cezzis-com-cocktails-mcp-cloudsync-ingress
+  namespace: cezzis
+  labels:
+    app.kubernetes.io/part-of: cezzis
+  annotations:
+    # k3s uses Traefik by default
+    kubernetes.io/ingress.class: traefik
+    argocd.argoproj.io/sync-wave: "500"
+spec:
+  rules:
+    - host: cezzis-cocktails-mcp-cloudsync.127.0.0.1.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cezzis-com-cocktails-mcp-cloudsync
+                port:
+                  number: 7999

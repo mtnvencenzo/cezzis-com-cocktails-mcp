@@ -35,6 +35,9 @@ type CocktailCollectionListModel struct {
 	// Holiday The holiday rule for a holiday collection
 	Holiday NullableOfCollectionHolidayTypeModel `json:"holiday"`
 
+	// IconSvg The collection icon SVG
+	IconSvg string `json:"iconSvg"`
+
 	// Id The cocktail collection identifier
 	Id string `json:"id"`
 
@@ -65,14 +68,14 @@ type CocktailCollectionListModel struct {
 
 // CocktailCollectionModel The cocktail collection model
 type CocktailCollectionModel struct {
-	// CocktailIds The cocktail identifiers in the collection
-	CocktailIds []string `json:"cocktailIds"`
-
 	// Description The cocktail collection description
 	Description string `json:"description"`
 
 	// Holiday The holiday rule for a holiday collection
 	Holiday NullableOfCollectionHolidayTypeModel `json:"holiday"`
+
+	// IconSvg The collection icon SVG
+	IconSvg string `json:"iconSvg"`
 
 	// Id The cocktail collection identifier
 	Id string `json:"id"`
@@ -112,6 +115,27 @@ type CocktailCollectionRs struct {
 type CocktailCollectionsRs struct {
 	// Items The visible cocktail collections
 	Items []CocktailCollectionListModel `json:"items"`
+}
+
+// CocktailDietaryModel The computed dietary suitability for the cocktail recipe. Null when no ingredient supplies a dietary profile.
+type CocktailDietaryModel struct {
+	// IsComplete Whether every ingredient supplied a dietary profile. When false the flags are partial and may overstate suitability
+	IsComplete bool `json:"isComplete"`
+
+	// IsDairyFree Whether the cocktail contains no milk-derived products
+	IsDairyFree bool `json:"isDairyFree"`
+
+	// IsGlutenFree Whether the cocktail contains no gluten (distilled spirits qualify; malt and wheat-based products do not)
+	IsGlutenFree bool `json:"isGlutenFree"`
+
+	// IsNutFree Whether the cocktail contains no tree nuts or peanuts
+	IsNutFree bool `json:"isNutFree"`
+
+	// IsVegan Whether the cocktail contains no animal-derived products
+	IsVegan bool `json:"isVegan"`
+
+	// IsVegetarian Whether the cocktail is free of meat, poultry, and fish (dairy, egg, and honey are permitted)
+	IsVegetarian bool `json:"isVegetarian"`
 }
 
 // CocktailImageModel defines model for CocktailImageModel.
@@ -171,6 +195,48 @@ type CocktailIngredientFiltersRs struct {
 	WineBeerAndSake []interface{} `json:"wineBeerAndSake"`
 }
 
+// CocktailIngredientMatchSearchModel defines model for CocktailIngredientMatchSearchModel.
+type CocktailIngredientMatchSearchModel struct {
+	// DescriptiveTitle Descriptive title of the cocktail
+	DescriptiveTitle string `json:"descriptiveTitle"`
+
+	// Glassware List of glassware types used for the cocktail
+	Glassware []GlasswareTypeModel `json:"glassware"`
+
+	// Id Unique identifier for the cocktail
+	Id string `json:"id"`
+
+	// Images Images associated with the cocktail
+	Images []CocktailSearchImageModel `json:"images"`
+
+	// Ingredients List of ingredients in the cocktail
+	Ingredients []CocktailSearchIngredientModel `json:"ingredients"`
+
+	// IsIba Indicates if the cocktail is an IBA official cocktail
+	IsIba bool `json:"isIba"`
+
+	// MissingGarnishmentCount The number of garnishment ingredients that were not present in the supplied ingredient list
+	MissingGarnishmentCount int32 `json:"missingGarnishmentCount"`
+
+	// PrepTimeMinutes Preparation time in minutes
+	PrepTimeMinutes int32 `json:"prepTimeMinutes"`
+
+	// Rating Rating of the cocktail
+	Rating float64 `json:"rating"`
+
+	// SearchStatistics Search statistics for the cocktail
+	SearchStatistics CocktailSearchStatisticsModel `json:"searchStatistics"`
+
+	// Serves Number of servings
+	Serves int32 `json:"serves"`
+
+	// Title Title of the cocktail
+	Title string `json:"title"`
+
+	// UnmatchedIngredientCount The number of cocktail ingredients that were not present in the supplied ingredient list
+	UnmatchedIngredientCount int32 `json:"unmatchedIngredientCount"`
+}
+
 // CocktailKeywordsModel The keywords associated with the cocktail recipe
 type CocktailKeywordsModel struct {
 	// KeywordsBaseSpirit Base spirit keywords
@@ -221,6 +287,9 @@ type CocktailModel struct {
 	// DescriptiveTitle A more descriptive title for the cocktail recipe, generally used as an editorial title
 	DescriptiveTitle string `json:"descriptiveTitle"`
 
+	// Dietary The computed dietary suitability for the cocktail recipe. Null when no ingredient supplies a dietary profile.
+	Dietary *CocktailDietaryModel `json:"dietary"`
+
 	// Glassware The recommended glassware to use when serving the cocktail
 	Glassware []GlasswareTypeModel `json:"glassware"`
 
@@ -245,6 +314,9 @@ type CocktailModel struct {
 	// ModifiedOn The date this cocktail recipe was last modified on Cezzis.Com
 	ModifiedOn time.Time `json:"modifiedOn"`
 
+	// Nutrition The estimated nutrition totals for the cocktail recipe. Null when no ingredient supplies nutrition data.
+	Nutrition *CocktailNutritionModel `json:"nutrition"`
+
 	// PrepTimeMinutes The average number of minutes to build the cocktail using this recipe
 	PrepTimeMinutes int32 `json:"prepTimeMinutes"`
 
@@ -253,6 +325,9 @@ type CocktailModel struct {
 
 	// Rating A ratings for this cocktail
 	Rating CocktailRatingModel `json:"rating"`
+
+	// Reactions The summed user reaction totals for this cocktail keyed by reaction type
+	Reactions map[string]int32 `json:"reactions"`
 
 	// RecipeCuisine The regional or national cuisine the cocktail recipe is associated with, aligned with schema.org Recipe.recipeCuisine. Empty when the origin cannot be determined.
 	RecipeCuisine string `json:"recipeCuisine"`
@@ -268,6 +343,42 @@ type CocktailModel struct {
 
 	// Title The name of the cocktail recipe
 	Title string `json:"title"`
+}
+
+// CocktailNutritionModel The estimated nutrition totals for the cocktail recipe. Null when no ingredient supplies nutrition data.
+type CocktailNutritionModel struct {
+	// Calories The estimated total energy in kilocalories
+	Calories float64 `json:"calories"`
+
+	// CarbohydrateContent The estimated total carbohydrate content in grams
+	CarbohydrateContent float64 `json:"carbohydrateContent"`
+
+	// FatContent The estimated total fat content in grams
+	FatContent float64 `json:"fatContent"`
+
+	// FiberContent The estimated total dietary fiber content in grams
+	FiberContent float64 `json:"fiberContent"`
+
+	// IsComplete Whether every ingredient supplied nutrition data. When false the totals are partial and understate the true values
+	IsComplete bool `json:"isComplete"`
+
+	// IsEstimated Whether any contributing value is estimated rather than measured. When true, present these figures as estimates
+	IsEstimated bool `json:"isEstimated"`
+
+	// ProteinContent The estimated total protein content in grams
+	ProteinContent float64 `json:"proteinContent"`
+
+	// SaturatedFatContent The estimated total saturated fat content in grams
+	SaturatedFatContent float64 `json:"saturatedFatContent"`
+
+	// ServingVolumeMl The total liquid volume in milliliters the nutrition was computed from, when known
+	ServingVolumeMl float64 `json:"servingVolumeMl"`
+
+	// SodiumContent The estimated total sodium content in milligrams
+	SodiumContent float64 `json:"sodiumContent"`
+
+	// SugarContent The estimated total sugar content in grams
+	SugarContent float64 `json:"sugarContent"`
 }
 
 // CocktailRatingModel A ratings for this cocktail
@@ -303,11 +414,140 @@ type CocktailRs struct {
 	Item CocktailModel `json:"item"`
 }
 
+// CocktailSearchImageModel defines model for CocktailSearchImageModel.
+type CocktailSearchImageModel struct {
+	// Height Height of the image in pixels
+	Height int32 `json:"height"`
+
+	// Type Type of the image
+	Type string `json:"type"`
+
+	// Uri URI of the image
+	Uri string `json:"uri"`
+
+	// Width Width of the image in pixels
+	Width int32 `json:"width"`
+}
+
+// CocktailSearchIngredientModel defines model for CocktailSearchIngredientModel.
+type CocktailSearchIngredientModel struct {
+	// Applications List of ingredient applications
+	Applications []IngredientApplicationModel `json:"applications"`
+
+	// Display Display string for the ingredient
+	Display string `json:"display"`
+
+	// Id Unique identifier for the ingredient
+	Id string `json:"id"`
+
+	// Name Name of the ingredient
+	Name string `json:"name"`
+
+	// Preparation Preparation type for the ingredient
+	Preparation PreparationTypeModel2 `json:"preparation"`
+
+	// Requirement Requirement type for the ingredient
+	Requirement IngredientRequirementTypeModel2 `json:"requirement"`
+
+	// Suggestions Suggestions for the ingredient
+	Suggestions string `json:"suggestions"`
+
+	// Types List of ingredient types
+	Types []string `json:"types"`
+
+	// Units Quantity of the ingredient
+	Units float32 `json:"units"`
+
+	// UoM Unit of Measure for the ingredient
+	UoM UofMTypeModel2 `json:"uoM"`
+}
+
+// CocktailSearchModel defines model for CocktailSearchModel.
+type CocktailSearchModel struct {
+	// DescriptiveTitle Descriptive title of the cocktail
+	DescriptiveTitle string `json:"descriptiveTitle"`
+
+	// Glassware List of glassware types used for the cocktail
+	Glassware []GlasswareTypeModel `json:"glassware"`
+
+	// Id Unique identifier for the cocktail
+	Id string `json:"id"`
+
+	// Images Images associated with the cocktail
+	Images []CocktailSearchImageModel `json:"images"`
+
+	// Ingredients List of ingredients in the cocktail
+	Ingredients []CocktailSearchIngredientModel `json:"ingredients"`
+
+	// IsIba Indicates if the cocktail is an IBA official cocktail
+	IsIba bool `json:"isIba"`
+
+	// PrepTimeMinutes Preparation time in minutes
+	PrepTimeMinutes int32 `json:"prepTimeMinutes"`
+
+	// Rating Rating of the cocktail
+	Rating float64 `json:"rating"`
+
+	// SearchStatistics Search statistics for the cocktail
+	SearchStatistics CocktailSearchStatisticsModel `json:"searchStatistics"`
+
+	// Serves Number of servings
+	Serves int32 `json:"serves"`
+
+	// Title Title of the cocktail
+	Title string `json:"title"`
+}
+
+// CocktailSearchStatisticsModel Search statistics for the cocktail
+type CocktailSearchStatisticsModel struct {
+	// AvgScore Average score across all hits
+	AvgScore float64 `json:"avgScore"`
+
+	// HitCount Number of matching chunks
+	HitCount int32 `json:"hitCount"`
+
+	// HitResults List of hit results with their scores
+	HitResults []CocktailVectorSearchResultModel `json:"hitResults"`
+
+	// MaxScore Highest individual chunk score
+	MaxScore float64 `json:"maxScore"`
+
+	// RerankerScore Cross-encoder reranker relevance score
+	RerankerScore float64 `json:"rerankerScore"`
+
+	// TotalScore Sum of all hit scores
+	TotalScore float64 `json:"totalScore"`
+
+	// WeightedScore Weighted score combining avg with hit count boost
+	WeightedScore float64 `json:"weightedScore"`
+}
+
+// CocktailVectorSearchResultModel defines model for CocktailVectorSearchResultModel.
+type CocktailVectorSearchResultModel struct {
+	// Score Score of the search result
+	Score float64 `json:"score"`
+}
+
+// CocktailsIngredientMatchSearchRs defines model for CocktailsIngredientMatchSearchRs.
+type CocktailsIngredientMatchSearchRs struct {
+	// Items List of cocktails returned from ingredient-overlap search
+	Items []CocktailIngredientMatchSearchModel `json:"items"`
+}
+
+// CocktailsRelationsRs defines model for CocktailsRelationsRs.
+type CocktailsRelationsRs struct {
+	// Items List of related cocktails returned from the search
+	Items []CocktailSearchModel `json:"items"`
+}
+
+// CocktailsSearchRs defines model for CocktailsSearchRs.
+type CocktailsSearchRs struct {
+	// Items List of cocktails returned from the search
+	Items []CocktailSearchModel `json:"items"`
+}
+
 // CollectionVisibilityTypeModel The collection visibility type
 type CollectionVisibilityTypeModel = interface{}
-
-// DocumentFormat The format that the document content is in
-type DocumentFormat = interface{}
 
 // GlasswareTypeModel defines model for GlasswareTypeModel.
 type GlasswareTypeModel = interface{}
@@ -368,6 +608,9 @@ type IngredientModel struct {
 
 // IngredientRequirementTypeModel Whether or not this ingredient is required ('Required' or 'Optional')
 type IngredientRequirementTypeModel = interface{}
+
+// IngredientRequirementTypeModel2 Requirement type for the ingredient
+type IngredientRequirementTypeModel2 = interface{}
 
 // IngredientRs defines model for IngredientRs.
 type IngredientRs struct {
@@ -468,15 +711,6 @@ type InventoryIngredientModel2 struct {
 	Variations []IngredientVariationModel `json:"variations"`
 }
 
-// LegalDocumentRs defines model for LegalDocumentRs.
-type LegalDocumentRs struct {
-	// Document The document content
-	Document string `json:"document"`
-
-	// Format The format that the document content is in
-	Format DocumentFormat `json:"format"`
-}
-
 // NullableOfCollectionHolidayTypeModel The holiday rule for a holiday collection
 type NullableOfCollectionHolidayTypeModel = interface{}
 
@@ -485,6 +719,9 @@ type NullableOfCollectionSeasonTypeModel = interface{}
 
 // PreparationTypeModel Any preparation that should be made with this ingredient
 type PreparationTypeModel = interface{}
+
+// PreparationTypeModel2 Preparation type for the ingredient
+type PreparationTypeModel2 = interface{}
 
 // ProblemDetails defines model for ProblemDetails.
 type ProblemDetails struct {
@@ -513,6 +750,9 @@ type TaxonomyFilterTypeModel = interface{}
 // UofMTypeModel The unit of measure when using this ingredient in a cocktail recipe
 type UofMTypeModel = interface{}
 
+// UofMTypeModel2 Unit of Measure for the ingredient
+type UofMTypeModel2 = interface{}
+
 // PublishCocktailsParams defines parameters for PublishCocktails.
 type PublishCocktailsParams struct {
 	// XKey Subscription key
@@ -533,6 +773,18 @@ type GetCocktailCollectionsParams struct {
 
 // GetCocktailCollectionParams defines parameters for GetCocktailCollection.
 type GetCocktailCollectionParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// GetCocktailCollectionCocktailsParams defines parameters for GetCocktailCollectionCocktails.
+type GetCocktailCollectionCocktailsParams struct {
+	// Skip The number of cocktails to skip from the paged response
+	Skip *int32 `form:"skip,omitempty" json:"skip,omitempty"`
+
+	// Take The number of cocktails to take for pagination
+	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
+
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -579,14 +831,77 @@ type GetCocktailParams struct {
 // GetCocktailParamsMeasurementSystem defines parameters for GetCocktail.
 type GetCocktailParamsMeasurementSystem string
 
-// GetPrivacyPolicyParams defines parameters for GetPrivacyPolicy.
-type GetPrivacyPolicyParams struct {
+// IngredientMatchParams defines parameters for IngredientMatch.
+type IngredientMatchParams struct {
+	// MinimumMatchCount The minimum number of supplied ingredients that must match a cocktail unless all cocktail ingredients are matched
+	MinimumMatchCount *int32 `form:"minimum_match_count,omitempty" json:"minimum_match_count,omitempty"`
+
+	// Skip The number of cocktail recipes to skip from the paged response
+	Skip *int32 `form:"skip,omitempty" json:"skip,omitempty"`
+
+	// Take The number of cocktail recipes to take for pagination
+	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
+
+	// Fi An optional list of ingredient identifiers used to match cocktails by ingredient overlap
+	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
+
+	// Mif Optional coverage filters. Repeat mif for combinations. Allowed: all, exact, missing_1, missing_2, missing_3_plus
+	Mif *[]string `form:"mif,omitempty" json:"mif,omitempty"`
+
+	// IgnoreMissingGarnishments When true, missing garnishments are not counted as missing ingredients for filtering purposes. The unmatched ingredient count and missingGarnishmentCount in the response still reflect the actual missing garnishments
+	IgnoreMissingGarnishments *bool `form:"ignore_missing_garnishments,omitempty" json:"ignore_missing_garnishments,omitempty"`
+
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
 
-// GetTermsOfServiceParams defines parameters for GetTermsOfService.
-type GetTermsOfServiceParams struct {
+// RelatedParams defines parameters for Related.
+type RelatedParams struct {
+	// Take The number of related cocktails to return
+	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
+
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// SearchParams defines parameters for Search.
+type SearchParams struct {
+	// Freetext The free text search term to match against
+	Freetext *string `form:"freetext,omitempty" json:"freetext,omitempty"`
+
+	// Skip The number of cocktail recipes to skip from the paged response
+	Skip *int32 `form:"skip,omitempty" json:"skip,omitempty"`
+
+	// Take The number of cocktail recipes to take for pagination
+	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
+
+	// M A list of cocktails that can be included in the list
+	M *[]string `form:"m,omitempty" json:"m,omitempty"`
+
+	// MEx Whether or not the supplied matches must be exclusively returned
+	MEx *bool `form:"m_ex,omitempty" json:"m_ex,omitempty"`
+
+	// Fi An optional list of filters to use when querying the cocktail recipes
+	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
+
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
+
+// TypeAheadParams defines parameters for TypeAhead.
+type TypeAheadParams struct {
+	// Freetext The free text search term to match against
+	Freetext *string `form:"freetext,omitempty" json:"freetext,omitempty"`
+
+	// Skip The number of cocktail recipes to skip from the paged response
+	Skip *int32 `form:"skip,omitempty" json:"skip,omitempty"`
+
+	// Take The number of cocktail recipes to take for pagination
+	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
+
+	// Fi An optional list of filters to use when querying the cocktail recipes
+	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
+
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -686,6 +1001,9 @@ type ClientInterface interface {
 	// GetCocktailCollection request
 	GetCocktailCollection(ctx context.Context, id string, params *GetCocktailCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetCocktailCollectionCocktails request
+	GetCocktailCollectionCocktails(ctx context.Context, id string, params *GetCocktailCollectionCocktailsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetIngredients request
 	GetIngredients(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -698,11 +1016,17 @@ type ClientInterface interface {
 	// GetCocktail request
 	GetCocktail(ctx context.Context, id string, params *GetCocktailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetPrivacyPolicy request
-	GetPrivacyPolicy(ctx context.Context, params *GetPrivacyPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// IngredientMatch request
+	IngredientMatch(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetTermsOfService request
-	GetTermsOfService(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// Related request
+	Related(ctx context.Context, cocktailId string, params *RelatedParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// Search request
+	Search(ctx context.Context, params *SearchParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// TypeAhead request
+	TypeAhead(ctx context.Context, params *TypeAheadParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) PublishCocktailsWithBody(ctx context.Context, params *PublishCocktailsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -777,6 +1101,18 @@ func (c *Client) GetCocktailCollection(ctx context.Context, id string, params *G
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetCocktailCollectionCocktails(ctx context.Context, id string, params *GetCocktailCollectionCocktailsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCocktailCollectionCocktailsRequest(c.Server, id, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetIngredients(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetIngredientsRequest(c.Server, params)
 	if err != nil {
@@ -825,8 +1161,8 @@ func (c *Client) GetCocktail(ctx context.Context, id string, params *GetCocktail
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetPrivacyPolicy(ctx context.Context, params *GetPrivacyPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetPrivacyPolicyRequest(c.Server, params)
+func (c *Client) IngredientMatch(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIngredientMatchRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -837,8 +1173,32 @@ func (c *Client) GetPrivacyPolicy(ctx context.Context, params *GetPrivacyPolicyP
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetTermsOfService(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetTermsOfServiceRequest(c.Server, params)
+func (c *Client) Related(ctx context.Context, cocktailId string, params *RelatedParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRelatedRequest(c.Server, cocktailId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Search(ctx context.Context, params *SearchParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) TypeAhead(ctx context.Context, params *TypeAheadParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewTypeAheadRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1025,6 +1385,93 @@ func NewGetCocktailCollectionRequest(server string, id string, params *GetCockta
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetCocktailCollectionCocktailsRequest generates requests for GetCocktailCollectionCocktails
+func NewGetCocktailCollectionCocktailsRequest(server string, id string, params *GetCocktailCollectionCocktailsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/cocktails/collections/%s/cocktails", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Skip != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "skip", runtime.ParamLocationQuery, *params.Skip); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Take != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "take", runtime.ParamLocationQuery, *params.Take); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -1324,8 +1771,8 @@ func NewGetCocktailRequest(server string, id string, params *GetCocktailParams) 
 	return req, nil
 }
 
-// NewGetPrivacyPolicyRequest generates requests for GetPrivacyPolicy
-func NewGetPrivacyPolicyRequest(server string, params *GetPrivacyPolicyParams) (*http.Request, error) {
+// NewIngredientMatchRequest generates requests for IngredientMatch
+func NewIngredientMatchRequest(server string, params *IngredientMatchParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1333,7 +1780,7 @@ func NewGetPrivacyPolicyRequest(server string, params *GetPrivacyPolicyParams) (
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/v1/legal/documents/privacy-policy")
+	operationPath := fmt.Sprintf("/api/v1/search/ingredient-match")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1341,6 +1788,108 @@ func NewGetPrivacyPolicyRequest(server string, params *GetPrivacyPolicyParams) (
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.MinimumMatchCount != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "minimum_match_count", runtime.ParamLocationQuery, *params.MinimumMatchCount); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Skip != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "skip", runtime.ParamLocationQuery, *params.Skip); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Take != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "take", runtime.ParamLocationQuery, *params.Take); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Fi != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "fi", runtime.ParamLocationQuery, *params.Fi); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Mif != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mif", runtime.ParamLocationQuery, *params.Mif); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IgnoreMissingGarnishments != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "ignore_missing_garnishments", runtime.ParamLocationQuery, *params.IgnoreMissingGarnishments); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -1366,16 +1915,23 @@ func NewGetPrivacyPolicyRequest(server string, params *GetPrivacyPolicyParams) (
 	return req, nil
 }
 
-// NewGetTermsOfServiceRequest generates requests for GetTermsOfService
-func NewGetTermsOfServiceRequest(server string, params *GetTermsOfServiceParams) (*http.Request, error) {
+// NewRelatedRequest generates requests for Related
+func NewRelatedRequest(server string, cocktailId string, params *RelatedParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "cocktailId", runtime.ParamLocationPath, cocktailId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/v1/legal/documents/terms-of-service")
+	operationPath := fmt.Sprintf("/api/v1/search/related/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1383,6 +1939,284 @@ func NewGetTermsOfServiceRequest(server string, params *GetTermsOfServiceParams)
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Take != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "take", runtime.ParamLocationQuery, *params.Take); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewSearchRequest generates requests for Search
+func NewSearchRequest(server string, params *SearchParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/search/semantic")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Freetext != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "freetext", runtime.ParamLocationQuery, *params.Freetext); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Skip != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "skip", runtime.ParamLocationQuery, *params.Skip); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Take != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "take", runtime.ParamLocationQuery, *params.Take); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.M != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "m", runtime.ParamLocationQuery, *params.M); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.MEx != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "m_ex", runtime.ParamLocationQuery, *params.MEx); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Fi != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "fi", runtime.ParamLocationQuery, *params.Fi); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewTypeAheadRequest generates requests for TypeAhead
+func NewTypeAheadRequest(server string, params *TypeAheadParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/search/typeahead")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Freetext != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "freetext", runtime.ParamLocationQuery, *params.Freetext); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Skip != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "skip", runtime.ParamLocationQuery, *params.Skip); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Take != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "take", runtime.ParamLocationQuery, *params.Take); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Fi != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "fi", runtime.ParamLocationQuery, *params.Fi); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -1467,6 +2301,9 @@ type ClientWithResponsesInterface interface {
 	// GetCocktailCollectionWithResponse request
 	GetCocktailCollectionWithResponse(ctx context.Context, id string, params *GetCocktailCollectionParams, reqEditors ...RequestEditorFn) (*GetCocktailCollectionResponse, error)
 
+	// GetCocktailCollectionCocktailsWithResponse request
+	GetCocktailCollectionCocktailsWithResponse(ctx context.Context, id string, params *GetCocktailCollectionCocktailsParams, reqEditors ...RequestEditorFn) (*GetCocktailCollectionCocktailsResponse, error)
+
 	// GetIngredientsWithResponse request
 	GetIngredientsWithResponse(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*GetIngredientsResponse, error)
 
@@ -1479,11 +2316,17 @@ type ClientWithResponsesInterface interface {
 	// GetCocktailWithResponse request
 	GetCocktailWithResponse(ctx context.Context, id string, params *GetCocktailParams, reqEditors ...RequestEditorFn) (*GetCocktailResponse, error)
 
-	// GetPrivacyPolicyWithResponse request
-	GetPrivacyPolicyWithResponse(ctx context.Context, params *GetPrivacyPolicyParams, reqEditors ...RequestEditorFn) (*GetPrivacyPolicyResponse, error)
+	// IngredientMatchWithResponse request
+	IngredientMatchWithResponse(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error)
 
-	// GetTermsOfServiceWithResponse request
-	GetTermsOfServiceWithResponse(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*GetTermsOfServiceResponse, error)
+	// RelatedWithResponse request
+	RelatedWithResponse(ctx context.Context, cocktailId string, params *RelatedParams, reqEditors ...RequestEditorFn) (*RelatedResponse, error)
+
+	// SearchWithResponse request
+	SearchWithResponse(ctx context.Context, params *SearchParams, reqEditors ...RequestEditorFn) (*SearchResponse, error)
+
+	// TypeAheadWithResponse request
+	TypeAheadWithResponse(ctx context.Context, params *TypeAheadParams, reqEditors ...RequestEditorFn) (*TypeAheadResponse, error)
 }
 
 type PublishCocktailsResponse struct {
@@ -1570,6 +2413,29 @@ func (r GetCocktailCollectionResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetCocktailCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCocktailCollectionCocktailsResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *CocktailsSearchRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCocktailCollectionCocktailsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCocktailCollectionCocktailsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1668,15 +2534,15 @@ func (r GetCocktailResponse) StatusCode() int {
 	return 0
 }
 
-type GetPrivacyPolicyResponse struct {
+type IngredientMatchResponse struct {
 	Body                                []byte
 	HTTPResponse                        *http.Response
-	ApplicationjsonXApiVersion10200     *LegalDocumentRs
+	ApplicationjsonXApiVersion10200     *CocktailsIngredientMatchSearchRs
 	ApplicationjsonXApiVersion10Default *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
-func (r GetPrivacyPolicyResponse) Status() string {
+func (r IngredientMatchResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1684,22 +2550,22 @@ func (r GetPrivacyPolicyResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetPrivacyPolicyResponse) StatusCode() int {
+func (r IngredientMatchResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetTermsOfServiceResponse struct {
+type RelatedResponse struct {
 	Body                                []byte
 	HTTPResponse                        *http.Response
-	ApplicationjsonXApiVersion10200     *LegalDocumentRs
+	ApplicationjsonXApiVersion10200     *CocktailsRelationsRs
 	ApplicationjsonXApiVersion10Default *ProblemDetails
 }
 
 // Status returns HTTPResponse.Status
-func (r GetTermsOfServiceResponse) Status() string {
+func (r RelatedResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1707,7 +2573,53 @@ func (r GetTermsOfServiceResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetTermsOfServiceResponse) StatusCode() int {
+func (r RelatedResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SearchResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *CocktailsSearchRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type TypeAheadResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10200     *CocktailsSearchRs
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r TypeAheadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r TypeAheadResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1766,6 +2678,15 @@ func (c *ClientWithResponses) GetCocktailCollectionWithResponse(ctx context.Cont
 	return ParseGetCocktailCollectionResponse(rsp)
 }
 
+// GetCocktailCollectionCocktailsWithResponse request returning *GetCocktailCollectionCocktailsResponse
+func (c *ClientWithResponses) GetCocktailCollectionCocktailsWithResponse(ctx context.Context, id string, params *GetCocktailCollectionCocktailsParams, reqEditors ...RequestEditorFn) (*GetCocktailCollectionCocktailsResponse, error) {
+	rsp, err := c.GetCocktailCollectionCocktails(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCocktailCollectionCocktailsResponse(rsp)
+}
+
 // GetIngredientsWithResponse request returning *GetIngredientsResponse
 func (c *ClientWithResponses) GetIngredientsWithResponse(ctx context.Context, params *GetIngredientsParams, reqEditors ...RequestEditorFn) (*GetIngredientsResponse, error) {
 	rsp, err := c.GetIngredients(ctx, params, reqEditors...)
@@ -1802,22 +2723,40 @@ func (c *ClientWithResponses) GetCocktailWithResponse(ctx context.Context, id st
 	return ParseGetCocktailResponse(rsp)
 }
 
-// GetPrivacyPolicyWithResponse request returning *GetPrivacyPolicyResponse
-func (c *ClientWithResponses) GetPrivacyPolicyWithResponse(ctx context.Context, params *GetPrivacyPolicyParams, reqEditors ...RequestEditorFn) (*GetPrivacyPolicyResponse, error) {
-	rsp, err := c.GetPrivacyPolicy(ctx, params, reqEditors...)
+// IngredientMatchWithResponse request returning *IngredientMatchResponse
+func (c *ClientWithResponses) IngredientMatchWithResponse(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error) {
+	rsp, err := c.IngredientMatch(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetPrivacyPolicyResponse(rsp)
+	return ParseIngredientMatchResponse(rsp)
 }
 
-// GetTermsOfServiceWithResponse request returning *GetTermsOfServiceResponse
-func (c *ClientWithResponses) GetTermsOfServiceWithResponse(ctx context.Context, params *GetTermsOfServiceParams, reqEditors ...RequestEditorFn) (*GetTermsOfServiceResponse, error) {
-	rsp, err := c.GetTermsOfService(ctx, params, reqEditors...)
+// RelatedWithResponse request returning *RelatedResponse
+func (c *ClientWithResponses) RelatedWithResponse(ctx context.Context, cocktailId string, params *RelatedParams, reqEditors ...RequestEditorFn) (*RelatedResponse, error) {
+	rsp, err := c.Related(ctx, cocktailId, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetTermsOfServiceResponse(rsp)
+	return ParseRelatedResponse(rsp)
+}
+
+// SearchWithResponse request returning *SearchResponse
+func (c *ClientWithResponses) SearchWithResponse(ctx context.Context, params *SearchParams, reqEditors ...RequestEditorFn) (*SearchResponse, error) {
+	rsp, err := c.Search(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchResponse(rsp)
+}
+
+// TypeAheadWithResponse request returning *TypeAheadResponse
+func (c *ClientWithResponses) TypeAheadWithResponse(ctx context.Context, params *TypeAheadParams, reqEditors ...RequestEditorFn) (*TypeAheadResponse, error) {
+	rsp, err := c.TypeAhead(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseTypeAheadResponse(rsp)
 }
 
 // ParsePublishCocktailsResponse parses an HTTP response from a PublishCocktailsWithResponse call
@@ -1921,6 +2860,39 @@ func ParseGetCocktailCollectionResponse(rsp *http.Response) (*GetCocktailCollect
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest CocktailCollectionRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCocktailCollectionCocktailsResponse parses an HTTP response from a GetCocktailCollectionCocktailsWithResponse call
+func ParseGetCocktailCollectionCocktailsResponse(rsp *http.Response) (*GetCocktailCollectionCocktailsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCocktailCollectionCocktailsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailsSearchRs
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2070,22 +3042,22 @@ func ParseGetCocktailResponse(rsp *http.Response) (*GetCocktailResponse, error) 
 	return response, nil
 }
 
-// ParseGetPrivacyPolicyResponse parses an HTTP response from a GetPrivacyPolicyWithResponse call
-func ParseGetPrivacyPolicyResponse(rsp *http.Response) (*GetPrivacyPolicyResponse, error) {
+// ParseIngredientMatchResponse parses an HTTP response from a IngredientMatchWithResponse call
+func ParseIngredientMatchResponse(rsp *http.Response) (*IngredientMatchResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetPrivacyPolicyResponse{
+	response := &IngredientMatchResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest LegalDocumentRs
+		var dest CocktailsIngredientMatchSearchRs
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2103,22 +3075,88 @@ func ParseGetPrivacyPolicyResponse(rsp *http.Response) (*GetPrivacyPolicyRespons
 	return response, nil
 }
 
-// ParseGetTermsOfServiceResponse parses an HTTP response from a GetTermsOfServiceWithResponse call
-func ParseGetTermsOfServiceResponse(rsp *http.Response) (*GetTermsOfServiceResponse, error) {
+// ParseRelatedResponse parses an HTTP response from a RelatedWithResponse call
+func ParseRelatedResponse(rsp *http.Response) (*RelatedResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetTermsOfServiceResponse{
+	response := &RelatedResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest LegalDocumentRs
+		var dest CocktailsRelationsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSearchResponse parses an HTTP response from a SearchWithResponse call
+func ParseSearchResponse(rsp *http.Response) (*SearchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailsSearchRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseTypeAheadResponse parses an HTTP response from a TypeAheadWithResponse call
+func ParseTypeAheadResponse(rsp *http.Response) (*TypeAheadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &TypeAheadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailsSearchRs
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

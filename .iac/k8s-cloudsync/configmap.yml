@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cezzis-com-cocktails-mcp-config
+  name: cezzis-com-cocktails-mcp-cloudsync-config
   namespace: cezzis
   labels:
     app.kubernetes.io/part-of: cezzis
@@ -9,27 +9,27 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "100"
 data:
-  ENV: "loc"
+  ENV: "prd"
   PORT: "7999"
-  ACCOUNTS_API_HOST: "http://cezzis-com-accounts-api:8016"
-  ACCOUNTS_API_XKEY: ""
-  AISEARCH_API_HOST: "http://cezzis-com-cocktails-aisearch:8010"
+  ACCOUNTS_API_HOST: "https://www.cezzis.com/prd/accounts"
+  AISEARCH_API_HOST: "http://cezzis-com-cocktails-aisearch-cloudsync:8010"
   AISEARCH_API_XKEY: ""
   AUTH0_ACCOUNTS_API_AUDIENCE: "https://cezzis-accounts-api"
   AUTH0_NATIVE_CLIENT_ID: "6pNnUIHVbyakv27TtICiLyAQbXYxNjOQ"
   AUTH0_DOMAIN: "login.cezzis.com"
   AUTH0_SCOPES: "openid offline_access profile email read:owned-account write:owned-account"
-  CEZZIS_BASE_URL: "http://localhost:4001"
-  COCKTAILS_API_HOST: "http://cezzis-com-cocktails-api:7177"
+  CEZZIS_BASE_URL: "http://www.cezzis.com"
+  COCKTAILS_API_HOST: "https://www.cezzis.com/prd/cocktails"
   INIT_DELAY_SECONDS: "30"
   INIT_JOB_ENABLED: "true"
   LOG_LEVEL: "info"
+  OTLP_SERVICE_NAME: "cocktails-mcp-cloudsync"
   OTLP_ENDPOINT: "http://otel-collector.elastic-platform.svc.cluster.local:4318"
   OTLP_INSECURE: "true"
   OTLP_LOG_ENABLED: "true"
   OTLP_METRICS_ENABLED: "false"
   OTLP_TRACE_ENABLED: "true"
-  POSTGRES_DB: "cezzis-cocktailsmcp-db-loc"
+  POSTGRES_DB: "cezzis-cocktailsmcp-db-cloudsync"
   POSTGRES_HOST: "postgres.postgres-platform.svc.cluster.local"
   POSTGRES_PORT: "5432"
   POSTGRES_USER: "admin"
