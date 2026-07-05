@@ -37,6 +37,8 @@ spec:
                 name: cezzis-com-cocktails-mcp-cloudsync-config
             - secretRef:
                 name: cezzis-com-cocktails-mcp-cloudsync-shared-secrets
+            - secretRef:
+                name: cezzis-com-cocktails-mcp-cloudsync-secrets
           startupProbe:
             httpGet:
               path: /mcp/v1/health/liveness
