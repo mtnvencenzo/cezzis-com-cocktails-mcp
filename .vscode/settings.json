@@ -3,17 +3,16 @@
     "rest-client.enableTelemetry": false,
     "rest-client.environmentVariables": {
         "local": {
-          "host": "http://localhost:8012"
+          "host": "http://localhost:8012",
+          "xKey": ""
         },
-        "local-docker": {
-          "host": "http://localhost:7999"
+        "k8s-loc": {
+          "host": "http://cezzis-cocktailsmcp.127.0.0.1.sslip.io",
+          "xKey": ""
         },
-        "prod-apim": {
-          "host": "https://www.cezzis.com/prd/cocktails",
-          "xKey": "21075g+k(-k6)vs}%a-_m#bo"
-        },
-        "prod-k8s": {
-          "host": "http://cezzis-cocktails-mcp.127.0.0.1.sslip.io"
+        "k8s-cloudsync": {
+          "host": "http://cezzis-cocktailsmcp-cloudsync.127.0.0.1.sslip.io",
+          "xKey": ""
         }
     },
     "explorer.fileNesting.enabled": true,

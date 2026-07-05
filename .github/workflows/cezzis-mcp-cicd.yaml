@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths-ignore:
       - '.iac/k8s/kustomization.yaml'
+      - '.iac/k8s-loc/kustomization.yaml'
+      - '.iac/k8s-cloudsync/kustomization.yaml'
       - '.vscode/**'
       - '.assets/**'
 
@@ -12,6 +14,8 @@ on:
     branches: [main]
     paths-ignore:
       - '.iac/k8s/kustomization.yaml'
+      - '.iac/k8s-loc/kustomization.yaml'
+      - '.iac/k8s-cloudsync/kustomization.yaml'
       - '.vscode/**'
       - '.assets/**'
 
