@@ -57,12 +57,12 @@ data "azurerm_api_management_api" "accounts_api_version_v1" {
   revision            = "v1"
 }
 
-data "azurerm_api_management_api" "aisearch_api_version_v1" {
-  name                = "${var.environment}-aisearch-api-v1"
-  api_management_name = data.azurerm_api_management.apim_shared.name
-  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
-  revision            = "v1"
-}
+# data "azurerm_api_management_api" "aisearch_api_version_v1" {
+#   name                = "${var.environment}-aisearch-api-v1"
+#   api_management_name = data.azurerm_api_management.apim_shared.name
+#   resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+#   revision            = "v1"
+# }
 
 data "azurerm_key_vault_secret" "otel_collector_api_key" {
   name         = "otel-collector-api-key-1"
