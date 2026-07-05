@@ -64,10 +64,10 @@ data "azurerm_api_management_api" "accounts_api_version_v1" {
 #   revision            = "v1"
 # }
 
-data "azurerm_key_vault_secret" "otel_collector_api_key" {
-  name         = "otel-collector-api-key-1"
-  key_vault_id = data.azurerm_key_vault.global_keyvault.id
-}
+# data "azurerm_key_vault_secret" "otel_collector_api_key" {
+#   name         = "otel-collector-api-key-1"
+#   key_vault_id = data.azurerm_key_vault.global_keyvault.id
+# }
 
 data "azurerm_key_vault_secret" "postgres_username" {
   name         = "postgres-admin-username"
@@ -84,7 +84,7 @@ data "azurerm_postgresql_flexible_server" "postgres" {
   resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
 }
 
-data "azurerm_container_app" "otel_collector" {
-  name                = "aca-${var.sub}-${var.region}-${var.global_environment}-otelcol-${var.sequence}"
-  resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
-}
+# data "azurerm_container_app" "otel_collector" {
+#   name                = "aca-${var.sub}-${var.region}-${var.global_environment}-otelcol-${var.sequence}"
+#   resource_group_name = data.azurerm_resource_group.global_shared_resource_group.name
+# }
