@@ -293,6 +293,9 @@ type CocktailModel struct {
 	// Glassware The recommended glassware to use when serving the cocktail
 	Glassware []GlasswareTypeModel `json:"glassware"`
 
+	// Hashtags A list of hashtags associated with this cocktail
+	Hashtags []string `json:"hashtags"`
+
 	// Id The cocktail recipe unique identifier
 	Id string `json:"id"`
 
@@ -337,6 +340,9 @@ type CocktailModel struct {
 
 	// Serves The number of people the cocktail recipe serves
 	Serves int32 `json:"serves"`
+
+	// SocialLinks A list of social media links associated with this cocktail
+	SocialLinks []SocialMediaLinkModel `json:"socialLinks"`
 
 	// Tags A list of taxonomy tags defining the cocktail recipe
 	Tags []string `json:"tags"`
@@ -406,6 +412,90 @@ type CocktailRatingModel struct {
 
 	// TwoStars The number of two star ratings
 	TwoStars int32 `json:"twoStars"`
+}
+
+// CocktailReportsImageModel defines model for CocktailReportsImageModel.
+type CocktailReportsImageModel struct {
+	// Height Height of the image in pixels
+	Height int32 `json:"height"`
+
+	// Type Type of the image
+	Type string `json:"type"`
+
+	// Uri URI of the image
+	Uri string `json:"uri"`
+
+	// Width Width of the image in pixels
+	Width int32 `json:"width"`
+}
+
+// CocktailReportsIngredientModel defines model for CocktailReportsIngredientModel.
+type CocktailReportsIngredientModel struct {
+	// Applications List of ingredient applications
+	Applications []IngredientApplicationModel `json:"applications"`
+
+	// Display Display string for the ingredient
+	Display string `json:"display"`
+
+	// Id Unique identifier for the ingredient
+	Id string `json:"id"`
+
+	// Name Name of the ingredient
+	Name string `json:"name"`
+
+	// Preparation Preparation type for the ingredient
+	Preparation PreparationTypeModel2 `json:"preparation"`
+
+	// Requirement Requirement type for the ingredient
+	Requirement IngredientRequirementTypeModel2 `json:"requirement"`
+
+	// Suggestions Suggestions for the ingredient
+	Suggestions string `json:"suggestions"`
+
+	// Types List of ingredient types
+	Types []string `json:"types"`
+
+	// Units Quantity of the ingredient
+	Units float32 `json:"units"`
+
+	// UoM Unit of Measure for the ingredient
+	UoM UofMTypeModel2 `json:"uoM"`
+}
+
+// CocktailReportsModel defines model for CocktailReportsModel.
+type CocktailReportsModel struct {
+	// Description Description of the cocktail
+	Description string `json:"description"`
+
+	// DescriptiveTitle Descriptive title of the cocktail
+	DescriptiveTitle string `json:"descriptiveTitle"`
+
+	// Glassware List of glassware types used for the cocktail
+	Glassware []GlasswareTypeModel `json:"glassware"`
+
+	// Id Unique identifier for the cocktail
+	Id string `json:"id"`
+
+	// Images Images associated with the cocktail
+	Images []CocktailReportsImageModel `json:"images"`
+
+	// Ingredients List of ingredients in the cocktail
+	Ingredients []CocktailReportsIngredientModel `json:"ingredients"`
+
+	// IsIba Indicates if the cocktail is an IBA official cocktail
+	IsIba bool `json:"isIba"`
+
+	// PrepTimeMinutes Preparation time in minutes
+	PrepTimeMinutes int32 `json:"prepTimeMinutes"`
+
+	// Rating Rating of the cocktail
+	Rating float64 `json:"rating"`
+
+	// Serves Number of servings
+	Serves int32 `json:"serves"`
+
+	// Title Title of the cocktail
+	Title string `json:"title"`
 }
 
 // CocktailRs defines model for CocktailRs.
@@ -528,6 +618,27 @@ type CocktailVectorSearchResultModel struct {
 	Score float64 `json:"score"`
 }
 
+// CocktailsIngredientMatchSearchRq defines model for CocktailsIngredientMatchSearchRq.
+type CocktailsIngredientMatchSearchRq struct {
+	// IgnoreMissingGarnishments When true, missing garnishments are not counted as missing ingredients for filtering purposes. The unmatched ingredient count and missingGarnishmentCount in the response still reflect the actual missing garnishments
+	IgnoreMissingGarnishments *bool `json:"ignoreMissingGarnishments"`
+
+	// Ingredients An optional list of ingredient identifiers used to match cocktails by ingredient overlap
+	Ingredients *[]string `json:"ingredients"`
+
+	// MatchCoverageFilters Optional coverage filters. Allowed: all, exact, missing_1, missing_2, missing_3_plus
+	MatchCoverageFilters *[]string `json:"matchCoverageFilters"`
+
+	// MinimumMatchCount The minimum number of supplied ingredients that must match a cocktail unless all cocktail ingredients are matched
+	MinimumMatchCount *int32 `json:"minimumMatchCount"`
+
+	// Skip The number of cocktail recipes to skip from the paged response
+	Skip *int32 `json:"skip"`
+
+	// Take The number of cocktail recipes to take for pagination
+	Take *int32 `json:"take"`
+}
+
 // CocktailsIngredientMatchSearchRs defines model for CocktailsIngredientMatchSearchRs.
 type CocktailsIngredientMatchSearchRs struct {
 	// Items List of cocktails returned from ingredient-overlap search
@@ -538,6 +649,12 @@ type CocktailsIngredientMatchSearchRs struct {
 type CocktailsRelationsRs struct {
 	// Items List of related cocktails returned from the search
 	Items []CocktailSearchModel `json:"items"`
+}
+
+// CocktailsReportsRs defines model for CocktailsReportsRs.
+type CocktailsReportsRs struct {
+	// Items List of cocktails returned from the search
+	Items []CocktailReportsModel `json:"items"`
 }
 
 // CocktailsSearchRs defines model for CocktailsSearchRs.
@@ -744,6 +861,15 @@ type PublishIngredientsRq struct {
 	IngredientIds []string `json:"ingredientIds"`
 }
 
+// SocialMediaLinkModel defines model for SocialMediaLinkModel.
+type SocialMediaLinkModel struct {
+	// Type The social media type (e.g., Pinterest, Facebook)
+	Type string `json:"type"`
+
+	// Url The URL of the social media link
+	Url string `json:"url"`
+}
+
 // TaxonomyFilterTypeModel The ingredient filter group used for cocktail search filters
 type TaxonomyFilterTypeModel = interface{}
 
@@ -752,6 +878,12 @@ type UofMTypeModel = interface{}
 
 // UofMTypeModel2 Unit of Measure for the ingredient
 type UofMTypeModel2 = interface{}
+
+// UpsertSocialLinkRq defines model for UpsertSocialLinkRq.
+type UpsertSocialLinkRq struct {
+	// Url The URL of the social link to upsert
+	Url string `json:"url"`
+}
 
 // PublishCocktailsParams defines parameters for PublishCocktails.
 type PublishCocktailsParams struct {
@@ -767,6 +899,8 @@ type PublishIngredientsParams struct {
 
 // GetCocktailCollectionsParams defines parameters for GetCocktailCollections.
 type GetCocktailCollectionsParams struct {
+	All *bool `form:"all,omitempty" json:"all,omitempty"`
+
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -831,26 +965,26 @@ type GetCocktailParams struct {
 // GetCocktailParamsMeasurementSystem defines parameters for GetCocktail.
 type GetCocktailParamsMeasurementSystem string
 
-// IngredientMatchParams defines parameters for IngredientMatch.
-type IngredientMatchParams struct {
-	// MinimumMatchCount The minimum number of supplied ingredients that must match a cocktail unless all cocktail ingredients are matched
-	MinimumMatchCount *int32 `form:"minimum_match_count,omitempty" json:"minimum_match_count,omitempty"`
+// UpsertSocialLinkParams defines parameters for UpsertSocialLink.
+type UpsertSocialLinkParams struct {
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
 
+// GetCocktailsMissingSocialLinkParams defines parameters for GetCocktailsMissingSocialLink.
+type GetCocktailsMissingSocialLinkParams struct {
 	// Skip The number of cocktail recipes to skip from the paged response
 	Skip *int32 `form:"skip,omitempty" json:"skip,omitempty"`
 
 	// Take The number of cocktail recipes to take for pagination
 	Take *int32 `form:"take,omitempty" json:"take,omitempty"`
 
-	// Fi An optional list of ingredient identifiers used to match cocktails by ingredient overlap
-	Fi *[]string `form:"fi,omitempty" json:"fi,omitempty"`
+	// XKey Subscription key
+	XKey *string `json:"X-Key,omitempty"`
+}
 
-	// Mif Optional coverage filters. Repeat mif for combinations. Allowed: all, exact, missing_1, missing_2, missing_3_plus
-	Mif *[]string `form:"mif,omitempty" json:"mif,omitempty"`
-
-	// IgnoreMissingGarnishments When true, missing garnishments are not counted as missing ingredients for filtering purposes. The unmatched ingredient count and missingGarnishmentCount in the response still reflect the actual missing garnishments
-	IgnoreMissingGarnishments *bool `form:"ignore_missing_garnishments,omitempty" json:"ignore_missing_garnishments,omitempty"`
-
+// IngredientMatchParams defines parameters for IngredientMatch.
+type IngredientMatchParams struct {
 	// XKey Subscription key
 	XKey *string `json:"X-Key,omitempty"`
 }
@@ -911,6 +1045,12 @@ type PublishCocktailsApplicationJSONXAPIVersion10RequestBody = PublishCocktailsR
 
 // PublishIngredientsApplicationJSONXAPIVersion10RequestBody defines body for PublishIngredients for application/json; x-api-version=1.0 ContentType.
 type PublishIngredientsApplicationJSONXAPIVersion10RequestBody = PublishIngredientsRq
+
+// UpsertSocialLinkApplicationJSONXAPIVersion10RequestBody defines body for UpsertSocialLink for application/json; x-api-version=1.0 ContentType.
+type UpsertSocialLinkApplicationJSONXAPIVersion10RequestBody = UpsertSocialLinkRq
+
+// IngredientMatchApplicationJSONXAPIVersion10RequestBody defines body for IngredientMatch for application/json; x-api-version=1.0 ContentType.
+type IngredientMatchApplicationJSONXAPIVersion10RequestBody = CocktailsIngredientMatchSearchRq
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -1016,8 +1156,18 @@ type ClientInterface interface {
 	// GetCocktail request
 	GetCocktail(ctx context.Context, id string, params *GetCocktailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// IngredientMatch request
-	IngredientMatch(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// UpsertSocialLinkWithBody request with any body
+	UpsertSocialLinkWithBody(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpsertSocialLinkWithApplicationJSONXAPIVersion10Body(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, body UpsertSocialLinkApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCocktailsMissingSocialLink request
+	GetCocktailsMissingSocialLink(ctx context.Context, pType string, params *GetCocktailsMissingSocialLinkParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IngredientMatchWithBody request with any body
+	IngredientMatchWithBody(ctx context.Context, params *IngredientMatchParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	IngredientMatchWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *IngredientMatchParams, body IngredientMatchApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Related request
 	Related(ctx context.Context, cocktailId string, params *RelatedParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1161,8 +1311,56 @@ func (c *Client) GetCocktail(ctx context.Context, id string, params *GetCocktail
 	return c.Client.Do(req)
 }
 
-func (c *Client) IngredientMatch(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewIngredientMatchRequest(c.Server, params)
+func (c *Client) UpsertSocialLinkWithBody(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpsertSocialLinkRequestWithBody(c.Server, id, pType, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpsertSocialLinkWithApplicationJSONXAPIVersion10Body(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, body UpsertSocialLinkApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpsertSocialLinkRequestWithApplicationJSONXAPIVersion10Body(c.Server, id, pType, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCocktailsMissingSocialLink(ctx context.Context, pType string, params *GetCocktailsMissingSocialLinkParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCocktailsMissingSocialLinkRequest(c.Server, pType, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IngredientMatchWithBody(ctx context.Context, params *IngredientMatchParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIngredientMatchRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IngredientMatchWithApplicationJSONXAPIVersion10Body(ctx context.Context, params *IngredientMatchParams, body IngredientMatchApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIngredientMatchRequestWithApplicationJSONXAPIVersion10Body(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1336,6 +1534,28 @@ func NewGetCocktailCollectionsRequest(server string, params *GetCocktailCollecti
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.All != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "all", runtime.ParamLocationQuery, *params.All); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -1771,16 +1991,92 @@ func NewGetCocktailRequest(server string, id string, params *GetCocktailParams) 
 	return req, nil
 }
 
-// NewIngredientMatchRequest generates requests for IngredientMatch
-func NewIngredientMatchRequest(server string, params *IngredientMatchParams) (*http.Request, error) {
+// NewUpsertSocialLinkRequestWithApplicationJSONXAPIVersion10Body calls the generic UpsertSocialLink builder with application/json; x-api-version=1.0 body
+func NewUpsertSocialLinkRequestWithApplicationJSONXAPIVersion10Body(server string, id string, pType string, params *UpsertSocialLinkParams, body UpsertSocialLinkApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpsertSocialLinkRequestWithBody(server, id, pType, params, "application/json; x-api-version=1.0", bodyReader)
+}
+
+// NewUpsertSocialLinkRequestWithBody generates requests for UpsertSocialLink with any type of body
+func NewUpsertSocialLinkRequestWithBody(server string, id string, pType string, params *UpsertSocialLinkParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "type", runtime.ParamLocationPath, pType)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/v1/search/ingredient-match")
+	operationPath := fmt.Sprintf("/api/v1/cocktails/%s/sociallinks/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetCocktailsMissingSocialLinkRequest generates requests for GetCocktailsMissingSocialLink
+func NewGetCocktailsMissingSocialLinkRequest(server string, pType string, params *GetCocktailsMissingSocialLinkParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "type", runtime.ParamLocationPath, pType)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/reports/cocktails-missing-sociallink/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1792,22 +2088,6 @@ func NewIngredientMatchRequest(server string, params *IngredientMatchParams) (*h
 
 	if params != nil {
 		queryValues := queryURL.Query()
-
-		if params.MinimumMatchCount != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "minimum_match_count", runtime.ParamLocationQuery, *params.MinimumMatchCount); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
 
 		if params.Skip != nil {
 
@@ -1841,54 +2121,6 @@ func NewIngredientMatchRequest(server string, params *IngredientMatchParams) (*h
 
 		}
 
-		if params.Fi != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "fi", runtime.ParamLocationQuery, *params.Fi); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Mif != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mif", runtime.ParamLocationQuery, *params.Mif); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.IgnoreMissingGarnishments != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "ignore_missing_garnishments", runtime.ParamLocationQuery, *params.IgnoreMissingGarnishments); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
 		queryURL.RawQuery = queryValues.Encode()
 	}
 
@@ -1896,6 +2128,61 @@ func NewIngredientMatchRequest(server string, params *IngredientMatchParams) (*h
 	if err != nil {
 		return nil, err
 	}
+
+	if params != nil {
+
+		if params.XKey != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, *params.XKey)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Key", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewIngredientMatchRequestWithApplicationJSONXAPIVersion10Body calls the generic IngredientMatch builder with application/json; x-api-version=1.0 body
+func NewIngredientMatchRequestWithApplicationJSONXAPIVersion10Body(server string, params *IngredientMatchParams, body IngredientMatchApplicationJSONXAPIVersion10RequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewIngredientMatchRequestWithBody(server, params, "application/json; x-api-version=1.0", bodyReader)
+}
+
+// NewIngredientMatchRequestWithBody generates requests for IngredientMatch with any type of body
+func NewIngredientMatchRequestWithBody(server string, params *IngredientMatchParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/search/ingredient-match")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	if params != nil {
 
@@ -2316,8 +2603,18 @@ type ClientWithResponsesInterface interface {
 	// GetCocktailWithResponse request
 	GetCocktailWithResponse(ctx context.Context, id string, params *GetCocktailParams, reqEditors ...RequestEditorFn) (*GetCocktailResponse, error)
 
-	// IngredientMatchWithResponse request
-	IngredientMatchWithResponse(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error)
+	// UpsertSocialLinkWithBodyWithResponse request with any body
+	UpsertSocialLinkWithBodyWithResponse(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertSocialLinkResponse, error)
+
+	UpsertSocialLinkWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, body UpsertSocialLinkApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*UpsertSocialLinkResponse, error)
+
+	// GetCocktailsMissingSocialLinkWithResponse request
+	GetCocktailsMissingSocialLinkWithResponse(ctx context.Context, pType string, params *GetCocktailsMissingSocialLinkParams, reqEditors ...RequestEditorFn) (*GetCocktailsMissingSocialLinkResponse, error)
+
+	// IngredientMatchWithBodyWithResponse request with any body
+	IngredientMatchWithBodyWithResponse(ctx context.Context, params *IngredientMatchParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error)
+
+	IngredientMatchWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *IngredientMatchParams, body IngredientMatchApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error)
 
 	// RelatedWithResponse request
 	RelatedWithResponse(ctx context.Context, cocktailId string, params *RelatedParams, reqEditors ...RequestEditorFn) (*RelatedResponse, error)
@@ -2534,6 +2831,50 @@ func (r GetCocktailResponse) StatusCode() int {
 	return 0
 }
 
+type UpsertSocialLinkResponse struct {
+	Body                                []byte
+	HTTPResponse                        *http.Response
+	ApplicationjsonXApiVersion10Default *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r UpsertSocialLinkResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpsertSocialLinkResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCocktailsMissingSocialLinkResponse struct {
+	Body                            []byte
+	HTTPResponse                    *http.Response
+	ApplicationjsonXApiVersion10200 *CocktailsReportsRs
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCocktailsMissingSocialLinkResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCocktailsMissingSocialLinkResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type IngredientMatchResponse struct {
 	Body                                []byte
 	HTTPResponse                        *http.Response
@@ -2723,9 +3064,43 @@ func (c *ClientWithResponses) GetCocktailWithResponse(ctx context.Context, id st
 	return ParseGetCocktailResponse(rsp)
 }
 
-// IngredientMatchWithResponse request returning *IngredientMatchResponse
-func (c *ClientWithResponses) IngredientMatchWithResponse(ctx context.Context, params *IngredientMatchParams, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error) {
-	rsp, err := c.IngredientMatch(ctx, params, reqEditors...)
+// UpsertSocialLinkWithBodyWithResponse request with arbitrary body returning *UpsertSocialLinkResponse
+func (c *ClientWithResponses) UpsertSocialLinkWithBodyWithResponse(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertSocialLinkResponse, error) {
+	rsp, err := c.UpsertSocialLinkWithBody(ctx, id, pType, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpsertSocialLinkResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpsertSocialLinkWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, id string, pType string, params *UpsertSocialLinkParams, body UpsertSocialLinkApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*UpsertSocialLinkResponse, error) {
+	rsp, err := c.UpsertSocialLinkWithApplicationJSONXAPIVersion10Body(ctx, id, pType, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpsertSocialLinkResponse(rsp)
+}
+
+// GetCocktailsMissingSocialLinkWithResponse request returning *GetCocktailsMissingSocialLinkResponse
+func (c *ClientWithResponses) GetCocktailsMissingSocialLinkWithResponse(ctx context.Context, pType string, params *GetCocktailsMissingSocialLinkParams, reqEditors ...RequestEditorFn) (*GetCocktailsMissingSocialLinkResponse, error) {
+	rsp, err := c.GetCocktailsMissingSocialLink(ctx, pType, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCocktailsMissingSocialLinkResponse(rsp)
+}
+
+// IngredientMatchWithBodyWithResponse request with arbitrary body returning *IngredientMatchResponse
+func (c *ClientWithResponses) IngredientMatchWithBodyWithResponse(ctx context.Context, params *IngredientMatchParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error) {
+	rsp, err := c.IngredientMatchWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIngredientMatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) IngredientMatchWithApplicationJSONXAPIVersion10BodyWithResponse(ctx context.Context, params *IngredientMatchParams, body IngredientMatchApplicationJSONXAPIVersion10RequestBody, reqEditors ...RequestEditorFn) (*IngredientMatchResponse, error) {
+	rsp, err := c.IngredientMatchWithApplicationJSONXAPIVersion10Body(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3036,6 +3411,58 @@ func ParseGetCocktailResponse(rsp *http.Response) (*GetCocktailResponse, error) 
 			return nil, err
 		}
 		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpsertSocialLinkResponse parses an HTTP response from a UpsertSocialLinkWithResponse call
+func ParseUpsertSocialLinkResponse(rsp *http.Response) (*UpsertSocialLinkResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpsertSocialLinkResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10Default = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCocktailsMissingSocialLinkResponse parses an HTTP response from a GetCocktailsMissingSocialLinkWithResponse call
+func ParseGetCocktailsMissingSocialLinkResponse(rsp *http.Response) (*GetCocktailsMissingSocialLinkResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCocktailsMissingSocialLinkResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailsReportsRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationjsonXApiVersion10200 = &dest
 
 	}
 
