@@ -95,6 +95,48 @@ Tool execution requests rely on the `Mcp-Session-Id` header so the server can as
 | `authentication_logout_flow` | Clears tokens for the current MCP session |
 | `cocktail_rate` | Submits a cocktail rating for an authenticated user |
 
+## Getting Started: Go Environment Setup
+
+On a fresh machine (e.g. a new Ubuntu install), install Go from the official upstream tarball rather than the distro package manager, since apt-provided Go versions are often out of date or mismatched with the version this project targets (Go 1.25.1+). Install into `/usr/local/go`, the standard location recommended by the official Go docs, so `go` is available to every user on the machine.
+
+```bash
+# 1. Download the official Go tarball (check https://go.dev/dl/ for the latest version)
+cd /tmp
+curl -LO https://go.dev/dl/go1.27.1.linux-amd64.tar.gz
+
+# 2. Remove any previous install and extract the new one to /usr/local
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf go1.27.1.linux-amd64.tar.gz
+
+# 3. Make Go available to all users via a system-wide PATH entry
+echo 'export PATH="$PATH:/usr/local/go/bin"' | sudo tee /etc/profile.d/go.sh
+sudo chmod +x /etc/profile.d/go.sh
+
+# 4. Re-login or source it, then verify
+source /etc/profile.d/go.sh
+go version
+```
+
+To upgrade Go in the future: repeat steps 1–2 (`sudo rm -rf /usr/local/go` then extract the new tarball). The PATH entry doesn't change. Each user's own `go install` binaries land in their own `$HOME/go/bin`, so add `export PATH="$PATH:$HOME/go/bin"` per-user for tools like `golangci-lint`.
+
+To upgrade Go in the future: repeat steps 1–2 (`sudo rm -rf /usr/local/go` then extract the new tarball). The PATH entry doesn't change. Each user's own `go install` binaries land in their own `$HOME/go/bin`, so add `export PATH="$PATH:$HOME/go/bin"` per-user for tools like `golangci-lint`.
+
+### Required Go tools
+
+The `makefile` targets (`lint`, `imports`, `cover`, `gen-*-api`) depend on these tools:
+
+```bash
+go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+go install golang.org/x/tools/...@latest
+go install github.com/incu6us/goimports-reviser/v3@latest
+go install github.com/quantumcycle/go-ignore-cov@latest
+go install github.com/t-yuki/gocover-cobertura@latest
+cd /usr/local && sudo curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sudo sh -s
+```
+
+Also install `make` if it isn't already present (`sudo apt install build-essential`).
+
 ## Quick Start
 
 ### Prerequisites
