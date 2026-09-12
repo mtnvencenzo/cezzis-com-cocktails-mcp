@@ -55,7 +55,7 @@ jobs:
     uses: mtnvencenzo/workflows/.github/workflows/go-build.yaml@main
     needs: [gitVersion]
     with:
-      go_version: '1.25.1'
+      go_version: '1.27.1'
       go_mod_directory: './cocktails.mcp/src'
       go_main_directory: 'cmd'
       go_output_directory: 'dist/linux'
