@@ -20,37 +20,6 @@ const (
 	Auth0Scopes = "auth0.Scopes"
 )
 
-// Defines values for CocktailSearchGlasswareTypeModel.
-const (
-	CocktailSearchGlasswareTypeModelCantaritosClayPot CocktailSearchGlasswareTypeModel = "cantaritosClayPot"
-	CocktailSearchGlasswareTypeModelCocktailGlass     CocktailSearchGlasswareTypeModel = "cocktailGlass"
-	CocktailSearchGlasswareTypeModelCollins           CocktailSearchGlasswareTypeModel = "collins"
-	CocktailSearchGlasswareTypeModelCopperMug         CocktailSearchGlasswareTypeModel = "copperMug"
-	CocktailSearchGlasswareTypeModelCoupe             CocktailSearchGlasswareTypeModel = "coupe"
-	CocktailSearchGlasswareTypeModelDoubleRocks       CocktailSearchGlasswareTypeModel = "doubleRocks"
-	CocktailSearchGlasswareTypeModelFizz              CocktailSearchGlasswareTypeModel = "fizz"
-	CocktailSearchGlasswareTypeModelFlute             CocktailSearchGlasswareTypeModel = "flute"
-	CocktailSearchGlasswareTypeModelGoblet            CocktailSearchGlasswareTypeModel = "goblet"
-	CocktailSearchGlasswareTypeModelHighball          CocktailSearchGlasswareTypeModel = "highball"
-	CocktailSearchGlasswareTypeModelHollowedPineapple CocktailSearchGlasswareTypeModel = "hollowedPineapple"
-	CocktailSearchGlasswareTypeModelHurricane         CocktailSearchGlasswareTypeModel = "hurricane"
-	CocktailSearchGlasswareTypeModelJulepTin          CocktailSearchGlasswareTypeModel = "julepTin"
-	CocktailSearchGlasswareTypeModelLowball           CocktailSearchGlasswareTypeModel = "lowball"
-	CocktailSearchGlasswareTypeModelMartini           CocktailSearchGlasswareTypeModel = "martini"
-	CocktailSearchGlasswareTypeModelNickAndNora       CocktailSearchGlasswareTypeModel = "nickAndNora"
-	CocktailSearchGlasswareTypeModelNone              CocktailSearchGlasswareTypeModel = "none"
-	CocktailSearchGlasswareTypeModelPilsner           CocktailSearchGlasswareTypeModel = "pilsner"
-	CocktailSearchGlasswareTypeModelPintGlass         CocktailSearchGlasswareTypeModel = "pintGlass"
-	CocktailSearchGlasswareTypeModelRocks             CocktailSearchGlasswareTypeModel = "rocks"
-	CocktailSearchGlasswareTypeModelScorpionBowl      CocktailSearchGlasswareTypeModel = "scorpionBowl"
-	CocktailSearchGlasswareTypeModelShotGlass         CocktailSearchGlasswareTypeModel = "shotGlass"
-	CocktailSearchGlasswareTypeModelSling             CocktailSearchGlasswareTypeModel = "sling"
-	CocktailSearchGlasswareTypeModelSnifter           CocktailSearchGlasswareTypeModel = "snifter"
-	CocktailSearchGlasswareTypeModelTikiMug           CocktailSearchGlasswareTypeModel = "tikiMug"
-	CocktailSearchGlasswareTypeModelToddy             CocktailSearchGlasswareTypeModel = "toddy"
-	CocktailSearchGlasswareTypeModelWineGlass         CocktailSearchGlasswareTypeModel = "wineGlass"
-)
-
 // Defines values for CocktailSearchIngredientApplicationTypeModel.
 const (
 	Additional  CocktailSearchIngredientApplicationTypeModel = "additional"
@@ -79,19 +48,19 @@ const (
 
 // Defines values for CocktailSearchUofMTypeModel.
 const (
-	CocktailSearchUofMTypeModelBarspoon   CocktailSearchUofMTypeModel = "barspoon"
-	CocktailSearchUofMTypeModelCups       CocktailSearchUofMTypeModel = "cups"
-	CocktailSearchUofMTypeModelDashes     CocktailSearchUofMTypeModel = "dashes"
-	CocktailSearchUofMTypeModelDiscretion CocktailSearchUofMTypeModel = "discretion"
-	CocktailSearchUofMTypeModelItem       CocktailSearchUofMTypeModel = "item"
-	CocktailSearchUofMTypeModelNone       CocktailSearchUofMTypeModel = "none"
-	CocktailSearchUofMTypeModelOunces     CocktailSearchUofMTypeModel = "ounces"
-	CocktailSearchUofMTypeModelPinch      CocktailSearchUofMTypeModel = "pinch"
-	CocktailSearchUofMTypeModelSplash     CocktailSearchUofMTypeModel = "splash"
-	CocktailSearchUofMTypeModelTablespoon CocktailSearchUofMTypeModel = "tablespoon"
-	CocktailSearchUofMTypeModelTeaspoon   CocktailSearchUofMTypeModel = "teaspoon"
-	CocktailSearchUofMTypeModelToTaste    CocktailSearchUofMTypeModel = "toTaste"
-	CocktailSearchUofMTypeModelTopoff     CocktailSearchUofMTypeModel = "topoff"
+	Barspoon   CocktailSearchUofMTypeModel = "barspoon"
+	Cups       CocktailSearchUofMTypeModel = "cups"
+	Dashes     CocktailSearchUofMTypeModel = "dashes"
+	Discretion CocktailSearchUofMTypeModel = "discretion"
+	Item       CocktailSearchUofMTypeModel = "item"
+	None       CocktailSearchUofMTypeModel = "none"
+	Ounces     CocktailSearchUofMTypeModel = "ounces"
+	Pinch      CocktailSearchUofMTypeModel = "pinch"
+	Splash     CocktailSearchUofMTypeModel = "splash"
+	Tablespoon CocktailSearchUofMTypeModel = "tablespoon"
+	Teaspoon   CocktailSearchUofMTypeModel = "teaspoon"
+	ToTaste    CocktailSearchUofMTypeModel = "toTaste"
+	Topoff     CocktailSearchUofMTypeModel = "topoff"
 )
 
 // Defines values for IngredientCoverageFilter.
@@ -118,7 +87,7 @@ type CocktailEmbeddingModel struct {
 	DescriptiveTitle string `json:"descriptiveTitle"`
 
 	// Glassware List of glassware types used for the cocktail
-	Glassware []CocktailSearchGlasswareTypeModel `json:"glassware"`
+	Glassware []string `json:"glassware"`
 
 	// Id Unique identifier for the cocktail
 	Id string `json:"id"`
@@ -155,6 +124,9 @@ type CocktailEmbeddingRq struct {
 
 	// ContentChunks List of text chunks to be embedded
 	ContentChunks []CocktailDescriptionChunk `json:"contentChunks"`
+
+	// Locale The language the cocktail's text is written in (for example 'de'). The vectors are stored and searched per language. When omitted, the Accept-Language of the request is used, then the default language.
+	Locale *string `json:"locale"`
 }
 
 // CocktailIngredientMatchSearchModel Cocktail search model enriched with ingredient match metadata.
@@ -163,7 +135,7 @@ type CocktailIngredientMatchSearchModel struct {
 	DescriptiveTitle string `json:"descriptiveTitle"`
 
 	// Glassware List of glassware types used for the cocktail
-	Glassware []CocktailSearchGlasswareTypeModel `json:"glassware"`
+	Glassware []string `json:"glassware"`
 
 	// Id Unique identifier for the cocktail
 	Id string `json:"id"`
@@ -198,9 +170,6 @@ type CocktailIngredientMatchSearchModel struct {
 	// UnmatchedIngredientCount The number of cocktail ingredients that were not present in the supplied ingredient list
 	UnmatchedIngredientCount int `json:"unmatchedIngredientCount"`
 }
-
-// CocktailSearchGlasswareTypeModel The types of glassware used for serving cocktails.
-type CocktailSearchGlasswareTypeModel string
 
 // CocktailSearchImageModel Model representing an image used in a cocktail, including its name, unit of measure, requirement type, preparation, and suggestions.
 type CocktailSearchImageModel struct {
@@ -298,7 +267,7 @@ type CocktailSearchModel struct {
 	DescriptiveTitle string `json:"descriptiveTitle"`
 
 	// Glassware List of glassware types used for the cocktail
-	Glassware []CocktailSearchGlasswareTypeModel `json:"glassware"`
+	Glassware []string `json:"glassware"`
 
 	// Id Unique identifier for the cocktail
 	Id string `json:"id"`
@@ -385,6 +354,17 @@ type CocktailsSearchRs struct {
 // IngredientCoverageFilter defines model for IngredientCoverageFilter.
 type IngredientCoverageFilter string
 
+// PingRs defines model for PingRs.
+type PingRs struct {
+	Is64bitOs      bool   `json:"is_64bit_os"`
+	Is64bitProcess bool   `json:"is_64bit_process"`
+	MachineName    string `json:"machine_name"`
+	OsVersion      string `json:"os_version"`
+	ProcessorCount int    `json:"processor_count"`
+	Version        string `json:"version"`
+	WorkingSet     int    `json:"working_set"`
+}
+
 // ProblemDetails RFC 7807 compliant problem details model.
 //
 // This model provides a standard way to carry machine-readable details
@@ -412,10 +392,18 @@ type ProblemDetails struct {
 	Type *string `json:"type,omitempty"`
 }
 
+// VersionRs Version response model.
+type VersionRs struct {
+	Version string `json:"version"`
+}
+
 // PutV1CocktailsEmbeddingsParams defines parameters for PutV1CocktailsEmbeddings.
 type PutV1CocktailsEmbeddingsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response and search language, for example de-DE,de;q=0.9. An absent, malformed, or unsupported value uses the configured default language. For embeddings, a request body locale overrides the header for the stored language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1CocktailsIngredientMatchSearchParams defines parameters for GetV1CocktailsIngredientMatchSearch.
@@ -440,6 +428,9 @@ type GetV1CocktailsIngredientMatchSearchParams struct {
 
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response and search language, for example de-DE,de;q=0.9. An absent, malformed, or unsupported value uses the configured default language. For embeddings, a request body locale overrides the header for the stored language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1CocktailsRelatedParams defines parameters for GetV1CocktailsRelated.
@@ -449,6 +440,9 @@ type GetV1CocktailsRelatedParams struct {
 
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response and search language, for example de-DE,de;q=0.9. An absent, malformed, or unsupported value uses the configured default language. For embeddings, a request body locale overrides the header for the stored language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1CocktailsSearchParams defines parameters for GetV1CocktailsSearch.
@@ -473,6 +467,9 @@ type GetV1CocktailsSearchParams struct {
 
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response and search language, for example de-DE,de;q=0.9. An absent, malformed, or unsupported value uses the configured default language. For embeddings, a request body locale overrides the header for the stored language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1CocktailsTypeaheadParams defines parameters for GetV1CocktailsTypeahead.
@@ -491,6 +488,9 @@ type GetV1CocktailsTypeaheadParams struct {
 
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response and search language, for example de-DE,de;q=0.9. An absent, malformed, or unsupported value uses the configured default language. For embeddings, a request body locale overrides the header for the stored language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1CocktailsEmbeddingsJSONRequestBody defines body for PutV1CocktailsEmbeddings for application/json ContentType.
@@ -569,6 +569,12 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// PingApiV1HealthPingGet request
+	PingApiV1HealthPingGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetVersionApiV1HealthVersionGet request
+	GetVersionApiV1HealthVersionGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PutV1CocktailsEmbeddingsWithBody request with any body
 	PutV1CocktailsEmbeddingsWithBody(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -585,6 +591,30 @@ type ClientInterface interface {
 
 	// GetV1CocktailsTypeahead request
 	GetV1CocktailsTypeahead(ctx context.Context, params *GetV1CocktailsTypeaheadParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) PingApiV1HealthPingGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPingApiV1HealthPingGetRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetVersionApiV1HealthVersionGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetVersionApiV1HealthVersionGetRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) PutV1CocktailsEmbeddingsWithBody(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -659,6 +689,60 @@ func (c *Client) GetV1CocktailsTypeahead(ctx context.Context, params *GetV1Cockt
 	return c.Client.Do(req)
 }
 
+// NewPingApiV1HealthPingGetRequest generates requests for PingApiV1HealthPingGet
+func NewPingApiV1HealthPingGetRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/health/ping")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetVersionApiV1HealthVersionGetRequest generates requests for GetVersionApiV1HealthVersionGet
+func NewGetVersionApiV1HealthVersionGetRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/health/version")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPutV1CocktailsEmbeddingsRequest calls the generic PutV1CocktailsEmbeddings builder with application/json body
 func NewPutV1CocktailsEmbeddingsRequest(server string, params *PutV1CocktailsEmbeddingsParams, body PutV1CocktailsEmbeddingsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -706,6 +790,17 @@ func NewPutV1CocktailsEmbeddingsRequestWithBody(server string, params *PutV1Cock
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -849,6 +944,17 @@ func NewGetV1CocktailsIngredientMatchSearchRequest(server string, params *GetV1C
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -917,6 +1023,17 @@ func NewGetV1CocktailsRelatedRequest(server string, cocktailId string, params *G
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -1060,6 +1177,17 @@ func NewGetV1CocktailsSearchRequest(server string, params *GetV1CocktailsSearchP
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -1170,6 +1298,17 @@ func NewGetV1CocktailsTypeaheadRequest(server string, params *GetV1CocktailsType
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -1218,6 +1357,12 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// PingApiV1HealthPingGetWithResponse request
+	PingApiV1HealthPingGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PingApiV1HealthPingGetResponse, error)
+
+	// GetVersionApiV1HealthVersionGetWithResponse request
+	GetVersionApiV1HealthVersionGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetVersionApiV1HealthVersionGetResponse, error)
+
 	// PutV1CocktailsEmbeddingsWithBodyWithResponse request with any body
 	PutV1CocktailsEmbeddingsWithBodyWithResponse(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1CocktailsEmbeddingsResponse, error)
 
@@ -1234,6 +1379,54 @@ type ClientWithResponsesInterface interface {
 
 	// GetV1CocktailsTypeaheadWithResponse request
 	GetV1CocktailsTypeaheadWithResponse(ctx context.Context, params *GetV1CocktailsTypeaheadParams, reqEditors ...RequestEditorFn) (*GetV1CocktailsTypeaheadResponse, error)
+}
+
+type PingApiV1HealthPingGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *PingRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PingApiV1HealthPingGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PingApiV1HealthPingGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetVersionApiV1HealthVersionGetResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *VersionRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVersionApiV1HealthVersionGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVersionApiV1HealthVersionGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type PutV1CocktailsEmbeddingsResponse struct {
@@ -1355,6 +1548,24 @@ func (r GetV1CocktailsTypeaheadResponse) StatusCode() int {
 	return 0
 }
 
+// PingApiV1HealthPingGetWithResponse request returning *PingApiV1HealthPingGetResponse
+func (c *ClientWithResponses) PingApiV1HealthPingGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PingApiV1HealthPingGetResponse, error) {
+	rsp, err := c.PingApiV1HealthPingGet(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePingApiV1HealthPingGetResponse(rsp)
+}
+
+// GetVersionApiV1HealthVersionGetWithResponse request returning *GetVersionApiV1HealthVersionGetResponse
+func (c *ClientWithResponses) GetVersionApiV1HealthVersionGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetVersionApiV1HealthVersionGetResponse, error) {
+	rsp, err := c.GetVersionApiV1HealthVersionGet(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVersionApiV1HealthVersionGetResponse(rsp)
+}
+
 // PutV1CocktailsEmbeddingsWithBodyWithResponse request with arbitrary body returning *PutV1CocktailsEmbeddingsResponse
 func (c *ClientWithResponses) PutV1CocktailsEmbeddingsWithBodyWithResponse(ctx context.Context, params *PutV1CocktailsEmbeddingsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1CocktailsEmbeddingsResponse, error) {
 	rsp, err := c.PutV1CocktailsEmbeddingsWithBody(ctx, params, contentType, body, reqEditors...)
@@ -1406,6 +1617,86 @@ func (c *ClientWithResponses) GetV1CocktailsTypeaheadWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseGetV1CocktailsTypeaheadResponse(rsp)
+}
+
+// ParsePingApiV1HealthPingGetResponse parses an HTTP response from a PingApiV1HealthPingGetWithResponse call
+func ParsePingApiV1HealthPingGetResponse(rsp *http.Response) (*PingApiV1HealthPingGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PingApiV1HealthPingGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PingRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetVersionApiV1HealthVersionGetResponse parses an HTTP response from a GetVersionApiV1HealthVersionGetWithResponse call
+func ParseGetVersionApiV1HealthVersionGetResponse(rsp *http.Response) (*GetVersionApiV1HealthVersionGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetVersionApiV1HealthVersionGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VersionRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParsePutV1CocktailsEmbeddingsResponse parses an HTTP response from a PutV1CocktailsEmbeddingsWithResponse call

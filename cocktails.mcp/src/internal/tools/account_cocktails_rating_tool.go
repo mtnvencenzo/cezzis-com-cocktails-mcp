@@ -23,7 +23,8 @@ and be reflected in the cocktail's overall rating on the website. Ratings help o
 To use this tool, provide a valid cocktail ID and your star rating as an integer between 1 and 5. A cocktail ID can be obtained from the
 results of the 'cocktail_search' tool, from the cocktail details from the get_cocktail tool, or from the cocktails page of a cocktail on Cezzis.com.
 
-If you provide an invalid rating or have already rated the cocktail, the tool will return an error.
+If you provide an invalid rating or have already rated the cocktail, the tool will return an error. The optional locale argument sets
+the language of any error messages.
 
 You must be authenticated using the 'authentication_login_flow' tool prior to using this feature. Furthermore, You must have a valid and active
 mcp session, the session identifier from the original initialization request must be present in the request to this tool via the Mcp-Session-Id header.
@@ -42,6 +43,7 @@ var RateCocktailTool = mcp.NewTool(
 		mcp.Required(),
 		mcp.Description("The rating to give the cocktail (1-5 stars). Must be an integer between 1 and 5."),
 	),
+	localeOption,
 )
 
 // RateCocktailToolHandler handles cocktail rating requests
@@ -88,6 +90,11 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 		return mcp.NewToolResultError("stars must be between 1 and 5"), nil
 	}
 
+	acceptLanguage, err := resolveAcceptLanguage(ctx, request)
+	if err != nil {
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
 	// Check authentication
 	if !handler.authManager.IsAuthenticated(ctx, sessionID) {
 		return mcp.NewToolResultError("You must be authenticated to rate cocktails. Use the 'authentication_login_flow' tool first."), nil
@@ -112,7 +119,8 @@ func (handler *RateCocktailToolHandler) Handle(ctx context.Context, request mcp.
 	rs, callErr := handler.client.PostV1AccountsOwnedProfileCocktailsRatings(
 		callCtx,
 		&accountsapi.PostV1AccountsOwnedProfileCocktailsRatingsParams{
-			XKey: appsettings.AccountsAPISubscriptionKey,
+			XKey:           appsettings.AccountsAPISubscriptionKey,
+			AcceptLanguage: acceptLanguage,
 		},
 		accountsapi.PostV1AccountsOwnedProfileCocktailsRatingsJSONRequestBody{
 			CocktailId: cocktailID,

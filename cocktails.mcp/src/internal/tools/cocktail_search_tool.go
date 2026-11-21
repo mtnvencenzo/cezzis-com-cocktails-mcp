@@ -39,7 +39,11 @@ var searchToolDescription = fmt.Sprintf(`Searches cocktail recipe data from the 
 	get_cocktail tool.
 
 	It is required to reference Cezzis.com as a clickable link when displaying cocktail information from this tool.
-	The url for each cocktail is formatted as %[1]s/cocktails/<cocktailId>.
+	The url for each cocktail is formatted as %[1]s/cocktails/<cocktailId>. For a language other than English the url includes
+	the language prefix, formatted as %[1]s/<locale>/cocktails/<cocktailId> (for example %[1]s/de/cocktails/<cocktailId>).
+
+	The search terms are matched against, and the results are returned in, the language given by the optional locale argument.
+	Use the language the search terms are written in, and the default language (English) when it is not supplied.
 
 	This tool does not require authentication and can be used without an account.
 
@@ -54,6 +58,7 @@ var searchToolDescription = fmt.Sprintf(`Searches cocktail recipe data from the 
 //
 // The tool supports the following parameters:
 //   - freeText: The free text search query to use when search the cocktails. This is a required parameter.
+//   - locale: The language to search and return results in. This is an optional parameter.
 //
 // The tool returns the raw API response as a string result.
 var CocktailSearchTool = mcp.NewTool(
@@ -63,6 +68,7 @@ var CocktailSearchTool = mcp.NewTool(
 		mcp.Required(),
 		mcp.Description("The free text search query to use when searching the cocktails."),
 	),
+	localeOption,
 )
 
 // CocktailSearchToolHandler implements the MCP tool handler for searching cocktails.
@@ -98,6 +104,11 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 		return mcp.NewToolResultError(err.Error()), err
 	}
 
+	acceptLanguage, err := resolveAcceptLanguage(ctx, request)
+	if err != nil {
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
 	telemetry.Logger.Info().Ctx(ctx).Msg("MCP Searching cocktails: " + ft)
 
 	// default to a safe deadline if none present
@@ -109,7 +120,8 @@ func (handler CocktailSearchToolHandler) Handle(ctx context.Context, request mcp
 	}
 
 	rs, callErr := handler.client.GetV1CocktailsSearch(callCtx, &aisearch.GetV1CocktailsSearchParams{
-		Freetext: &freeText,
+		Freetext:       &freeText,
+		AcceptLanguage: acceptLanguage,
 	}, aisearch.RequestEditor())
 
 	if callErr != nil {

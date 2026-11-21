@@ -107,3 +107,28 @@ func Test_cocktailsearch_toolhandler_returns_valid_response_for_freetext_search(
 
 	require.Equal(t, jsonString, content.Text)
 }
+
+func Test_cocktailsearch_toolhandler_forwards_locale_as_accept_language(t *testing.T) {
+	// Arrange
+	testutils.LoadEnvironment("..", "..")
+	_, searchClient, mux, ctx, _ := testutils.Setup(t)
+
+	received := "unset"
+	mux.HandleFunc("/api/v1/search/semantic", func(w http.ResponseWriter, r *http.Request) {
+		received = r.Header.Get("Accept-Language")
+		fmt.Fprint(w, "{}")
+	})
+
+	// Act
+	result, err := tools.NewCocktailSearchToolHandler(searchClient).Handle(ctx, mcp.CallToolRequest{
+		Params: mcp.CallToolParams{
+			Name:      "search_cocktails",
+			Arguments: map[string]interface{}{"freeText": "Ginsünde", "locale": "de"},
+		},
+	})
+
+	// Assert
+	require.NoError(t, err)
+	require.False(t, result.IsError)
+	require.Equal(t, "de", received)
+}

@@ -75,28 +75,28 @@ const (
 	Venue      SubscriptionTierTypeModel = "venue"
 )
 
-// AccountAddressModel An owned account profile address.
+// AccountAddressModel An owned account profile address. All fields are optional and free-form (no prescribed values for region/country).
 type AccountAddressModel struct {
 	// AddressLine1 The primary street address.
-	AddressLine1 string `json:"addressLine1"`
+	AddressLine1 *string `json:"addressLine1"`
 
 	// AddressLine2 The secondary street address building sub divider
-	AddressLine2 string `json:"addressLine2"`
+	AddressLine2 *string `json:"addressLine2"`
 
 	// City The city the address is within
-	City string `json:"city"`
+	City *string `json:"city"`
 
 	// Country The country
-	Country string `json:"country"`
+	Country *string `json:"country"`
 
 	// PostalCode The postal or zip code
-	PostalCode string `json:"postalCode"`
+	PostalCode *string `json:"postalCode"`
 
 	// Region The state or province
-	Region string `json:"region"`
+	Region *string `json:"region"`
 
 	// SubRegion The state or province divider such as county
-	SubRegion string `json:"subRegion"`
+	SubRegion *string `json:"subRegion"`
 }
 
 // AccountCocktailRatingModel The cocktail user ratings.
@@ -185,9 +185,6 @@ type AccountEntitlementsModel struct {
 
 	// BarExport Whether CSV bar export/import is enabled
 	BarExport bool `json:"barExport"`
-
-	// BatchScaling Whether batch recipe scaling is enabled
-	BatchScaling bool `json:"batchScaling"`
 
 	// CustomizeBarInfo Whether bar name/description customization is enabled
 	CustomizeBarInfo *bool `json:"customizeBarInfo,omitempty"`
@@ -287,10 +284,16 @@ type AccountOwnedProfileRs struct {
 
 	// Username The username for the account
 	Username *string `json:"username"`
+
+	// Verified Indicates whether the account's email has been verified
+	Verified *bool `json:"verified,omitempty"`
 }
 
 // AccountPreferencesModel The owned account profile preferences.
 type AccountPreferencesModel struct {
+	// Locale The language pinned for the account; null when the account follows the browser language
+	Locale *string `json:"locale"`
+
 	// MeasurementSystem The measurement system options for profile preferences.
 	MeasurementSystem MeasurementSystemModel `json:"measurementSystem"`
 
@@ -323,6 +326,12 @@ type AccountSubscriptionModel struct {
 
 	// Tier The supported account subscription tiers.
 	Tier *SubscriptionTierTypeModel `json:"tier,omitempty"`
+}
+
+// AddCocktailListItemRq The request to add a cocktail to a cocktail list.
+type AddCocktailListItemRq struct {
+	// CocktailId The ID of the cocktail to add
+	CocktailId string `json:"cocktailId"`
 }
 
 // BarIngredientLimitStatusModel Per-bar ingredient entitlement status returned after an upsert.
@@ -455,6 +464,12 @@ type CocktailFavoriteActionModel struct {
 // CocktailFavoritingActionModel An action that can be taken on a cocktail in an owned account's favorites list.
 type CocktailFavoritingActionModel string
 
+// CocktailListMembershipRs The IDs of the user's cocktail lists that contain a given cocktail.
+type CocktailListMembershipRs struct {
+	// ListIds IDs of the lists containing the cocktail
+	ListIds *[]string `json:"listIds,omitempty"`
+}
+
 // CocktailListModel Full cocktail list detail model.
 type CocktailListModel struct {
 	// CocktailIds Ordered list of cocktail IDs
@@ -471,9 +486,6 @@ type CocktailListModel struct {
 
 	// Order Display order among user's lists
 	Order int `json:"order"`
-
-	// SearchTerm The original search term if created from search
-	SearchTerm *string `json:"searchTerm"`
 
 	// UpdatedOn When the list was last updated
 	UpdatedOn time.Time `json:"updatedOn"`
@@ -504,9 +516,6 @@ type CocktailListSummaryModel struct {
 
 	// Order Display order among user's lists
 	Order int `json:"order"`
-
-	// SearchTerm The original search term if created from search
-	SearchTerm *string `json:"searchTerm"`
 
 	// UsageCount Number of times this list has been used
 	UsageCount int `json:"usageCount"`
@@ -593,9 +602,6 @@ type CreateCocktailListRq struct {
 
 	// Name The list name
 	Name string `json:"name"`
-
-	// SearchTerm The search term if creating from a search
-	SearchTerm *string `json:"searchTerm"`
 }
 
 // LegalAgreementDocumentStatusModel Acceptance status for a single required legal document.
@@ -639,6 +645,9 @@ type LegalDocumentRs struct {
 	// EffectiveDate The date the published version became effective
 	EffectiveDate openapi_types.Date `json:"effectiveDate"`
 
+	// Locale The language the document text is written in; the default language when the requested language has no translation
+	Locale string `json:"locale"`
+
 	// Version The published version of the document
 	Version string `json:"version"`
 }
@@ -665,6 +674,9 @@ type LegalDocumentVersionModel struct {
 
 	// EffectiveDate The date the published version became effective
 	EffectiveDate openapi_types.Date `json:"effectiveDate"`
+
+	// Locale The language the document text is written in; the default language when the requested language has no translation
+	Locale string `json:"locale"`
 
 	// Version The published version of the document
 	Version string `json:"version"`
@@ -795,9 +807,6 @@ type ShareCocktailRq struct {
 	// CocktailId The cocktail identifier to share
 	CocktailId string `json:"cocktailId"`
 
-	// PersonalMessage An optional personal message to include in the email
-	PersonalMessage *string `json:"personalMessage"`
-
 	// RecipientEmail The recipient's email address
 	RecipientEmail openapi_types.Email `json:"recipientEmail"`
 }
@@ -861,6 +870,9 @@ type UpdateAccountOwnedNotificationSettingsRq struct {
 
 // UpdateAccountOwnedPreferencesRq The account owned profile preferences update request.
 type UpdateAccountOwnedPreferencesRq struct {
+	// Locale The language pinned for the account (a supported locale such as en or de). Omit to keep the current value; null follows the browser language.
+	Locale *string `json:"locale"`
+
 	// MeasurementSystem The measurement system options for profile preferences.
 	MeasurementSystem MeasurementSystemModel `json:"measurementSystem"`
 
@@ -871,7 +883,7 @@ type UpdateAccountOwnedPreferencesRq struct {
 // UpdateAccountOwnedProfileRq The account owned profile upload request information.
 type UpdateAccountOwnedProfileRq struct {
 	// DisplayName The display for the account visible to other users
-	DisplayName string `json:"displayName"`
+	DisplayName *string `json:"displayName"`
 
 	// FamilyName The family name on the account
 	FamilyName string `json:"familyName"`
@@ -899,9 +911,6 @@ type UpdateCocktailListRq struct {
 
 	// Name The new list name
 	Name *string `json:"name"`
-
-	// SearchTerm Updated search term
-	SearchTerm *string `json:"searchTerm"`
 }
 
 // UpdateSearchHistoryRq The request to replace the account's search history.
@@ -948,234 +957,390 @@ type UpsertCocktailReactionRq struct {
 type GetV1AccountsOwnedProfileParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileParams defines parameters for PostV1AccountsOwnedProfile.
 type PostV1AccountsOwnedProfileParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileParams defines parameters for PutV1AccountsOwnedProfile.
 type PutV1AccountsOwnedProfileParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileBarsParams defines parameters for GetV1AccountsOwnedProfileBars.
 type GetV1AccountsOwnedProfileBarsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileBarsParams defines parameters for PostV1AccountsOwnedProfileBars.
 type PostV1AccountsOwnedProfileBarsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileBarsOrderParams defines parameters for PutV1AccountsOwnedProfileBarsOrder.
 type PutV1AccountsOwnedProfileBarsOrderParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileBarIngredientsParams defines parameters for PutV1AccountsOwnedProfileBarIngredients.
 type PutV1AccountsOwnedProfileBarIngredientsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // DeleteV1AccountsOwnedProfileBarIngredientByIdParams defines parameters for DeleteV1AccountsOwnedProfileBarIngredientById.
 type DeleteV1AccountsOwnedProfileBarIngredientByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // DeleteV1AccountsOwnedProfileBarByIdParams defines parameters for DeleteV1AccountsOwnedProfileBarById.
 type DeleteV1AccountsOwnedProfileBarByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileBarByIdParams defines parameters for GetV1AccountsOwnedProfileBarById.
 type GetV1AccountsOwnedProfileBarByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileBarByIdParams defines parameters for PutV1AccountsOwnedProfileBarById.
 type PutV1AccountsOwnedProfileBarByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsCheckoutSessionsParams defines parameters for PostV1AccountsCheckoutSessions.
 type PostV1AccountsCheckoutSessionsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsSubscriptionTiersParams defines parameters for GetV1AccountsSubscriptionTiers.
 type GetV1AccountsSubscriptionTiersParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileCocktailsFavoritesParams defines parameters for PutV1AccountsOwnedProfileCocktailsFavorites.
 type PutV1AccountsOwnedProfileCocktailsFavoritesParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileCocktailsListsParams defines parameters for GetV1AccountsOwnedProfileCocktailsLists.
 type GetV1AccountsOwnedProfileCocktailsListsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileCocktailsListsParams defines parameters for PostV1AccountsOwnedProfileCocktailsLists.
 type PostV1AccountsOwnedProfileCocktailsListsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
+}
+
+// GetV1AccountsOwnedProfileCocktailsListsMembershipParams defines parameters for GetV1AccountsOwnedProfileCocktailsListsMembership.
+type GetV1AccountsOwnedProfileCocktailsListsMembershipParams struct {
+	// CocktailId The cocktail ID
+	CocktailId string `form:"cocktailId" json:"cocktailId"`
+
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileCocktailsListsOrderParams defines parameters for PutV1AccountsOwnedProfileCocktailsListsOrder.
 type PutV1AccountsOwnedProfileCocktailsListsOrderParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // DeleteV1AccountsOwnedProfileCocktailsListByIdParams defines parameters for DeleteV1AccountsOwnedProfileCocktailsListById.
 type DeleteV1AccountsOwnedProfileCocktailsListByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileCocktailsListByIdParams defines parameters for GetV1AccountsOwnedProfileCocktailsListById.
 type GetV1AccountsOwnedProfileCocktailsListByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileCocktailsListByIdParams defines parameters for PutV1AccountsOwnedProfileCocktailsListById.
 type PutV1AccountsOwnedProfileCocktailsListByIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
+}
+
+// PostV1AccountsOwnedProfileCocktailsListItemsParams defines parameters for PostV1AccountsOwnedProfileCocktailsListItems.
+type PostV1AccountsOwnedProfileCocktailsListItemsParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileCocktailsListItemsOrderParams defines parameters for PutV1AccountsOwnedProfileCocktailsListItemsOrder.
 type PutV1AccountsOwnedProfileCocktailsListItemsOrderParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
+}
+
+// DeleteV1AccountsOwnedProfileCocktailsListItemParams defines parameters for DeleteV1AccountsOwnedProfileCocktailsListItem.
+type DeleteV1AccountsOwnedProfileCocktailsListItemParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileCocktailsListUsageParams defines parameters for PostV1AccountsOwnedProfileCocktailsListUsage.
 type PostV1AccountsOwnedProfileCocktailsListUsageParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileCocktailsRatingsParams defines parameters for GetV1AccountsOwnedProfileCocktailsRatings.
 type GetV1AccountsOwnedProfileCocktailsRatingsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileCocktailsRatingsParams defines parameters for PostV1AccountsOwnedProfileCocktailsRatings.
 type PostV1AccountsOwnedProfileCocktailsRatingsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileCocktailsReactionsParams defines parameters for GetV1AccountsOwnedProfileCocktailsReactions.
 type GetV1AccountsOwnedProfileCocktailsReactionsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileCocktailsReactionsParams defines parameters for PutV1AccountsOwnedProfileCocktailsReactions.
 type PutV1AccountsOwnedProfileCocktailsReactionsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileCocktailsSharesParams defines parameters for PostV1AccountsOwnedProfileCocktailsShares.
 type PostV1AccountsOwnedProfileCocktailsSharesParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileEmailParams defines parameters for PutV1AccountsOwnedProfileEmail.
 type PutV1AccountsOwnedProfileEmailParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileIdParams defines parameters for GetV1AccountsOwnedProfileId.
 type GetV1AccountsOwnedProfileIdParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileImageParams defines parameters for PostV1AccountsOwnedProfileImage.
 type PostV1AccountsOwnedProfileImageParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PostV1AccountsOwnedProfileLegalAgreementsParams defines parameters for PostV1AccountsOwnedProfileLegalAgreements.
 type PostV1AccountsOwnedProfileLegalAgreementsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileNotificationsParams defines parameters for PutV1AccountsOwnedProfileNotifications.
 type PutV1AccountsOwnedProfileNotificationsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfilePasswordParams defines parameters for PutV1AccountsOwnedProfilePassword.
 type PutV1AccountsOwnedProfilePasswordParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfilePreferencesParams defines parameters for PutV1AccountsOwnedProfilePreferences.
 type PutV1AccountsOwnedProfilePreferencesParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1AccountsOwnedProfileSearchHistoryParams defines parameters for GetV1AccountsOwnedProfileSearchHistory.
 type GetV1AccountsOwnedProfileSearchHistoryParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileSearchHistoryParams defines parameters for PutV1AccountsOwnedProfileSearchHistory.
 type PutV1AccountsOwnedProfileSearchHistoryParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileUsernameParams defines parameters for PutV1AccountsOwnedProfileUsername.
 type PutV1AccountsOwnedProfileUsernameParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
+}
+
+// PostV1AccountsOwnedProfileVerificationEmailParams defines parameters for PostV1AccountsOwnedProfileVerificationEmail.
+type PostV1AccountsOwnedProfileVerificationEmailParams struct {
+	// XKey The API gateway subscription key
+	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1LegalDocumentVersionsParams defines parameters for GetV1LegalDocumentVersions.
 type GetV1LegalDocumentVersionsParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // GetV1LegalDocumentParams defines parameters for GetV1LegalDocument.
 type GetV1LegalDocumentParams struct {
 	// XKey The API gateway subscription key
 	XKey string `json:"X-Key"`
+
+	// AcceptLanguage Preferred response languages, using standard Accept-Language syntax. The best supported language is used for messages and validation errors; when none is supported the API's default language is used. The language used is returned in Content-Language.
+	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // PutV1AccountsOwnedProfileJSONRequestBody defines body for PutV1AccountsOwnedProfile for application/json ContentType.
@@ -1207,6 +1372,9 @@ type PutV1AccountsOwnedProfileCocktailsListsOrderJSONRequestBody = ReorderCockta
 
 // PutV1AccountsOwnedProfileCocktailsListByIdJSONRequestBody defines body for PutV1AccountsOwnedProfileCocktailsListById for application/json ContentType.
 type PutV1AccountsOwnedProfileCocktailsListByIdJSONRequestBody = UpdateCocktailListRq
+
+// PostV1AccountsOwnedProfileCocktailsListItemsJSONRequestBody defines body for PostV1AccountsOwnedProfileCocktailsListItems for application/json ContentType.
+type PostV1AccountsOwnedProfileCocktailsListItemsJSONRequestBody = AddCocktailListItemRq
 
 // PutV1AccountsOwnedProfileCocktailsListItemsOrderJSONRequestBody defines body for PutV1AccountsOwnedProfileCocktailsListItemsOrder for application/json ContentType.
 type PutV1AccountsOwnedProfileCocktailsListItemsOrderJSONRequestBody = ReorderCocktailListItemsRq
@@ -1381,6 +1549,9 @@ type ClientInterface interface {
 
 	PostV1AccountsOwnedProfileCocktailsLists(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsListsParams, body PostV1AccountsOwnedProfileCocktailsListsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetV1AccountsOwnedProfileCocktailsListsMembership request
+	GetV1AccountsOwnedProfileCocktailsListsMembership(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsListsMembershipParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PutV1AccountsOwnedProfileCocktailsListsOrderWithBody request with any body
 	PutV1AccountsOwnedProfileCocktailsListsOrderWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsListsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1397,10 +1568,18 @@ type ClientInterface interface {
 
 	PutV1AccountsOwnedProfileCocktailsListById(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListByIdParams, body PutV1AccountsOwnedProfileCocktailsListByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostV1AccountsOwnedProfileCocktailsListItemsWithBody request with any body
+	PostV1AccountsOwnedProfileCocktailsListItemsWithBody(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostV1AccountsOwnedProfileCocktailsListItems(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, body PostV1AccountsOwnedProfileCocktailsListItemsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBody request with any body
 	PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBody(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListItemsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutV1AccountsOwnedProfileCocktailsListItemsOrder(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListItemsOrderParams, body PutV1AccountsOwnedProfileCocktailsListItemsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteV1AccountsOwnedProfileCocktailsListItem request
+	DeleteV1AccountsOwnedProfileCocktailsListItem(ctx context.Context, id string, cocktailId string, params *DeleteV1AccountsOwnedProfileCocktailsListItemParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostV1AccountsOwnedProfileCocktailsListUsage request
 	PostV1AccountsOwnedProfileCocktailsListUsage(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListUsageParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1469,6 +1648,9 @@ type ClientInterface interface {
 	PutV1AccountsOwnedProfileUsernameWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutV1AccountsOwnedProfileUsername(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AccountsOwnedProfileVerificationEmail request
+	PostV1AccountsOwnedProfileVerificationEmail(ctx context.Context, params *PostV1AccountsOwnedProfileVerificationEmailParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetV1LegalDocumentVersions request
 	GetV1LegalDocumentVersions(ctx context.Context, params *GetV1LegalDocumentVersionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1765,6 +1947,18 @@ func (c *Client) PostV1AccountsOwnedProfileCocktailsLists(ctx context.Context, p
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetV1AccountsOwnedProfileCocktailsListsMembership(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsListsMembershipParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountsOwnedProfileCocktailsListsMembershipRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PutV1AccountsOwnedProfileCocktailsListsOrderWithBody(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsListsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutV1AccountsOwnedProfileCocktailsListsOrderRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -1837,6 +2031,30 @@ func (c *Client) PutV1AccountsOwnedProfileCocktailsListById(ctx context.Context,
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostV1AccountsOwnedProfileCocktailsListItemsWithBody(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileCocktailsListItemsRequestWithBody(c.Server, id, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1AccountsOwnedProfileCocktailsListItems(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, body PostV1AccountsOwnedProfileCocktailsListItemsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileCocktailsListItemsRequest(c.Server, id, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBody(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListItemsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutV1AccountsOwnedProfileCocktailsListItemsOrderRequestWithBody(c.Server, id, params, contentType, body)
 	if err != nil {
@@ -1851,6 +2069,18 @@ func (c *Client) PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBody(ctx co
 
 func (c *Client) PutV1AccountsOwnedProfileCocktailsListItemsOrder(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListItemsOrderParams, body PutV1AccountsOwnedProfileCocktailsListItemsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutV1AccountsOwnedProfileCocktailsListItemsOrderRequest(c.Server, id, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteV1AccountsOwnedProfileCocktailsListItem(ctx context.Context, id string, cocktailId string, params *DeleteV1AccountsOwnedProfileCocktailsListItemParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AccountsOwnedProfileCocktailsListItemRequest(c.Server, id, cocktailId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2173,6 +2403,18 @@ func (c *Client) PutV1AccountsOwnedProfileUsername(ctx context.Context, params *
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostV1AccountsOwnedProfileVerificationEmail(ctx context.Context, params *PostV1AccountsOwnedProfileVerificationEmailParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AccountsOwnedProfileVerificationEmailRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetV1LegalDocumentVersions(ctx context.Context, params *GetV1LegalDocumentVersionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV1LegalDocumentVersionsRequest(c.Server, params)
 	if err != nil {
@@ -2232,6 +2474,17 @@ func NewGetV1AccountsOwnedProfileRequest(server string, params *GetV1AccountsOwn
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2271,6 +2524,17 @@ func NewPostV1AccountsOwnedProfileRequest(server string, params *PostV1AccountsO
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -2325,6 +2589,17 @@ func NewPutV1AccountsOwnedProfileRequestWithBody(server string, params *PutV1Acc
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2364,6 +2639,17 @@ func NewGetV1AccountsOwnedProfileBarsRequest(server string, params *GetV1Account
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -2418,6 +2704,17 @@ func NewPostV1AccountsOwnedProfileBarsRequestWithBody(server string, params *Pos
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2470,6 +2767,17 @@ func NewPutV1AccountsOwnedProfileBarsOrderRequestWithBody(server string, params 
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -2531,6 +2839,17 @@ func NewPutV1AccountsOwnedProfileBarIngredientsRequestWithBody(server string, ba
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2585,6 +2904,17 @@ func NewDeleteV1AccountsOwnedProfileBarIngredientByIdRequest(server string, barI
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2632,6 +2962,17 @@ func NewDeleteV1AccountsOwnedProfileBarByIdRequest(server string, id string, par
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2678,6 +3019,17 @@ func NewGetV1AccountsOwnedProfileBarByIdRequest(server string, id string, params
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -2739,6 +3091,17 @@ func NewPutV1AccountsOwnedProfileBarByIdRequestWithBody(server string, id string
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2792,6 +3155,17 @@ func NewPostV1AccountsCheckoutSessionsRequestWithBody(server string, params *Pos
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2831,6 +3205,17 @@ func NewGetV1AccountsSubscriptionTiersRequest(server string, params *GetV1Accoun
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -2885,6 +3270,17 @@ func NewPutV1AccountsOwnedProfileCocktailsFavoritesRequestWithBody(server string
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -2924,6 +3320,17 @@ func NewGetV1AccountsOwnedProfileCocktailsListsRequest(server string, params *Ge
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -2978,6 +3385,86 @@ func NewPostV1AccountsOwnedProfileCocktailsListsRequestWithBody(server string, p
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetV1AccountsOwnedProfileCocktailsListsMembershipRequest generates requests for GetV1AccountsOwnedProfileCocktailsListsMembership
+func NewGetV1AccountsOwnedProfileCocktailsListsMembershipRequest(server string, params *GetV1AccountsOwnedProfileCocktailsListsMembershipParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/lists/membership")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "cocktailId", runtime.ParamLocationQuery, params.CocktailId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3031,6 +3518,17 @@ func NewPutV1AccountsOwnedProfileCocktailsListsOrderRequestWithBody(server strin
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3078,6 +3576,17 @@ func NewDeleteV1AccountsOwnedProfileCocktailsListByIdRequest(server string, id s
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3124,6 +3633,17 @@ func NewGetV1AccountsOwnedProfileCocktailsListByIdRequest(server string, id stri
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3185,6 +3705,88 @@ func NewPutV1AccountsOwnedProfileCocktailsListByIdRequestWithBody(server string,
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostV1AccountsOwnedProfileCocktailsListItemsRequest calls the generic PostV1AccountsOwnedProfileCocktailsListItems builder with application/json body
+func NewPostV1AccountsOwnedProfileCocktailsListItemsRequest(server string, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, body PostV1AccountsOwnedProfileCocktailsListItemsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AccountsOwnedProfileCocktailsListItemsRequestWithBody(server, id, params, "application/json", bodyReader)
+}
+
+// NewPostV1AccountsOwnedProfileCocktailsListItemsRequestWithBody generates requests for PostV1AccountsOwnedProfileCocktailsListItems with any type of body
+func NewPostV1AccountsOwnedProfileCocktailsListItemsRequestWithBody(server string, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/lists/%s/items", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3245,6 +3847,82 @@ func NewPutV1AccountsOwnedProfileCocktailsListItemsOrderRequestWithBody(server s
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteV1AccountsOwnedProfileCocktailsListItemRequest generates requests for DeleteV1AccountsOwnedProfileCocktailsListItem
+func NewDeleteV1AccountsOwnedProfileCocktailsListItemRequest(server string, id string, cocktailId string, params *DeleteV1AccountsOwnedProfileCocktailsListItemParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "cocktail_id", runtime.ParamLocationPath, cocktailId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/cocktails/lists/%s/items/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3292,6 +3970,17 @@ func NewPostV1AccountsOwnedProfileCocktailsListUsageRequest(server string, id st
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3331,6 +4020,17 @@ func NewGetV1AccountsOwnedProfileCocktailsRatingsRequest(server string, params *
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3385,6 +4085,17 @@ func NewPostV1AccountsOwnedProfileCocktailsRatingsRequestWithBody(server string,
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3424,6 +4135,17 @@ func NewGetV1AccountsOwnedProfileCocktailsReactionsRequest(server string, params
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3478,6 +4200,17 @@ func NewPutV1AccountsOwnedProfileCocktailsReactionsRequestWithBody(server string
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3530,6 +4263,17 @@ func NewPostV1AccountsOwnedProfileCocktailsSharesRequestWithBody(server string, 
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3584,6 +4328,17 @@ func NewPutV1AccountsOwnedProfileEmailRequestWithBody(server string, params *Put
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3623,6 +4378,17 @@ func NewGetV1AccountsOwnedProfileIdRequest(server string, params *GetV1AccountsO
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3665,6 +4431,17 @@ func NewPostV1AccountsOwnedProfileImageRequestWithBody(server string, params *Po
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3719,6 +4496,17 @@ func NewPostV1AccountsOwnedProfileLegalAgreementsRequestWithBody(server string, 
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3771,6 +4559,17 @@ func NewPutV1AccountsOwnedProfileNotificationsRequestWithBody(server string, par
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3825,6 +4624,17 @@ func NewPutV1AccountsOwnedProfilePasswordRequestWithBody(server string, params *
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3878,6 +4688,17 @@ func NewPutV1AccountsOwnedProfilePreferencesRequestWithBody(server string, param
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -3917,6 +4738,17 @@ func NewGetV1AccountsOwnedProfileSearchHistoryRequest(server string, params *Get
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -3971,6 +4803,17 @@ func NewPutV1AccountsOwnedProfileSearchHistoryRequestWithBody(server string, par
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -4024,6 +4867,68 @@ func NewPutV1AccountsOwnedProfileUsernameRequestWithBody(server string, params *
 
 		req.Header.Set("X-Key", headerParam0)
 
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostV1AccountsOwnedProfileVerificationEmailRequest generates requests for PostV1AccountsOwnedProfileVerificationEmail
+func NewPostV1AccountsOwnedProfileVerificationEmailRequest(server string, params *PostV1AccountsOwnedProfileVerificationEmailParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/accounts/owned/profile/verification-email")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Key", runtime.ParamLocationHeader, params.XKey)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
+
 	}
 
 	return req, nil
@@ -4063,6 +4968,17 @@ func NewGetV1LegalDocumentVersionsRequest(server string, params *GetV1LegalDocum
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -4110,6 +5026,17 @@ func NewGetV1LegalDocumentRequest(server string, documentType LegalDocumentType,
 		}
 
 		req.Header.Set("X-Key", headerParam0)
+
+		if params.AcceptLanguage != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept-Language", runtime.ParamLocationHeader, *params.AcceptLanguage)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept-Language", headerParam1)
+		}
 
 	}
 
@@ -4223,6 +5150,9 @@ type ClientWithResponsesInterface interface {
 
 	PostV1AccountsOwnedProfileCocktailsListsWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileCocktailsListsParams, body PostV1AccountsOwnedProfileCocktailsListsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsListsResponse, error)
 
+	// GetV1AccountsOwnedProfileCocktailsListsMembershipWithResponse request
+	GetV1AccountsOwnedProfileCocktailsListsMembershipWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsListsMembershipParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileCocktailsListsMembershipResponse, error)
+
 	// PutV1AccountsOwnedProfileCocktailsListsOrderWithBodyWithResponse request with any body
 	PutV1AccountsOwnedProfileCocktailsListsOrderWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsListsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsListsOrderResponse, error)
 
@@ -4239,10 +5169,18 @@ type ClientWithResponsesInterface interface {
 
 	PutV1AccountsOwnedProfileCocktailsListByIdWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListByIdParams, body PutV1AccountsOwnedProfileCocktailsListByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsListByIdResponse, error)
 
+	// PostV1AccountsOwnedProfileCocktailsListItemsWithBodyWithResponse request with any body
+	PostV1AccountsOwnedProfileCocktailsListItemsWithBodyWithResponse(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsListItemsResponse, error)
+
+	PostV1AccountsOwnedProfileCocktailsListItemsWithResponse(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, body PostV1AccountsOwnedProfileCocktailsListItemsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsListItemsResponse, error)
+
 	// PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBodyWithResponse request with any body
 	PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBodyWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListItemsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse, error)
 
 	PutV1AccountsOwnedProfileCocktailsListItemsOrderWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListItemsOrderParams, body PutV1AccountsOwnedProfileCocktailsListItemsOrderJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse, error)
+
+	// DeleteV1AccountsOwnedProfileCocktailsListItemWithResponse request
+	DeleteV1AccountsOwnedProfileCocktailsListItemWithResponse(ctx context.Context, id string, cocktailId string, params *DeleteV1AccountsOwnedProfileCocktailsListItemParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileCocktailsListItemResponse, error)
 
 	// PostV1AccountsOwnedProfileCocktailsListUsageWithResponse request
 	PostV1AccountsOwnedProfileCocktailsListUsageWithResponse(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListUsageParams, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsListUsageResponse, error)
@@ -4311,6 +5249,9 @@ type ClientWithResponsesInterface interface {
 	PutV1AccountsOwnedProfileUsernameWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
 
 	PutV1AccountsOwnedProfileUsernameWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileUsernameParams, body PutV1AccountsOwnedProfileUsernameJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileUsernameResponse, error)
+
+	// PostV1AccountsOwnedProfileVerificationEmailWithResponse request
+	PostV1AccountsOwnedProfileVerificationEmailWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileVerificationEmailParams, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileVerificationEmailResponse, error)
 
 	// GetV1LegalDocumentVersionsWithResponse request
 	GetV1LegalDocumentVersionsWithResponse(ctx context.Context, params *GetV1LegalDocumentVersionsParams, reqEditors ...RequestEditorFn) (*GetV1LegalDocumentVersionsResponse, error)
@@ -4717,6 +5658,30 @@ func (r PostV1AccountsOwnedProfileCocktailsListsResponse) StatusCode() int {
 	return 0
 }
 
+type GetV1AccountsOwnedProfileCocktailsListsMembershipResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CocktailListMembershipRs
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountsOwnedProfileCocktailsListsMembershipResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountsOwnedProfileCocktailsListsMembershipResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PutV1AccountsOwnedProfileCocktailsListsOrderResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -4816,6 +5781,31 @@ func (r PutV1AccountsOwnedProfileCocktailsListByIdResponse) StatusCode() int {
 	return 0
 }
 
+type PostV1AccountsOwnedProfileCocktailsListItemsResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CocktailListRs
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AccountsOwnedProfileCocktailsListItemsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AccountsOwnedProfileCocktailsListItemsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -4835,6 +5825,31 @@ func (r PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse) Status() strin
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteV1AccountsOwnedProfileCocktailsListItemResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *CocktailListRs
+	JSON404                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AccountsOwnedProfileCocktailsListItemResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AccountsOwnedProfileCocktailsListItemResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5237,6 +6252,31 @@ func (r PutV1AccountsOwnedProfileUsernameResponse) StatusCode() int {
 	return 0
 }
 
+type PostV1AccountsOwnedProfileVerificationEmailResponse struct {
+	Body                          []byte
+	HTTPResponse                  *http.Response
+	JSON200                       *interface{}
+	JSON409                       *ProblemDetails
+	JSONDefault                   *ProblemDetails
+	ApplicationproblemJSONDefault *ProblemDetails
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AccountsOwnedProfileVerificationEmailResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AccountsOwnedProfileVerificationEmailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetV1LegalDocumentVersionsResponse struct {
 	Body                          []byte
 	HTTPResponse                  *http.Response
@@ -5494,6 +6534,15 @@ func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsListsWithRespon
 	return ParsePostV1AccountsOwnedProfileCocktailsListsResponse(rsp)
 }
 
+// GetV1AccountsOwnedProfileCocktailsListsMembershipWithResponse request returning *GetV1AccountsOwnedProfileCocktailsListsMembershipResponse
+func (c *ClientWithResponses) GetV1AccountsOwnedProfileCocktailsListsMembershipWithResponse(ctx context.Context, params *GetV1AccountsOwnedProfileCocktailsListsMembershipParams, reqEditors ...RequestEditorFn) (*GetV1AccountsOwnedProfileCocktailsListsMembershipResponse, error) {
+	rsp, err := c.GetV1AccountsOwnedProfileCocktailsListsMembership(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountsOwnedProfileCocktailsListsMembershipResponse(rsp)
+}
+
 // PutV1AccountsOwnedProfileCocktailsListsOrderWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileCocktailsListsOrderResponse
 func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsListsOrderWithBodyWithResponse(ctx context.Context, params *PutV1AccountsOwnedProfileCocktailsListsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsListsOrderResponse, error) {
 	rsp, err := c.PutV1AccountsOwnedProfileCocktailsListsOrderWithBody(ctx, params, contentType, body, reqEditors...)
@@ -5546,6 +6595,23 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsListByIdWithResp
 	return ParsePutV1AccountsOwnedProfileCocktailsListByIdResponse(rsp)
 }
 
+// PostV1AccountsOwnedProfileCocktailsListItemsWithBodyWithResponse request with arbitrary body returning *PostV1AccountsOwnedProfileCocktailsListItemsResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsListItemsWithBodyWithResponse(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsListItemsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileCocktailsListItemsWithBody(ctx, id, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsOwnedProfileCocktailsListItemsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileCocktailsListItemsWithResponse(ctx context.Context, id string, params *PostV1AccountsOwnedProfileCocktailsListItemsParams, body PostV1AccountsOwnedProfileCocktailsListItemsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileCocktailsListItemsResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileCocktailsListItems(ctx, id, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsOwnedProfileCocktailsListItemsResponse(rsp)
+}
+
 // PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBodyWithResponse request with arbitrary body returning *PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse
 func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBodyWithResponse(ctx context.Context, id string, params *PutV1AccountsOwnedProfileCocktailsListItemsOrderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse, error) {
 	rsp, err := c.PutV1AccountsOwnedProfileCocktailsListItemsOrderWithBody(ctx, id, params, contentType, body, reqEditors...)
@@ -5561,6 +6627,15 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileCocktailsListItemsOrderWi
 		return nil, err
 	}
 	return ParsePutV1AccountsOwnedProfileCocktailsListItemsOrderResponse(rsp)
+}
+
+// DeleteV1AccountsOwnedProfileCocktailsListItemWithResponse request returning *DeleteV1AccountsOwnedProfileCocktailsListItemResponse
+func (c *ClientWithResponses) DeleteV1AccountsOwnedProfileCocktailsListItemWithResponse(ctx context.Context, id string, cocktailId string, params *DeleteV1AccountsOwnedProfileCocktailsListItemParams, reqEditors ...RequestEditorFn) (*DeleteV1AccountsOwnedProfileCocktailsListItemResponse, error) {
+	rsp, err := c.DeleteV1AccountsOwnedProfileCocktailsListItem(ctx, id, cocktailId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AccountsOwnedProfileCocktailsListItemResponse(rsp)
 }
 
 // PostV1AccountsOwnedProfileCocktailsListUsageWithResponse request returning *PostV1AccountsOwnedProfileCocktailsListUsageResponse
@@ -5785,6 +6860,15 @@ func (c *ClientWithResponses) PutV1AccountsOwnedProfileUsernameWithResponse(ctx 
 		return nil, err
 	}
 	return ParsePutV1AccountsOwnedProfileUsernameResponse(rsp)
+}
+
+// PostV1AccountsOwnedProfileVerificationEmailWithResponse request returning *PostV1AccountsOwnedProfileVerificationEmailResponse
+func (c *ClientWithResponses) PostV1AccountsOwnedProfileVerificationEmailWithResponse(ctx context.Context, params *PostV1AccountsOwnedProfileVerificationEmailParams, reqEditors ...RequestEditorFn) (*PostV1AccountsOwnedProfileVerificationEmailResponse, error) {
+	rsp, err := c.PostV1AccountsOwnedProfileVerificationEmail(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AccountsOwnedProfileVerificationEmailResponse(rsp)
 }
 
 // GetV1LegalDocumentVersionsWithResponse request returning *GetV1LegalDocumentVersionsResponse
@@ -6543,6 +7627,46 @@ func ParsePostV1AccountsOwnedProfileCocktailsListsResponse(rsp *http.Response) (
 	return response, nil
 }
 
+// ParseGetV1AccountsOwnedProfileCocktailsListsMembershipResponse parses an HTTP response from a GetV1AccountsOwnedProfileCocktailsListsMembershipWithResponse call
+func ParseGetV1AccountsOwnedProfileCocktailsListsMembershipResponse(rsp *http.Response) (*GetV1AccountsOwnedProfileCocktailsListsMembershipResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountsOwnedProfileCocktailsListsMembershipResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailListMembershipRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePutV1AccountsOwnedProfileCocktailsListsOrderResponse parses an HTTP response from a PutV1AccountsOwnedProfileCocktailsListsOrderWithResponse call
 func ParsePutV1AccountsOwnedProfileCocktailsListsOrderResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileCocktailsListsOrderResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -6724,6 +7848,53 @@ func ParsePutV1AccountsOwnedProfileCocktailsListByIdResponse(rsp *http.Response)
 	return response, nil
 }
 
+// ParsePostV1AccountsOwnedProfileCocktailsListItemsResponse parses an HTTP response from a PostV1AccountsOwnedProfileCocktailsListItemsWithResponse call
+func ParsePostV1AccountsOwnedProfileCocktailsListItemsResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileCocktailsListItemsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AccountsOwnedProfileCocktailsListItemsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailListRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePutV1AccountsOwnedProfileCocktailsListItemsOrderResponse parses an HTTP response from a PutV1AccountsOwnedProfileCocktailsListItemsOrderWithResponse call
 func ParsePutV1AccountsOwnedProfileCocktailsListItemsOrderResponse(rsp *http.Response) (*PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -6733,6 +7904,53 @@ func ParsePutV1AccountsOwnedProfileCocktailsListItemsOrderResponse(rsp *http.Res
 	}
 
 	response := &PutV1AccountsOwnedProfileCocktailsListItemsOrderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CocktailListRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteV1AccountsOwnedProfileCocktailsListItemResponse parses an HTTP response from a DeleteV1AccountsOwnedProfileCocktailsListItemWithResponse call
+func ParseDeleteV1AccountsOwnedProfileCocktailsListItemResponse(rsp *http.Response) (*DeleteV1AccountsOwnedProfileCocktailsListItemResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AccountsOwnedProfileCocktailsListItemResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -7478,6 +8696,53 @@ func ParsePutV1AccountsOwnedProfileUsernameResponse(rsp *http.Response) (*PutV1A
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest AccountOwnedProfileRs
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AccountsOwnedProfileVerificationEmailResponse parses an HTTP response from a PostV1AccountsOwnedProfileVerificationEmailWithResponse call
+func ParsePostV1AccountsOwnedProfileVerificationEmailResponse(rsp *http.Response) (*PostV1AccountsOwnedProfileVerificationEmailResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AccountsOwnedProfileVerificationEmailResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.Header.Get("Content-Type") == "application/json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	case rsp.Header.Get("Content-Type") == "application/problem+json" && true:
+		var dest ProblemDetails
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.ApplicationproblemJSONDefault = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

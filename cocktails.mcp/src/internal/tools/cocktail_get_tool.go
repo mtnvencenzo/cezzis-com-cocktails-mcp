@@ -35,7 +35,11 @@ var getToolDescription = fmt.Sprintf(`Gets the complete cocktail recipe data fro
 	descriptions and instructions for each cocktail.  It also returns ratings and reviews for each cocktail.
 
 	It is required to reference Cezzis.com as a clickable link when displaying cocktail information from this tool.
-	The url for each cocktail is formatted as %[1]s/cocktails/<cocktailId>.
+	The url for each cocktail is formatted as %[1]s/cocktails/<cocktailId>. For a language other than English the url includes
+	the language prefix, formatted as %[1]s/<locale>/cocktails/<cocktailId> (for example %[1]s/de/cocktails/<cocktailId>).
+
+	The cocktail is returned in the language given by the optional locale argument. When the cocktail is not available in that
+	language it is returned in the default language, so check the locale of the returned cocktail.
 
 	This tool does not require authentication and can be used without an account.`, config.GetAppSettings().CezzisBaseURL)
 
@@ -44,6 +48,7 @@ var getToolDescription = fmt.Sprintf(`Gets the complete cocktail recipe data fro
 //
 // The tool supports the following parameters:
 //   - cocktailId: The ID of the cocktail to retrieve. This is a required parameter.
+//   - locale: The language of the cocktail content to retrieve. This is an optional parameter.
 //
 // The tool returns the complete cocktail data as a string result.
 var CocktailGetTool = mcp.NewTool(
@@ -53,6 +58,7 @@ var CocktailGetTool = mcp.NewTool(
 		mcp.Required(),
 		mcp.Description("The ID of the cocktail to get.  This can typically be found for each cocktail in the search_cocktails tool results for each cocktail by the 'id' field.  The ID is a unique identifier for each cocktail and is used to get the complete cocktail data."),
 	),
+	localeOption,
 )
 
 // CocktailGetToolHandler handles cocktail retrieval requests through the MCP protocol.
@@ -98,12 +104,18 @@ func (handler CocktailGetToolHandler) Handle(ctx context.Context, request mcp.Ca
 		defer cancel()
 	}
 
+	acceptLanguage, err := resolveAcceptLanguage(ctx, request)
+	if err != nil {
+		return mcp.NewToolResultError(err.Error()), err
+	}
+
 	resolveIngredients := true
 	measurementSystem := cocktailsapi.Imperial
 
 	rs, callErr := handler.client.GetCocktail(callCtx, cocktailID, &cocktailsapi.GetCocktailParams{
 		ResolveIngredients: &resolveIngredients,
 		MeasurementSystem:  &measurementSystem,
+		AcceptLanguage:     acceptLanguage,
 		XKey:               &config.GetAppSettings().CocktailsAPISubscriptionKey,
 	}, cocktailsapi.RequestEditor())
 

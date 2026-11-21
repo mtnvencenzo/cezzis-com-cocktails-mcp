@@ -95,6 +95,10 @@ Tool execution requests rely on the `Mcp-Session-Id` header so the server can as
 | `authentication_logout_flow` | Clears tokens for the current MCP session |
 | `cocktail_rate` | Submits a cocktail rating for an authenticated user |
 
+### Language
+
+`search_cocktails`, `get_cocktail` and `cocktail_rate` accept an optional `locale` argument (for example `de` or `de-AT,de;q=0.9,en;q=0.8`). It is forwarded to the upstream APIs as `Accept-Language`, so cocktails are searched and returned in that language and rating errors are localized. When the argument is omitted the `Accept-Language` header of the MCP HTTP request is used, and when neither is present the upstream default language applies. `get_cocktail` can return the default language when a translation is missing, so check the `locale` of the returned cocktail. Cezzis.com pages for non-default languages are prefixed with the locale (`/de/cocktails/<cocktailId>`).
+
 ## Getting Started: Go Environment Setup
 
 On a fresh machine (e.g. a new Ubuntu install), install Go from the official upstream tarball rather than the distro package manager, since apt-provided Go versions are often out of date or mismatched with the version this project targets (Go 1.25.1+). Install into `/usr/local/go`, the standard location recommended by the official Go docs, so `go` is available to every user on the machine.

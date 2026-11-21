@@ -12,6 +12,9 @@ type mcpSessionKey int
 const (
 	// McpSessionIDKey is the context key for the MCP session ID
 	McpSessionIDKey mcpSessionKey = iota
+
+	// McpAcceptLanguageKey is the context key for the Accept-Language header of the MCP request
+	McpAcceptLanguageKey
 )
 
 // McpRequestHandler is middleware that handles MCP requests.
@@ -37,6 +40,7 @@ func McpRequestHandler(next http.Handler, streamableHTTP *server.StreamableHTTPS
 		case http.MethodPost:
 			sessionID := r.Header.Get("Mcp-Session-Id")
 			ctx := context.WithValue(r.Context(), McpSessionIDKey, sessionID)
+			ctx = context.WithValue(ctx, McpAcceptLanguageKey, r.Header.Get("Accept-Language"))
 			r = r.WithContext(ctx)
 			streamableHTTP.ServeHTTP(w, r)
 			return
