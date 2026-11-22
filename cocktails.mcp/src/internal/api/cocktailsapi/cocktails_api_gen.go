@@ -38,8 +38,7 @@ func (e GetCocktailParamsMeasurementSystem) Valid() bool {
 // CocktailCollectionListModel The cocktail collection list model
 type CocktailCollectionListModel struct {
 	// Description The cocktail collection description
-	Description string                      `json:"description"`
-	Holiday     *CollectionHolidayTypeModel `json:"holiday,omitempty"`
+	Description string `json:"description"`
 
 	// IconSvg The collection icon SVG
 	IconSvg *string `json:"iconSvg,omitempty"`
@@ -57,24 +56,19 @@ type CocktailCollectionListModel struct {
 	Order int32 `json:"order"`
 
 	// RelatedCollectionIds The related collection identifiers
-	RelatedCollectionIds []string                   `json:"relatedCollectionIds"`
-	Season               *CollectionSeasonTypeModel `json:"season,omitempty"`
+	RelatedCollectionIds []string `json:"relatedCollectionIds"`
 
 	// ShortTitle The short collection title for compact displays
 	ShortTitle string `json:"shortTitle"`
 
 	// Title The cocktail collection title
 	Title string `json:"title"`
-
-	// Visibility The collection visibility type
-	Visibility CollectionVisibilityTypeModel `json:"visibility"`
 }
 
 // CocktailCollectionModel The cocktail collection model
 type CocktailCollectionModel struct {
 	// Description The cocktail collection description
-	Description string                      `json:"description"`
-	Holiday     *CollectionHolidayTypeModel `json:"holiday,omitempty"`
+	Description string `json:"description"`
 
 	// IconSvg The collection icon SVG
 	IconSvg *string `json:"iconSvg,omitempty"`
@@ -92,17 +86,13 @@ type CocktailCollectionModel struct {
 	Order int32 `json:"order"`
 
 	// RelatedCollectionIds The related collection identifiers
-	RelatedCollectionIds []string                   `json:"relatedCollectionIds"`
-	Season               *CollectionSeasonTypeModel `json:"season,omitempty"`
+	RelatedCollectionIds []string `json:"relatedCollectionIds"`
 
 	// ShortTitle The short collection title for compact displays
 	ShortTitle string `json:"shortTitle"`
 
 	// Title The cocktail collection title
 	Title string `json:"title"`
-
-	// Visibility The collection visibility type
-	Visibility CollectionVisibilityTypeModel `json:"visibility"`
 }
 
 // CocktailCollectionRs The cocktail collection response
@@ -892,15 +882,6 @@ type CocktailsSearchRs struct {
 	// Items List of cocktails returned from the search
 	Items []CocktailSearchModel `json:"items"`
 }
-
-// CollectionHolidayTypeModel defines model for CollectionHolidayTypeModel.
-type CollectionHolidayTypeModel = interface{}
-
-// CollectionSeasonTypeModel defines model for CollectionSeasonTypeModel.
-type CollectionSeasonTypeModel = interface{}
-
-// CollectionVisibilityTypeModel defines model for CollectionVisibilityTypeModel.
-type CollectionVisibilityTypeModel = interface{}
 
 // DailyCocktailsResponse defines model for DailyCocktailsResponse.
 type DailyCocktailsResponse struct {
